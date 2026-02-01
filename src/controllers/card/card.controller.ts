@@ -1,0 +1,60 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
+import { CardService } from '../../services/card/card.service';
+
+@Controller('card')
+export class CardController {
+  constructor(private readonly cardService: CardService) {}
+
+  @Post()
+  create(
+    @Body()
+    createCardDto: {
+      deckId: number;
+      front: string;
+      back: string;
+      tags?: string;
+    },
+  ) {
+    return this.cardService.create(createCardDto);
+  }
+
+  @Get()
+  findAll(@Query('deckId') deckId?: string) {
+    if (deckId) {
+      return this.cardService.findByDeck(+deckId);
+    }
+    return this.cardService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.cardService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body()
+    updateCardDto: {
+      front?: string;
+      back?: string;
+      tags?: string;
+    },
+  ) {
+    return this.cardService.update(+id, updateCardDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.cardService.remove(+id);
+  }
+}

@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime
+
+  // Relations
+  decks Deck[]
+
+  @@index([email])
+  @@index([username])
+}
+
+model Deck {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user  User   @relation(fields: [userId], references: [id])
+  cards Card[]
+
+  @@index([userId])
+}
+
+enum ReviewQuality {
+  Again
+  Hard
+  Good
+  Easy
+}
+
+model Card {
+  id        Int      @id @default(autoincrement())
+  deckId    Int
+  front     String
+  back      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tags      String?
+
+  // Relations
+  deck    Deck         @relation(fields: [deckId], references: [id])
+  reviews CardReview[]
+
+  @@index([deckId])
+  @@map("Card")
+}
+
+model CardReview {
+  id             Int           @id @default(autoincrement())
+  cardId         Int
+  repetitions    Int
+  interval       Int
+  eFactor        Float
+  nextReviewDate DateTime
+  reviewedAt     DateTime
+  quality        ReviewQuality
+
+  // Relations
+  card Card @relation(fields: [cardId], references: [id])
+
+  @@index([cardId])
+  @@index([nextReviewDate])
+}
