@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { RouteConfig } from 'src/utils/route.decorator';
+import express from 'express';
 
 @Controller()
 export class AppController {
@@ -9,8 +10,15 @@ export class AppController {
   @Get()
   @RouteConfig({
     message: 'Root endpoint',
+    requiresAuth: true,
+    roles: ['USER', 'ADMIN'],
   })
-  getHello(): any {
+  getHello(
+    @Req() request: express.Request,
+    @Res({ passthrough: true }) response: express.Response,
+  ): any {
+    console.log(request.cookies);
+    response.cookie('testCookie', 'testValue');
     // throw new HttpException('Not implemented', 501);
     return {
       statusCode: 200,

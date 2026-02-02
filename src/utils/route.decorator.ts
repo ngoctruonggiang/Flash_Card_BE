@@ -1,13 +1,11 @@
-import { applyDecorators, SetMetadata } from '@nestjs/common';
-
-export const ROUTE_CONFIG_KEY = 'routeConfig';
+import { Reflector } from '@nestjs/core';
+import { Role } from '@prisma/client';
 
 export interface RouteConfig {
   message: string;
   version?: string;
   requiresAuth?: boolean;
-  roles?: string[];
+  roles?: Role[];
 }
 
-export const RouteConfig = (config: RouteConfig) =>
-  applyDecorators(SetMetadata(ROUTE_CONFIG_KEY, config));
+export const RouteConfig = Reflector.createDecorator<RouteConfig>();

@@ -5,9 +5,11 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user.module';
 import { DeckModule } from './modules/deck.module';
 import { CardModule } from './modules/card.module';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { ResponseInterceptor } from './middleware/response.interceptor';
-import { HttpExceptionFilter } from './middleware/global.filter';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseInterceptor } from './middleware/interceptor/response.interceptor';
+import { HttpExceptionFilter } from './middleware/filters/global.filter';
+import { RolesGuard } from './middleware/guards/roles.guard';
+import { AuthGuard } from './middleware/guards/auth.guard';
 
 @Module({
   imports: [
@@ -28,6 +30,14 @@ import { HttpExceptionFilter } from './middleware/global.filter';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

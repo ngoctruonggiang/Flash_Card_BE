@@ -11,7 +11,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiResponseDto } from 'src/utils/api-response.dto';
-import { ROUTE_CONFIG_KEY, RouteConfig } from 'src/utils/route.decorator';
+import { RouteConfig } from 'src/utils/route.decorator';
 
 @Injectable()
 export class ResponseInterceptor<T>
@@ -26,11 +26,10 @@ export class ResponseInterceptor<T>
     return next.handle().pipe(
       map((data) => {
         const response = context.switchToHttp().getResponse();
-        const routeConfig = this.reflector.get<RouteConfig>(
-          ROUTE_CONFIG_KEY,
+        const routeConfig = this.reflector.get(
+          RouteConfig,
           context.getHandler(),
         );
-        console.log(response);
         return new ApiResponseDto<T>(
           response.statusCode,
           routeConfig?.message ?? '',
