@@ -19,13 +19,12 @@ export class UserController {
     createUserDto: {
       username: string;
       email: string;
-      passwordHash: string;
-      lastLoginAt: string;
+      password: string;
     },
   ) {
     return this.userService.create({
       ...createUserDto,
-      lastLoginAt: new Date(createUserDto.lastLoginAt),
+      lastLoginAt: new Date(),
     });
   }
 

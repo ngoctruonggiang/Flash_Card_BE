@@ -8,11 +8,16 @@ export class UserService {
   async create(data: {
     username: string;
     email: string;
-    passwordHash: string;
+    password: string;
     lastLoginAt: Date;
   }) {
     return await this.prisma.user.create({
-      data,
+      data: {
+        username: data.username,
+        email: data.email,
+        passwordHash: data.password,
+        lastLoginAt: data.lastLoginAt,
+      },
     });
   }
 
@@ -20,6 +25,19 @@ export class UserService {
     return await this.prisma.user.findMany({
       include: {
         decks: true,
+      },
+    });
+  }
+
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        decks: {
+          include: {
+            cards: true,
+          },
+        },
       },
     });
   }

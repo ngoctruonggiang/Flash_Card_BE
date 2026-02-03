@@ -13,19 +13,12 @@ export class AppController {
     requiresAuth: true,
     roles: ['USER', 'ADMIN'],
   })
-  getHello(
-    @Req() request: express.Request,
-    @Res({ passthrough: true }) response: express.Response,
-  ): any {
-    console.log(request.cookies);
-    response.cookie('testCookie', 'testValue');
+  getHello() // @Req() request: express.Request,
+  // @Res({ passthrough: true }) response: express.Response,
+  : any {
+    // console.log(request.cookies);
+    // response.cookie('testCookie', 'testValue');
     // throw new HttpException('Not implemented', 501);
-    return {
-      statusCode: 200,
-      message: 'Welcome to FlashLearn API',
-      data: null,
-      success: true,
-      timestamp: new Date().toISOString(),
-    };
+    return null;
   }
 }
