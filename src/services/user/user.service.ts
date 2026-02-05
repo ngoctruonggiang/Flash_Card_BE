@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -8,20 +9,13 @@ export class UserService {
   async create(data: {
     username: string;
     email: string;
-    password: string;
+    passwordHash: string;
     lastLoginAt: Date;
-  }) {
-    return await this.prisma.user.create({
-      data: {
-        username: data.username,
-        email: data.email,
-        passwordHash: data.password,
-        lastLoginAt: data.lastLoginAt,
-      },
-    });
+  }): Promise<User> {
+    return await this.prisma.user.create({ data });
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     return await this.prisma.user.findMany({
       include: {
         decks: true,
@@ -29,20 +23,19 @@ export class UserService {
     });
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: { email },
-      include: {
-        decks: {
-          include: {
-            cards: true,
-          },
-        },
-      },
     });
   }
 
-  async findOne(id: number) {
+  async findByUsername(username: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { username },
+    });
+  }
+
+  async findOne(id: number): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -63,14 +56,14 @@ export class UserService {
       passwordHash?: string;
       lastLoginAt?: Date;
     },
-  ) {
+  ): Promise<User> {
     return await this.prisma.user.update({
       where: { id },
       data,
     });
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<User> {
     return await this.prisma.user.delete({
       where: { id },
     });

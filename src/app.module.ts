@@ -10,6 +10,8 @@ import { ResponseInterceptor } from './middleware/interceptor/response.intercept
 import { HttpExceptionFilter } from './middleware/filters/global.filter';
 import { RolesGuard } from './middleware/guards/roles.guard';
 import { AuthGuard } from './middleware/guards/auth.guard';
+import { AuthService } from './services/auth/auth.service';
+import { InvalidExceptionFilter } from './middleware/filters/invalidException.filter';
 
 @Module({
   imports: [
@@ -32,6 +34,10 @@ import { AuthGuard } from './middleware/guards/auth.guard';
       useClass: HttpExceptionFilter,
     },
     {
+      provide: APP_FILTER,
+      useClass: InvalidExceptionFilter,
+    },
+    {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
@@ -39,6 +45,7 @@ import { AuthGuard } from './middleware/guards/auth.guard';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    AuthService,
   ],
 })
 export class AppModule {}

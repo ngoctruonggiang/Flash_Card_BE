@@ -8,13 +8,17 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UserService } from '../../services/user/user.service';
+import { AuthService } from 'src/services/auth/auth.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
-  @Post()
-  create(
+  @Post('/signup')
+  signUp(
     @Body()
     createUserDto: {
       username: string;
@@ -22,21 +26,29 @@ export class UserController {
       password: string;
     },
   ) {
-    return this.userService.create({
-      ...createUserDto,
-      lastLoginAt: new Date(),
-    });
+    return this.authService.signUp(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Post('/signin')
+  signIn(
+    @Body()
+    signInDto: {
+      username: string;
+      password: string;
+    },
+  ) {
+    return this.authService.signIn(signInDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.userService.findAll();
+  // }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.userService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(

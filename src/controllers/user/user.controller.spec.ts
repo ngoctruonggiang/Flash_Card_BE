@@ -53,7 +53,7 @@ describe('UserController', () => {
 
       mockUserService.create.mockResolvedValue(mockUser);
 
-      const result = await controller.create(createDto);
+      const result = await controller.signUp(createDto);
 
       expect(result).toEqual(mockUser);
       // eslint-disable-next-line @typescript-eslint/unbound-method
