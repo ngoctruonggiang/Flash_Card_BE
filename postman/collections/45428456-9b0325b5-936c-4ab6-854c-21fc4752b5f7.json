@@ -30,7 +30,13 @@
 					},
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
@@ -102,11 +108,14 @@
 			"id": "45428456-612efa31-2534-478a-a4ad-d7a3574c2635"
 		}
 	],
+	"auth": {
+		"type": "bearer"
+	},
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "f2411fc7-58b2-49a9-960a-81ece7bce217",
+				"id": "39f95a24-1525-4b14-9355-98e366a271c5",
 				"type": "text/javascript",
 				"packages": {},
 				"requests": {},
@@ -118,7 +127,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "6b58d4f2-8b7e-42d8-ac8a-afc50d85d43b",
+				"id": "10119e40-97da-4f23-bbc2-72b2bdee1e94",
 				"type": "text/javascript",
 				"packages": {},
 				"requests": {},
