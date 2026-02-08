@@ -10,8 +10,7 @@ export class AppController {
   @Get()
   @RouteConfig({
     message: 'Root endpoint',
-    requiresAuth: true,
-    roles: ['USER', 'ADMIN'],
+    requiresAuth: false,
   })
   getHello() // @Req() request: express.Request,
   // @Res({ passthrough: true }) response: express.Response,

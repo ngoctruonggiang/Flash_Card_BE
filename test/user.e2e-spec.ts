@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
@@ -9,7 +9,6 @@ import { PrismaService } from 'src/services/prisma.service';
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let userService: UserService;
-  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,7 +19,6 @@ describe('AppController (e2e)', () => {
     await app.init();
 
     userService = moduleFixture.get<UserService>(UserService);
-    prismaService = moduleFixture.get<PrismaService>(PrismaService);
   });
 
   afterAll(async () => {
@@ -35,9 +33,9 @@ describe('AppController (e2e)', () => {
     };
 
     await request(app.getHttpServer())
-      .post('/user')
+      .post('/user/signup')
       .send(createUserDto)
-      .expect(201);
+      .expect(HttpStatus.CREATED);
 
     const user = await userService.findByEmail(createUserDto.email);
     expect(user).toBeDefined();

@@ -24,6 +24,7 @@ export class InvalidExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
     } as ApiResponseDto<null>);
+    console.error(exception);
     if (exception instanceof HttpException) {
       return;
     }
