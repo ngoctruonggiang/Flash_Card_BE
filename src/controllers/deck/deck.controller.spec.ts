@@ -29,6 +29,10 @@ describe('DeckController', () => {
     service = module.get<DeckService>(DeckService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });

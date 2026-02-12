@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
   let provider: AuthService;
   let userService: UserService;
+  let jwtService: JwtService;
 
   const mockUserService = {
     create: jest.fn(),
@@ -21,11 +23,13 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: UserService, useValue: mockUserService },
+        JwtService,
       ],
     }).compile();
 
     provider = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
