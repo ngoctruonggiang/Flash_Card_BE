@@ -1,11 +1,23 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Reflector } from '@nestjs/core';
+import { RouteConfig } from 'src/utils/route.decorator';
+import express from 'express';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return true;
+  constructor(private reflector: Reflector) {}
+
+  // Auth guard should already have validated the token and set the user in the request
+  // and the user is valid
+  canActivate(context: ExecutionContext): boolean {
+    const routeConfig = this.reflector.get(RouteConfig, context.getHandler());
+    if (!routeConfig?.requiresAuth) return true;
+
+    const roles = routeConfig.roles || [];
+
+    const request = context.switchToHttp().getRequest<express.Request>();
+    const user = request['user'] as User;
+    return roles.includes(user.role);
   }
 }

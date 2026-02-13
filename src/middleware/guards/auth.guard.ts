@@ -8,18 +8,22 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import express from 'express';
+import { UserService } from 'src/services/user/user.service';
 import { jwtConstants } from 'src/utils/constants';
 import { RouteConfig } from 'src/utils/route.decorator';
+import { JwtPayload } from 'src/utils/types/JWTTypes';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
+    private userService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<express.Request>();
+
     const routeConfig = this.reflector.get(RouteConfig, context.getHandler());
     if (!routeConfig?.requiresAuth) return true;
 
@@ -31,12 +35,19 @@ export class AuthGuard implements CanActivate {
       );
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret: jwtConstants.secret,
       });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload;
+
+      const user = await this.userService.findOne(payload.id);
+      if (!user) {
+        throw new HttpException(
+          'Unauthorized: User not found',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      request['user'] = user;
     } catch {
       throw new HttpException(
         'Unauthorized: Invalid token',

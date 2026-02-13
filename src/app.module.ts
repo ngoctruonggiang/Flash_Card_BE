@@ -7,11 +7,10 @@ import { DeckModule } from './modules/deck.module';
 import { CardModule } from './modules/card.module';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './middleware/interceptor/response.interceptor';
-import { HttpExceptionFilter } from './middleware/filters/global.filter';
+import { GlobalExceptionFilter } from './middleware/filters/global.filter';
 import { RolesGuard } from './middleware/guards/roles.guard';
 import { AuthGuard } from './middleware/guards/auth.guard';
 import { AuthService } from './services/auth/auth.service';
-import { InvalidExceptionFilter } from './middleware/filters/invalidException.filter';
 
 @Module({
   imports: [
@@ -31,11 +30,7 @@ import { InvalidExceptionFilter } from './middleware/filters/invalidException.fi
     },
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: InvalidExceptionFilter,
+      useClass: GlobalExceptionFilter,
     },
     {
       provide: APP_GUARD,

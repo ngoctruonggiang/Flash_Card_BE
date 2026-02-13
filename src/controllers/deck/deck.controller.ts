@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { DeckService } from '../../services/deck/deck.service';
+import { CreateDeckDto } from 'src/utils/types/dto/deck/create-deck.dto';
 
 @Controller('deck')
 export class DeckController {
@@ -17,11 +18,7 @@ export class DeckController {
   @Post()
   create(
     @Body()
-    createDeckDto: {
-      userId: number;
-      title: string;
-      description?: string;
-    },
+    createDeckDto: CreateDeckDto,
   ) {
     return this.deckService.create(createDeckDto);
   }

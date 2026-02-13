@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma:reset": "npx prisma migrate reset --force && npx prisma db push"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -25,6 +26,7 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.1",
     "@prisma/adapter-better-sqlite3": "^6.16.3",
     "@prisma/client": "^6.16.3",
     "bcrypt": "^6.0.0",
@@ -75,6 +77,10 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "src/$1",
+      "^@/(.*)$": "src/$1"
+    }
   }
 }

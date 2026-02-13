@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CardService } from '../../services/card/card.service';
+import { CreateCardDto } from 'src/utils/types/dto/card/create-card.dto';
 
 @Controller('card')
 export class CardController {
@@ -17,12 +18,7 @@ export class CardController {
   @Post()
   create(
     @Body()
-    createCardDto: {
-      deckId: number;
-      front: string;
-      back: string;
-      tags?: string;
-    },
+    createCardDto: CreateCardDto,
   ) {
     return this.cardService.create(createCardDto);
   }

@@ -9,6 +9,9 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../../services/user/user.service';
 import { AuthService } from 'src/services/auth/auth.service';
+import { SignUpDto } from 'src/utils/types/dto/user/sign-up.dto';
+import { SignInDto } from 'src/utils/types/dto/user/sign-in.dto';
+import { JwtTokenReturn } from 'src/utils/types/JWTTypes';
 
 @Controller('user')
 export class UserController {
@@ -20,23 +23,16 @@ export class UserController {
   @Post('/signup')
   signUp(
     @Body()
-    createUserDto: {
-      username: string;
-      email: string;
-      password: string;
-    },
-  ) {
+    createUserDto: SignUpDto,
+  ): Promise<JwtTokenReturn> {
     return this.authService.signUp(createUserDto);
   }
 
   @Post('/signin')
   signIn(
     @Body()
-    signInDto: {
-      username: string;
-      password: string;
-    },
-  ) {
+    signInDto: SignInDto,
+  ): Promise<JwtTokenReturn> {
     return this.authService.signIn(signInDto);
   }
 
