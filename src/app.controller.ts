@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
-import { RouteConfig } from 'src/utils/route.decorator';
+import { RouteConfig } from 'src/utils/decorators/route.decorator';
 import express from 'express';
 
 @Controller()

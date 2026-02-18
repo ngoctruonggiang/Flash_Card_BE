@@ -17,9 +17,8 @@ describe('UserController', () => {
   };
 
   const mockAuthService = {
-    validateUser: jest.fn(),
-    login: jest.fn(),
-    signup: jest.fn(),
+    signUp: jest.fn(),
+    signIn: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -51,30 +50,37 @@ describe('UserController', () => {
   });
 
   // Removed because of how badly i prompted
-  // describe('create', () => {
-  //   it('should create a user', async () => {
-  //     const createDto = {
-  //       username: 'testuser',
-  //       email: 'test@example.com',
-  //       passwordHash: 'hashedpassword',
-  //       lastLoginAt: '2025-10-29T00:00:00.000Z',
-  //     };
-  //     const mockUser = {
-  //       id: 1,
-  //       ...createDto,
-  //       lastLoginAt: new Date(createDto.lastLoginAt),
-  //     };
+  it('/signup', async () => {
+    const createDto = {
+      username: 'testuser',
+      email: 'test@example.com',
+      password: 'password123',
+    };
 
-  //     mockUserService.create.mockResolvedValue(mockUser);
+    const mockJwtToken = {
+      accessToken: 'mocked_jwt_token',
+    };
+    mockAuthService.signUp.mockResolvedValue(mockJwtToken);
 
-  //     const result = await controller.signUp(createDto);
+    await expect(controller.signUp(createDto)).resolves.toEqual(mockJwtToken);
 
-  //     expect(result).toEqual(mockUser);
-  //     // eslint-disable-next-line @typescript-eslint/unbound-method
-  //     expect(userService.create).toHaveBeenCalledWith({
-  //       ...createDto,
-  //       lastLoginAt: new Date(createDto.lastLoginAt),
-  //     });
-  //   });
-  // });
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(authService.signUp).toHaveBeenCalledWith(createDto);
+  });
+
+  it('/signin', async () => {
+    const createDto = {
+      username: 'testuser',
+      password: 'password123',
+    };
+    const mockJwtToken = {
+      accessToken: 'mocked_jwt_token',
+    };
+
+    mockAuthService.signIn.mockResolvedValue(mockJwtToken);
+
+    await expect(controller.signIn(createDto)).resolves.toEqual(mockJwtToken);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(authService.signIn).toHaveBeenCalledWith(createDto);
+  });
 });

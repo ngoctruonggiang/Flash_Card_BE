@@ -7,9 +7,12 @@ import {
   Param,
   Delete,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { DeckService } from '../../services/deck/deck.service';
-import { CreateDeckDto } from 'src/utils/types/dto/deck/create-deck.dto';
+import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
+import { IdParamDto } from 'src/utils/types/IDParam.dto';
+import { UpdateDeckDto } from 'src/utils/types/dto/deck/updateDeck.dto';
 
 @Controller('deck')
 export class DeckController {
@@ -24,32 +27,29 @@ export class DeckController {
   }
 
   @Get()
-  findAll(@Query('userId') userId?: string) {
+  findAll(@Query('userId', ParseIntPipe) userId?: number) {
     if (userId) {
-      return this.deckService.findByUser(+userId);
+      return this.deckService.findByUser(userId);
     }
     return this.deckService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.deckService.findOne(+id);
+  findOne(@Param() params: IdParamDto) {
+    return this.deckService.findOne(params.id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param() params: IdParamDto,
     @Body()
-    updateDeckDto: {
-      title?: string;
-      description?: string;
-    },
+    updateDeckDto: UpdateDeckDto,
   ) {
-    return this.deckService.update(+id, updateDeckDto);
+    return this.deckService.update(params.id, updateDeckDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deckService.remove(+id);
+  remove(@Param() params: IdParamDto) {
+    return this.deckService.remove(params.id);
   }
 }

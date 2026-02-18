@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeckService } from './deck.service';
 import { PrismaService } from '../prisma.service';
@@ -35,5 +36,147 @@ describe('Deck', () => {
 
   it('should be defined', () => {
     expect(provider).toBeDefined();
+  });
+
+  describe('Create', () => {
+    it('should create a new deck', async () => {
+      const mockDeck = {
+        userId: 1,
+        title: 'Test Deck',
+        description: 'Test Description',
+      };
+      mockPrismaService.deck.create.mockResolvedValue(mockDeck);
+      const result = await provider.create(mockDeck);
+      expect(result).not.toBeNull();
+      expect(prismaService.deck.create).toHaveBeenCalledWith({
+        data: mockDeck,
+      });
+    });
+  });
+
+  describe('Remove', () => {
+    it('should remove a deck', async () => {
+      const mockDeck = { id: 1, name: 'Test Deck', userId: 1 };
+
+      mockPrismaService.deck.delete.mockResolvedValue(mockDeck);
+      const result = await provider.remove(1);
+      expect(result).toEqual(mockDeck);
+      expect(prismaService.deck.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+    });
+  });
+
+  describe('Update', () => {
+    it('should update a deck', async () => {
+      const mockDeck = { id: 1, name: 'Updated Deck', userId: 1 };
+
+      mockPrismaService.deck.update.mockResolvedValue(mockDeck);
+      const result = await provider.update(1, { title: 'Updated Deck' });
+
+      expect(result).toEqual(mockDeck);
+      expect(prismaService.deck.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { title: 'Updated Deck' },
+      });
+    });
+
+    it('should throw an error if deck not found', async () => {
+      mockPrismaService.deck.update.mockRejectedValue(
+        new Error('Deck not found'),
+      );
+      await expect(
+        provider.update(999, { title: 'Non-existent Deck' }),
+      ).rejects.toThrow('Deck not found');
+      expect(prismaService.deck.update).toHaveBeenCalledWith({
+        where: { id: 999 },
+        data: { title: 'Non-existent Deck' },
+      });
+    });
+  });
+
+  describe('Query', () => {
+    describe('findAll', () => {
+      it('should return all decks', async () => {
+        const mockDecks = [
+          { id: 1, name: 'Deck 1', userId: 1 },
+          { id: 2, name: 'Deck 2', userId: 1 },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+
+        const result = await provider.findAll();
+
+        expect(result).toEqual(mockDecks);
+        expect(prismaService.deck.findMany).toHaveBeenCalledWith({
+          include: {
+            user: true,
+            cards: true,
+          },
+        });
+      });
+    });
+
+    describe('findByUser', () => {
+      it('should return decks by userId', async () => {
+        const mockDecks = [
+          { id: 1, name: 'Deck 1', userId: 1 },
+          { id: 2, name: 'Deck 2', userId: 1 },
+        ];
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+
+        const result = await provider.findByUser(1);
+
+        expect(result).toEqual(mockDecks);
+        expect(prismaService.deck.findMany).toHaveBeenCalledWith({
+          where: { userId: 1 },
+          include: {
+            cards: true,
+          },
+        });
+      });
+    });
+
+    describe('findOne', () => {
+      it('should return a single deck by id', async () => {
+        const mockDeck = { id: 1, name: 'Deck 1', userId: 1 };
+
+        mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
+
+        const result = await provider.findOne(1);
+
+        expect(result).toEqual(mockDeck);
+        expect(prismaService.deck.findUnique).toHaveBeenCalledWith({
+          where: { id: 1 },
+          include: {
+            user: true,
+            cards: {
+              include: {
+                reviews: true,
+              },
+            },
+          },
+        });
+      });
+
+      it('should return null if deck not found', async () => {
+        mockPrismaService.deck.findUnique.mockResolvedValue(null);
+
+        const result = await provider.findOne(999);
+
+        expect(result).toBeNull();
+        expect(prismaService.deck.findUnique).toHaveBeenCalledWith({
+          where: { id: 999 },
+          include: {
+            user: true,
+            cards: {
+              include: {
+                reviews: true,
+              },
+            },
+          },
+        });
+      });
+    });
   });
 });

@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import express from 'express';
 import { UserService } from 'src/services/user/user.service';
 import { jwtConstants } from 'src/utils/constants';
-import { RouteConfig } from 'src/utils/route.decorator';
+import { RouteConfig } from 'src/utils/decorators/route.decorator';
 import { JwtPayload } from 'src/utils/types/JWTTypes';
 
 @Injectable()

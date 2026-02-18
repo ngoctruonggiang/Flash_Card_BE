@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User } from '@prisma/client';
+import { UpdateUserDto } from 'src/utils/types/dto/user/updateUser.dto';
+import { bcryptConstants } from 'src/utils/constants';
+import * as bcrypt from 'bcrypt';
+import { UserDto } from 'src/utils/types/dto/user/user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,6 +17,26 @@ export class UserService {
     lastLoginAt: Date;
   }): Promise<User> {
     return await this.prisma.user.create({ data });
+  }
+
+  async getUserById(id: number): Promise<UserDto | null> {
+    const user = await this.findOne(id);
+    return user ? new UserDto(user) : null;
+  }
+
+  async getUserByUsername(username: string): Promise<UserDto | null> {
+    const user = await this.findByUsername(username);
+    return user ? new UserDto(user) : null;
+  }
+
+  async getUserByEmail(email: string): Promise<UserDto | null> {
+    const user = await this.findByEmail(email);
+    return user ? new UserDto(user) : null;
+  }
+
+  async getAllUsers(): Promise<UserDto[]> {
+    const users = await this.findAll();
+    return users.map((user) => new UserDto(user));
   }
 
   async findAll(): Promise<User[]> {
@@ -48,18 +72,21 @@ export class UserService {
     });
   }
 
-  async update(
-    id: number,
-    data: {
-      username?: string;
-      email?: string;
-      passwordHash?: string;
-      lastLoginAt?: Date;
-    },
-  ): Promise<User> {
+  async update(id: number, data: UpdateUserDto): Promise<User> {
+    let hashedPassword: string | undefined = undefined;
+    if (data.password) {
+      hashedPassword = await bcrypt.hash(
+        data.password,
+        bcryptConstants.saltOrRounds,
+      );
+    }
     return await this.prisma.user.update({
       where: { id },
-      data,
+      data: {
+        username: data.username,
+        email: data.email,
+        passwordHash: hashedPassword,
+      },
     });
   }
 
