@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 
 @Injectable()
 export class DeckService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: { userId: number; title: string; description?: string }) {
+  async create(data: CreateDeckDto) {
     return await this.prisma.deck.create({
-      data,
+      data: {
+        title: data.title,
+        description: data.description,
+        userId: data.userId.id,
+      },
     });
   }
 

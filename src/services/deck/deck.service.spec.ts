@@ -2,6 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeckService } from './deck.service';
 import { PrismaService } from '../prisma.service';
+import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 
 describe('Deck', () => {
   let provider: DeckService;
@@ -40,8 +41,8 @@ describe('Deck', () => {
 
   describe('Create', () => {
     it('should create a new deck', async () => {
-      const mockDeck = {
-        userId: 1,
+      const mockDeck: CreateDeckDto = {
+        userId: { id: 1 },
         title: 'Test Deck',
         description: 'Test Description',
       };
@@ -49,7 +50,11 @@ describe('Deck', () => {
       const result = await provider.create(mockDeck);
       expect(result).not.toBeNull();
       expect(prismaService.deck.create).toHaveBeenCalledWith({
-        data: mockDeck,
+        data: {
+          title: mockDeck.title,
+          description: mockDeck.description,
+          userId: mockDeck.userId.id,
+        },
       });
     });
   });

@@ -12,6 +12,7 @@ import {
 import { CardService } from '../../services/card/card.service';
 import { CreateCardDto } from 'src/utils/types/dto/card/createCard.dto';
 import { IdParamDto } from 'src/utils/types/IDParam.dto';
+import { UpdateCardDto } from 'src/utils/types/dto/card/updateCard.dto';
 
 @Controller('card')
 export class CardController {
@@ -47,11 +48,7 @@ export class CardController {
   update(
     @Param() params: IdParamDto,
     @Body()
-    updateCardDto: {
-      front?: string;
-      back?: string;
-      tags?: string;
-    },
+    updateCardDto: UpdateCardDto,
   ) {
     return this.cardService.update(params.id, updateCardDto);
   }
