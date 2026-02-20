@@ -41,19 +41,19 @@ describe('Deck', () => {
 
   describe('Create', () => {
     it('should create a new deck', async () => {
+      const userId = 1;
       const mockDeck: CreateDeckDto = {
-        userId: { id: 1 },
         title: 'Test Deck',
         description: 'Test Description',
       };
       mockPrismaService.deck.create.mockResolvedValue(mockDeck);
-      const result = await provider.create(mockDeck);
+      const result = await provider.create(userId, mockDeck);
       expect(result).not.toBeNull();
       expect(prismaService.deck.create).toHaveBeenCalledWith({
         data: {
           title: mockDeck.title,
           description: mockDeck.description,
-          userId: mockDeck.userId.id,
+          userId: userId,
         },
       });
     });

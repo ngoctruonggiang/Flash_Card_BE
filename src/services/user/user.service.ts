@@ -80,6 +80,7 @@ export class UserService {
         bcryptConstants.saltOrRounds,
       );
     }
+    console.log(data);
     return await this.prisma.user.update({
       where: { id },
       data: {
@@ -93,6 +94,12 @@ export class UserService {
   async remove(id: number): Promise<User> {
     return await this.prisma.user.delete({
       where: { id },
+    });
+  }
+
+  async removeByUsername(username: string): Promise<User> {
+    return await this.prisma.user.delete({
+      where: { username },
     });
   }
 }

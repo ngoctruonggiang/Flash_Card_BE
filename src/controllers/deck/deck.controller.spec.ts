@@ -4,6 +4,7 @@ import { DeckController } from './deck.controller';
 import { DeckService } from 'src/services/deck/deck.service';
 import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 import { UpdateDeckDto } from 'src/utils/types/dto/deck/updateDeck.dto';
+import { User } from '@prisma/client';
 
 describe('DeckController', () => {
   let controller: DeckController;
@@ -43,9 +44,17 @@ describe('DeckController', () => {
 
   describe('create', () => {
     it('should create a new deck', async () => {
+      const mockUser: User = {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'USER',
+        passwordHash: 'hashedpassword',
+        createdAt: new Date(),
+        lastLoginAt: new Date(),
+      };
       const createDeckDto: CreateDeckDto = {
         title: 'JavaScript Basics',
-        userId: { id: 1 },
         description: 'Learn JavaScript fundamentals',
       };
 
@@ -60,16 +69,24 @@ describe('DeckController', () => {
 
       mockService.create.mockResolvedValue(mockDeck);
 
-      const result = await controller.create(createDeckDto);
+      const result = await controller.create(mockUser, createDeckDto);
 
       expect(result).toEqual(mockDeck);
-      expect(service.create).toHaveBeenCalledWith(createDeckDto);
+      expect(service.create).toHaveBeenCalledWith(mockUser.id, createDeckDto);
     });
 
     it('should create a deck without description', async () => {
+      const mockUser: User = {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'USER',
+        passwordHash: 'hashedpassword',
+        createdAt: new Date(),
+        lastLoginAt: new Date(),
+      };
       const createDeckDto: CreateDeckDto = {
         title: 'TypeScript Basics',
-        userId: { id: 1 },
       };
 
       const mockDeck = {
@@ -83,10 +100,10 @@ describe('DeckController', () => {
 
       mockService.create.mockResolvedValue(mockDeck);
 
-      const result = await controller.create(createDeckDto);
+      const result = await controller.create(mockUser, createDeckDto);
 
       expect(result).toEqual(mockDeck);
-      expect(service.create).toHaveBeenCalledWith(createDeckDto);
+      expect(service.create).toHaveBeenCalledWith(mockUser.id, createDeckDto);
     });
   });
 

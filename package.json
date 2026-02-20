@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test-e2e/jest.json",
-    "prisma:reset": "npx prisma migrate reset --force && npx prisma db push"
+    "prisma:reset": "npx prisma migrate reset --force && npx prisma db push && npm run seed",
+    "seed": "ts-node -r tsconfig-paths/register src/seeders/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -64,6 +65,8 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
+  
+  
   "jest": {
     "moduleFileExtensions": [
       "js",

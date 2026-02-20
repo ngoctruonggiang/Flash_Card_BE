@@ -7,5 +7,6 @@ import { PrismaService } from 'src/services/prisma.service';
   imports: [],
   controllers: [CardController],
   providers: [CardService, PrismaService],
+  exports: [CardService],
 })
 export class CardModule {}

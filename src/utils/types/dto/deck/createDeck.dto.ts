@@ -1,17 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { IdParamDto } from '../../IDParam.dto';
-
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateDeckDto {
-  @ApiProperty()
-  @ValidateNested()
-  userId: IdParamDto;
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

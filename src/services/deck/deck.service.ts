@@ -6,12 +6,12 @@ import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 export class DeckService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateDeckDto) {
+  async create(userId: number, data: CreateDeckDto) {
     return await this.prisma.deck.create({
       data: {
         title: data.title,
         description: data.description,
-        userId: data.userId.id,
+        userId: userId,
       },
     });
   }
@@ -26,17 +26,22 @@ export class DeckService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.deck.findUnique({
-      where: { id },
-      include: {
-        user: true,
-        cards: {
-          include: {
-            reviews: true,
+    try {
+      return await this.prisma.deck.findUnique({
+        where: { id },
+        include: {
+          user: true,
+          cards: {
+            include: {
+              reviews: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error('Error finding deck:', error);
+      throw error;
+    }
   }
 
   async findByUser(userId: number) {

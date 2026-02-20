@@ -71,6 +71,7 @@ export class UserController {
   })
   update(@GetUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     const updateData: any = { ...updateUserDto };
+    console.log(updateData);
     return this.userService.update(user.id, updateData);
   }
 

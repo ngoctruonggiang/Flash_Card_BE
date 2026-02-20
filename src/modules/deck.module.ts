@@ -7,5 +7,6 @@ import { PrismaService } from 'src/services/prisma.service';
   imports: [],
   controllers: [DeckController],
   providers: [DeckService, PrismaService],
+  exports: [DeckService],
 })
 export class DeckModule {}
