@@ -23,7 +23,8 @@ describe('AppController (e2e)', () => {
     email: 'e2edeckuser@example.com',
     password: 'e2euserpassword',
   };
-  let testDeck: Deck;
+  let testDeck: Deck | null;
+  let userId: number;
   let jwtToken: JwtTokenReturn | null = null;
 
   beforeEach(async () => {
@@ -55,16 +56,12 @@ describe('AppController (e2e)', () => {
         password: userSignUpDto.password,
       });
     }
+    userId = (await userService.findByEmail(userSignUpDto.email))!.id;
 
-    const res = await request(app.getHttpServer())
-      .post('/deck')
-      .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
-      .send({
-        title: 'Test Deck',
-        description: 'This is a test deck',
-      })
-      .expect(201);
-    testDeck = res.body.data;
+    testDeck = await deckService.create(userId, {
+      title: 'Test Deck',
+      description: 'This is a test deck',
+    });
   });
 
   afterAll(async () => {
@@ -77,7 +74,7 @@ describe('AppController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await deckService.remove(testDeck.id);
+    if (testDeck) await deckService.remove(testDeck.id);
   });
 
   it('/deck (POST) create Deck', async () => {
@@ -97,18 +94,18 @@ describe('AppController (e2e)', () => {
 
   it('/deck/:id (GET) ', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/deck/${testDeck.id}`)
+      .get(`/deck/${testDeck?.id}`)
       .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
       .expect(200);
 
     // Clean up - delete the created deck
     const getDeck = res.body.data;
-    expect(getDeck.id).toBe(testDeck.id);
+    expect(getDeck.id).toBe(testDeck?.id);
   });
 
   it('/deck/:id (PATCH) ', async () => {
     await request(app.getHttpServer())
-      .patch(`/deck/${testDeck.id}`)
+      .patch(`/deck/${testDeck?.id}`)
       .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
       .send({
         title: 'Updated Test Deck',
@@ -118,12 +115,9 @@ describe('AppController (e2e)', () => {
 
   it('/deck/:id (DELETE) ', async () => {
     await request(app.getHttpServer())
-      .post('/deck')
+      .delete(`/deck/${testDeck?.id}`)
       .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
-      .send({
-        title: 'Deck to be deleted',
-        description: 'This deck will be deleted in the test',
-      })
-      .expect(201);
+      .expect(200);
+    testDeck = null;
   });
 });

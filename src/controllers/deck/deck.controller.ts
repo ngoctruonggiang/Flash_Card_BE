@@ -53,7 +53,6 @@ export class DeckController {
     requiresAuth: true,
   })
   findOne(@Param() params: IdParamDto) {
-    console.log(params.id);
     return this.deckService.findOne(params.id);
   }
 

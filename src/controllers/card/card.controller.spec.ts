@@ -44,7 +44,7 @@ describe('CardController', () => {
   describe('create', () => {
     it('should create a new card', async () => {
       const createCardDto: CreateCardDto = {
-        deckId: { id: 1 },
+        deckId: 1,
         front: 'What is JavaScript?',
         back: 'A programming language',
         tags: 'programming,js',
@@ -74,8 +74,8 @@ describe('CardController', () => {
     });
 
     it('should create a card without tags', async () => {
-      const createCardDto = {
-        deckId: { id: 2 },
+      const createCardDto: CreateCardDto = {
+        deckId: 2,
         front: 'What is TypeScript?',
         back: 'A typed superset of JavaScript',
       };

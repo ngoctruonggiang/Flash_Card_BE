@@ -24,7 +24,7 @@ export class CardController {
     createCardDto: CreateCardDto,
   ) {
     return this.cardService.create({
-      deckId: createCardDto.deckId.id,
+      deckId: createCardDto.deckId,
       front: createCardDto.front,
       back: createCardDto.back,
       tags: createCardDto.tags,

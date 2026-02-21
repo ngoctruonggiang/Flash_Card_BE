@@ -1,16 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { IdParamDto } from '../../IDParam.dto';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCardDto {
-  @ApiProperty()
-  @ValidateNested()
-  deckId: IdParamDto;
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  deckId: number;
 
   @ApiProperty()
   @IsString()

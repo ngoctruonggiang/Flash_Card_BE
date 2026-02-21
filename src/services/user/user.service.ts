@@ -80,7 +80,6 @@ export class UserService {
         bcryptConstants.saltOrRounds,
       );
     }
-    console.log(data);
     return await this.prisma.user.update({
       where: { id },
       data: {
