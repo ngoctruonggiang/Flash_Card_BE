@@ -138,8 +138,21 @@
 			"id": "45428456-612efa31-2534-478a-a4ad-d7a3574c2635"
 		},
 		{
-			"name": "New Folder",
-			"item": [],
+			"name": "/deck",
+			"item": [
+				{
+					"name": "Get",
+					"id": "45428456-0547e6ee-b202-4059-b5eb-70ec994d2d76",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
 			"id": "45428456-823a3541-098a-4d43-91cf-97ad1c1203d1"
 		}
 	],
