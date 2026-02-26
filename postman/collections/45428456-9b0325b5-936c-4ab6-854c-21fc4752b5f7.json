@@ -148,7 +148,20 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"abcdefgh1\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/deck",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"deck"
+							]
+						}
 					},
 					"response": []
 				}
