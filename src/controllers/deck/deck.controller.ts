@@ -34,17 +34,26 @@ export class DeckController {
     return this.deckService.create(user.id, createDeckDto);
   }
 
-  @Get()
+  @Get('/by')
   @RouteConfig({
     message: 'Get All Decks By UserID or All Decks',
     requiresAuth: true,
     roles: ['ADMIN'],
   })
-  findAll(@Query('userId', ParseIntPipe) userId?: number) {
+  findAllByUser(@Query('userId', ParseIntPipe) userId?: number) {
     if (userId) {
       return this.deckService.findByUser(userId);
     }
     return this.deckService.findAll();
+  }
+
+  @Get()
+  @RouteConfig({
+    message: 'Get All Decks By User',
+    requiresAuth: true,
+  })
+  findAllCurrentUser(@GetUser() user: client.User) {
+    return this.deckService.findByUser(user.id);
   }
 
   @Get(':id')

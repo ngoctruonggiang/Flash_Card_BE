@@ -130,7 +130,7 @@ describe('DeckController', () => {
 
       mockService.findAll.mockResolvedValue(mockDecks);
 
-      const result = await controller.findAll();
+      const result = await controller.findAllByUser();
 
       expect(result).toEqual(mockDecks);
       expect(service.findAll).toHaveBeenCalled();
@@ -151,7 +151,7 @@ describe('DeckController', () => {
 
       mockService.findByUser.mockResolvedValue(mockDecks);
 
-      const result = await controller.findAll(1);
+      const result = await controller.findAllByUser(1);
 
       expect(result).toEqual(mockDecks);
       expect(service.findByUser).toHaveBeenCalledWith(1);

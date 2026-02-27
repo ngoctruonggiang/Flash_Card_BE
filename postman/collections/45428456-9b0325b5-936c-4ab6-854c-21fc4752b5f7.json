@@ -1,214 +1,685 @@
 {
-	"info": {
-		"_postman_id": "45428456-9b0325b5-936c-4ab6-854c-21fc4752b5f7",
-		"name": "FlashLearn",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "/user",
-			"item": [
-				{
-					"name": "Sign up",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "25543545-e17f-4a8e-a518-5315a08eed7e",
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"id": "45428456-8741b74f-879b-46cf-8f63-9231ac17eb8f",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"12345678a\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/user/signup",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"user",
-								"signup"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Sign In",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "25543545-e17f-4a8e-a518-5315a08eed7e",
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"id": "45428456-3dd56d89-e8ed-40b8-ab6b-f7b6f56fce7a",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin123456\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/user/signin",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"user",
-								"signin"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update",
-					"id": "45428456-37b96b8d-9956-4d96-a2c1-7d06a47d2a37",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"abcdefgh1\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/user",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"user"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "45428456-612efa31-2534-478a-a4ad-d7a3574c2635"
-		},
-		{
-			"name": "/deck",
-			"item": [
-				{
-					"name": "Get",
-					"id": "45428456-0547e6ee-b202-4059-b5eb-70ec994d2d76",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"abcdefgh1\"\r\n}"
-						},
-						"url": {
-							"raw": "{{url}}/deck",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"deck"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "45428456-823a3541-098a-4d43-91cf-97ad1c1203d1"
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3NjM1MzQ2ODQsImV4cCI6MTc2MzU1NjI4NH0.HklfwFa22AHRObk4JhijQWzYTVRnjN7idr6-tG_sxd4",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "801e3580-c5cf-4e1b-a7ec-b10f6c2a9de3",
-				"type": "text/javascript",
-				"packages": {},
-				"requests": {},
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "f91c3acb-80e4-42c5-93cf-bcf1d5e510f8",
-				"type": "text/javascript",
-				"packages": {},
-				"requests": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "url",
-			"value": ""
-		}
-	]
+  "info": {
+    "_postman_id": "45428456-9b0325b5-936c-4ab6-854c-21fc4752b5f7",
+    "name": "FlashLearn",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "/user",
+      "item": [
+        {
+          "name": "Sign up",
+          "id": "45428456-8741b74f-879b-46cf-8f63-9231ac17eb8f",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"12345678a\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/user/signup",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign In",
+          "id": "45428456-3dd56d89-e8ed-40b8-ab6b-f7b6f56fce7a",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"test\",\r\n    \"password\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/user/signin",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                "signin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "id": "user-get-current",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/user",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Current User",
+          "id": "user-update-current",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"password\": \"abcdefgh1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/user",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Current User",
+          "id": "user-delete-current",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/user",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By Id (admin)",
+          "id": "user-get-by-id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/user/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users (admin)",
+          "id": "user-get-all",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/user/all",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Update User",
+          "id": "user-admin-update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"role\": \"ADMIN\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/user/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Delete User",
+          "id": "user-admin-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/user/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "45428456-612efa31-2534-478a-a4ad-d7a3574c2635"
+    },
+    {
+      "name": "/card",
+      "item": [
+        {
+          "name": "Create Card",
+          "id": "card-create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"deckId\": 1,\r\n  \"front\": \"What is 2+2?\",\r\n  \"back\": \"4\",\r\n  \"tags\": \"math,basics\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/card",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "card"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cards (all / by deckId)",
+          "id": "card-get-all",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/card?deckId=1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "card"
+              ],
+              "query": [
+                {
+                  "key": "deckId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Card By Id",
+          "id": "card-get-one",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/card/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "card",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Card",
+          "id": "card-update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"front\": \"New front text\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/card/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "card",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Card",
+          "id": "card-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/card/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "card",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "/deck",
+      "item": [
+        {
+          "name": "Create Deck",
+          "id": "deck-create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Basic Math\",\r\n  \"description\": \"Simple arithmetic flashcards\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/deck",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "deck"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find All By User or All (admin) - /deck/by",
+          "id": "deck-find-by",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/deck/by?userId=1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "deck",
+                "by"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Decks For Current User",
+          "id": "deck-get-current",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/deck",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "deck"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Deck By Id",
+          "id": "deck-get-one",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/deck/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "deck",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Deck",
+          "id": "deck-update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Updated title\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/deck/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "deck",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Deck",
+          "id": "deck-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/deck/:id",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "deck",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJ0ZXN0IiwiaWF0IjoxNzYxODg0Njg1LCJleHAiOjE3NjE5MDYyODV9.WvQ8X97QqgIimb6f1C-3nGzj28c2L4AaWGZ5W2hYK1Y",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "62d90662-b00c-4839-8129-0c977f8029ee",
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "39ce025d-c0db-466d-bb39-ee68ebe53201",
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "url",
+      "value": ""
+    }
+  ]
 }

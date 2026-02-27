@@ -5,11 +5,12 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user.module';
 import { DeckModule } from './modules/deck.module';
 import { CardModule } from './modules/card.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './middleware/interceptor/response.interceptor';
 import { GlobalExceptionFilter } from './middleware/filters/global.filter';
 import { RolesGuard } from './middleware/guards/roles.guard';
 import { AuthGuard } from './middleware/guards/auth.guard';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthGuard } from './middleware/guards/auth.guard';
     UserModule,
     DeckModule,
     CardModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [

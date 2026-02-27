@@ -4,12 +4,14 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTokenReturn } from 'src/utils/types/JWTTypes';
+// import { EmailVerificationService } from '../email-verification/email-verification.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    // private emailVerificationService: EmailVerificationService,
   ) {}
 
   async signUp(signUpDto: {
@@ -61,6 +63,9 @@ export class AuthService {
       passwordHash: hashedPassword,
       lastLoginAt: new Date(),
     });
+
+    // TODO: check if email verification is enabled in config
+    // await this.emailVerificationService.sendVerificationLink(user.email);
 
     // JWT token generation
     const payload: JwtPayload = { id: user.id, username: user.username };

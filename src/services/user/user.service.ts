@@ -86,7 +86,15 @@ export class UserService {
         username: data.username,
         email: data.email,
         passwordHash: hashedPassword,
+        role: data.role,
       },
+    });
+  }
+
+  async markEmailAsConfirmed(id: number): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id },
+      data: { isEmailConfirmed: true },
     });
   }
 

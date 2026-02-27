@@ -8,10 +8,10 @@ import dictionary from 'src/seeders/data/dictionary_alpha_arrays.json';
 @Injectable()
 export class SeederService {
   constructor(
-    private readonly AuthService: AuthService,
-    private readonly UserService: UserService,
-    private readonly CardService: CardService,
-    private readonly DeckService: DeckService,
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+    private readonly cardService: CardService,
+    private readonly deckService: DeckService,
   ) {}
 
   admin = {
@@ -22,23 +22,34 @@ export class SeederService {
 
   async seed() {
     console.log('Seeding database');
+    if (await this.userService.findByUsername(this.admin.username)) {
+      console.log('Already seeded. Skipping seeding.');
+      return;
+    }
+    await this.authService.signUp(this.admin);
+    const adminUser = (await this.userService.findByUsername(
+      this.admin.username,
+    ))!;
+    await this.userService.update(adminUser.id, { role: 'ADMIN' });
+
+    const deck = await this.deckService.create(adminUser.id, {
+      title: 'Sample Deck',
+      description: 'This is a sample deck created during seeding.',
+    });
+
     const limit = 10;
     for (const list in dictionary) {
       let wordCount = 0;
       for (const wordPair of Object.keys(dictionary[list])) {
         if (wordCount >= limit) break;
+        await this.cardService.create({
+          deckId: deck.id,
+          front: wordPair,
+          back: dictionary[list][wordPair],
+        });
         // console.log(dictionary[list][wordPair]);
         wordCount++;
       }
     }
-    if (await this.UserService.findByUsername(this.admin.username)) {
-      console.log('Already seeded. Skipping seeding.');
-      return;
-    }
-    await this.AuthService.signUp(this.admin);
-    const adminUser = (await this.UserService.findByUsername(
-      this.admin.username,
-    ))!;
-    await this.UserService.update(adminUser.id, { role: 'ADMIN' });
   }
 }

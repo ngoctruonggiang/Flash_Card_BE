@@ -19,13 +19,14 @@ enum Role {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique
-  email        String   @unique
-  role         Role     @default(USER)
-  passwordHash String
-  createdAt    DateTime @default(now())
-  lastLoginAt  DateTime
+  id               Int      @id @default(autoincrement())
+  username         String   @unique
+  email            String   @unique
+  role             Role     @default(USER)
+  passwordHash     String
+  createdAt        DateTime @default(now())
+  lastLoginAt      DateTime
+  isEmailConfirmed Boolean  @default(false)
 
   // Relations
   decks Deck[]
