@@ -3,8 +3,9 @@ import { bcryptConstants } from 'src/utils/constants';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload, JwtTokenReturn } from 'src/utils/types/JWTTypes';
-// import { EmailVerificationService } from '../email-verification/email-verification.service';
+import { JwtPayload } from 'src/utils/types/JWTTypes';
+import { SignInDto } from 'src/utils/types/dto/user/signIn.dto';
+import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
     username: string;
     email: string;
     password: string;
-  }): Promise<JwtTokenReturn> {
+  }): Promise<AuthResponseDto> {
     // Validate input
     // eslint-disable-next-line no-useless-escape
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -71,18 +72,21 @@ export class AuthService {
     const payload: JwtPayload = { id: user.id, username: user.username };
     return {
       accessToken: this.jwtService.sign(payload),
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      lastLoginAt: user.lastLoginAt,
     };
   }
 
-  async signIn(signInDto: {
-    username: string;
-    password: string;
-  }): Promise<JwtTokenReturn> {
-    const user = await this.userService.findByUsername(signInDto.username);
+  async signIn(signInDto: SignInDto): Promise<AuthResponseDto> {
+    const user = await this.userService.findByEmail(signInDto.email);
 
     if (!user) {
       throw new HttpException(
-        'Invalid username or password',
+        'Invalid email or password',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -94,7 +98,7 @@ export class AuthService {
     );
     if (!isPasswordValid) {
       throw new HttpException(
-        'Invalid username or password',
+        'Invalid email or password',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -103,6 +107,12 @@ export class AuthService {
     const payload: JwtPayload = { id: user.id, username: user.username };
     return {
       accessToken: this.jwtService.sign(payload),
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      lastLoginAt: user.lastLoginAt,
     };
   }
 }

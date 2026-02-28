@@ -7,9 +7,11 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  Request,
   Get,
+  Res,
+  Req,
 } from '@nestjs/common';
+import express from 'express';
 import { UserService } from '../../services/user/user.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
@@ -20,6 +22,7 @@ import { GetUser } from 'src/utils/decorators/user.decorator';
 import type { User } from '@prisma/client';
 import { IdParamDto } from 'src/utils/types/IDParam.dto';
 import { UpdateUserDto } from 'src/utils/types/dto/user/updateUser.dto';
+import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 
 @Controller('user')
 export class UserController {
@@ -29,21 +32,46 @@ export class UserController {
   ) {}
 
   // User Login and Registration
+
+  // These won't set cookies because i'm using Bearer tokens
+  // But that could be a big security risk
+
   @Post('/signup')
-  signUp(
+  async signUp(
     @Body()
     createUserDto: SignUpDto,
-  ): Promise<JwtTokenReturn> {
-    return this.authService.signUp(createUserDto);
+    // @Res({ passthrough: true }) res: express.Response,
+  ): Promise<AuthResponseDto> {
+    const user = await this.authService.signUp(createUserDto);
+    // res.cookie('FLASH_LEARN_TOKEN', userToken.accessToken, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'lax',
+    //   path: '/',
+    //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    // });
+    return user;
   }
+
+  // TODO: Add refresh, logout, etc.
 
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
-  signIn(
+  async signIn(
     @Body()
     signInDto: SignInDto,
-  ): Promise<JwtTokenReturn> {
-    return this.authService.signIn(signInDto);
+    // @Req() req: express.Request,
+    // @Res({ passthrough: true }) res: express.Response,
+  ): Promise<AuthResponseDto> {
+    const user = await this.authService.signIn(signInDto);
+    // res.cookie('FLASH_LEARN_TOKEN', userToken.accessToken, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'lax',
+    //   path: '/',
+    //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    // });
+    return user;
   }
 
   // User Update and Delete
@@ -59,8 +87,8 @@ export class UserController {
     requiresAuth: true,
     message: 'Get Current User',
   })
-  getCurrentUser(@GetUser() user: User) {
-    return this.userService.getUserById(user.id);
+  async getCurrentUser(@GetUser() user: User) {
+    return await this.userService.getUserById(user.id);
   }
 
   @Patch()
