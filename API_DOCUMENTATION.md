@@ -37,9 +37,21 @@ Register a new user.
 {
   "username": "test",
   "email": "test@gmail.com",
-  "password": "12345678a"
+  "password": "12345678a",
+  "confirmPassword": "12345678a"
 }
 ```
+
+**Field Descriptions:**
+
+- `username` (string, required): Unique username for the user
+- `email` (string, required): Valid email address
+- `password` (string, required): User's password
+- `confirmPassword` (string, required): Must match the `password` field exactly
+
+**Validation:**
+
+- The `confirmPassword` field must match the `password` field, or the request will fail with a validation error.
 
 ### 1.2 Sign In
 
@@ -68,17 +80,52 @@ Retrieve details of the currently authenticated user.
 
 ### 1.4 Update Current User
 
-Update the currently authenticated user's information (e.g., password).
+Update the currently authenticated user's information. You can update one or more fields at a time.
 
 - **URL**: `/user`
 - **Method**: `PATCH`
 - **Auth Required**: Yes
 
-**Request Body (JSON):**
+**Available Fields** (all optional):
+
+- `username`: string - Update username
+- `email`: string - Update email address
+- `password`: string - Update password
+- `role`: string - Update user role (typically admin-only)
+
+**Request Body Examples:**
+
+Update password only:
 
 ```json
 {
-  "password": "abcdefgh1"
+  "password": "newPassword123"
+}
+```
+
+Update email only:
+
+```json
+{
+  "email": "newemail@example.com"
+}
+```
+
+Update username only:
+
+```json
+{
+  "username": "newusername"
+}
+```
+
+Update multiple fields at once:
+
+```json
+{
+  "username": "newusername",
+  "email": "newemail@example.com",
+  "password": "newPassword123"
 }
 ```
 
