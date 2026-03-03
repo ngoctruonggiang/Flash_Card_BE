@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -20,8 +22,13 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('flashlearn')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  // Save Swagger JSON to file
+  const swaggerPath = join(process.cwd(), 'swagger.json');
+  await writeFile(swaggerPath, JSON.stringify(document, null, 2));
+  console.log(`Swagger documentation saved to: ${swaggerPath}`);
 
   app.useGlobalPipes(
     new ValidationPipe({
