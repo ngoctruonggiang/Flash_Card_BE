@@ -9,22 +9,22 @@ import {
 } from 'class-validator';
 
 export class UpdateUserDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   username?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsEmail()
   email?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   password?: string;
 
-  @ApiProperty({ enum: $Enums.Role, isArray: true })
+  @ApiProperty({ enum: $Enums.Role, required: false })
   @IsOptional()
   @IsEnum($Enums.Role)
   role?: $Enums.Role;

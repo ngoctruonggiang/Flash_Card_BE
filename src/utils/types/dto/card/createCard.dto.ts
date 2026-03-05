@@ -3,6 +3,7 @@ import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateCardDto {
+  @ApiProperty()
   @IsInt()
   @Min(1)
   @Type(() => Number)

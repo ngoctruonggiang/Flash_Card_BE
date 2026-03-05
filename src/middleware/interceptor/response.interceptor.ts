@@ -10,7 +10,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiResponseDto } from 'src/utils/api-response.dto';
+import { ApiResponseDto } from 'src/utils/types/dto/api-response.dto';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
 
 @Injectable()

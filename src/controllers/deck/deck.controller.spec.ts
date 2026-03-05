@@ -5,6 +5,8 @@ import { DeckService } from 'src/services/deck/deck.service';
 import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 import { UpdateDeckDto } from 'src/utils/types/dto/deck/updateDeck.dto';
 import { User } from '@prisma/client';
+import { ReviewService } from 'src/services/review/review.service';
+import { CardService } from 'src/services/card/card.service';
 
 describe('DeckController', () => {
   let controller: DeckController;
@@ -19,6 +21,13 @@ describe('DeckController', () => {
     remove: jest.fn(),
   };
 
+  const mockReviewService = {
+    updateReview: jest.fn(),
+    addReview: jest.fn(),
+    getDueReviews: jest.fn(),
+    submitReviews: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DeckController],
@@ -26,6 +35,14 @@ describe('DeckController', () => {
         {
           provide: DeckService,
           useValue: mockService,
+        },
+        {
+          provide: ReviewService,
+          useValue: mockReviewService,
+        },
+        {
+          provide: CardService,
+          useValue: {},
         },
       ],
     }).compile();

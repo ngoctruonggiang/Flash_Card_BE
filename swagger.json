@@ -7,9 +7,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Root endpoint"
           }
         },
+        "summary": "Root endpoint",
         "tags": [
           "App"
         ]
@@ -31,9 +32,17 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
           }
         },
+        "summary": "User registration",
         "tags": [
           "User"
         ]
@@ -55,9 +64,17 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
           }
         },
+        "summary": "User login",
         "tags": [
           "User"
         ]
@@ -72,6 +89,7 @@
             "description": ""
           }
         },
+        "summary": "Get current user profile",
         "tags": [
           "User"
         ]
@@ -94,6 +112,7 @@
             "description": ""
           }
         },
+        "summary": "Update current user profile",
         "tags": [
           "User"
         ]
@@ -106,6 +125,7 @@
             "description": ""
           }
         },
+        "summary": "Delete current user account",
         "tags": [
           "User"
         ]
@@ -114,19 +134,38 @@
     "/user/{id}": {
       "get": {
         "operationId": "UserController_getUserById",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "Get user by ID (Admin)",
         "tags": [
           "User"
         ]
       },
       "patch": {
         "operationId": "UserController_updateAdmin",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -142,18 +181,29 @@
             "description": ""
           }
         },
+        "summary": "Update user by ID (Admin)",
         "tags": [
           "User"
         ]
       },
       "delete": {
         "operationId": "UserController_removeAdmin",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "Delete user by ID (Admin)",
         "tags": [
           "User"
         ]
@@ -168,8 +218,58 @@
             "description": ""
           }
         },
+        "summary": "Get all users (Admin)",
         "tags": [
           "User"
+        ]
+      }
+    },
+    "/deck/review": {
+      "post": {
+        "operationId": "DeckController_submitReview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review submitted successfully"
+          }
+        },
+        "summary": "Submit card review",
+        "tags": [
+          "Deck"
+        ]
+      }
+    },
+    "/deck/review/{id}": {
+      "get": {
+        "operationId": "DeckController_getDueReviews",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return due reviews"
+          }
+        },
+        "summary": "Get due reviews for a deck",
+        "tags": [
+          "Deck"
         ]
       }
     },
@@ -189,9 +289,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Deck created successfully"
           }
         },
+        "summary": "Create a new deck",
         "tags": [
           "Deck"
         ]
@@ -204,6 +305,7 @@
             "description": ""
           }
         },
+        "summary": "Get all decks for current user",
         "tags": [
           "Deck"
         ]
@@ -215,7 +317,7 @@
         "parameters": [
           {
             "name": "userId",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "number"
@@ -227,6 +329,7 @@
             "description": ""
           }
         },
+        "summary": "Get all decks by user ID (Admin)",
         "tags": [
           "Deck"
         ]
@@ -235,19 +338,38 @@
     "/deck/{id}": {
       "get": {
         "operationId": "DeckController_findOne",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "Get a deck by id",
         "tags": [
           "Deck"
         ]
       },
       "patch": {
         "operationId": "DeckController_update",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -263,18 +385,29 @@
             "description": ""
           }
         },
+        "summary": "Update a deck",
         "tags": [
           "Deck"
         ]
       },
       "delete": {
         "operationId": "DeckController_remove",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "Delete a deck",
         "tags": [
           "Deck"
         ]
@@ -296,9 +429,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Card created successfully"
           }
         },
+        "summary": "Create a new card",
         "tags": [
           "Card"
         ]
@@ -308,7 +442,7 @@
         "parameters": [
           {
             "name": "deckId",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "number"
@@ -317,9 +451,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Return all cards"
           }
         },
+        "summary": "Get all cards",
         "tags": [
           "Card"
         ]
@@ -328,19 +463,38 @@
     "/card/{id}": {
       "get": {
         "operationId": "CardController_findOne",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Return a card"
           }
         },
+        "summary": "Get a card by id",
         "tags": [
           "Card"
         ]
       },
       "patch": {
         "operationId": "CardController_update",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -353,21 +507,32 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Card updated successfully"
           }
         },
+        "summary": "Update a card",
         "tags": [
           "Card"
         ]
       },
       "delete": {
         "operationId": "CardController_remove",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Card deleted successfully"
           }
         },
+        "summary": "Delete a card",
         "tags": [
           "Card"
         ]
@@ -412,6 +577,43 @@
           "confirmPassword"
         ]
       },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "lastLoginAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "id",
+          "username",
+          "email",
+          "role",
+          "createdAt",
+          "lastLoginAt"
+        ]
+      },
       "SignInDto": {
         "type": "object",
         "properties": {
@@ -440,21 +642,72 @@
             "type": "string"
           },
           "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ]
+          }
+        }
+      },
+      "SubmitReviewItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "cardId": {
+            "type": "number"
+          },
+          "quality": {
+            "type": "string",
+            "enum": [
+              "Again",
+              "Hard",
+              "Good",
+              "Easy"
+            ]
+          },
+          "repetitions": {
+            "type": "number"
+          },
+          "interval": {
+            "type": "number"
+          },
+          "eFactor": {
+            "type": "number"
+          },
+          "nextReviewDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reviewedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cardId",
+          "quality",
+          "repetitions",
+          "interval",
+          "eFactor",
+          "nextReviewDate",
+          "reviewedAt"
+        ]
+      },
+      "SubmitReviewDto": {
+        "type": "object",
+        "properties": {
+          "CardReviews": {
             "type": "array",
             "items": {
-              "type": "string",
-              "enum": [
-                "USER",
-                "ADMIN"
-              ]
+              "$ref": "#/components/schemas/SubmitReviewItemDto"
             }
           }
         },
         "required": [
-          "username",
-          "email",
-          "password",
-          "role"
+          "CardReviews"
         ]
       },
       "CreateDeckDto": {
@@ -480,15 +733,14 @@
           "description": {
             "type": "string"
           }
-        },
-        "required": [
-          "title",
-          "description"
-        ]
+        }
       },
       "CreateCardDto": {
         "type": "object",
         "properties": {
+          "deckId": {
+            "type": "number"
+          },
           "front": {
             "type": "string"
           },
@@ -500,6 +752,7 @@
           }
         },
         "required": [
+          "deckId",
           "front",
           "back",
           "tags"
@@ -517,12 +770,7 @@
           "tags": {
             "type": "string"
           }
-        },
-        "required": [
-          "front",
-          "back",
-          "tags"
-        ]
+        }
       }
     }
   }

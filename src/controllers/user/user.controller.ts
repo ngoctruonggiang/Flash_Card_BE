@@ -20,10 +20,12 @@ import { JwtTokenReturn } from 'src/utils/types/JWTTypes';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
 import { GetUser } from 'src/utils/decorators/user.decorator';
 import type { User } from '@prisma/client';
-import { IdParamDto } from 'src/utils/types/IDParam.dto';
+import { IdParamDto } from 'src/utils/types/dto/IDParam.dto';
 import { UpdateUserDto } from 'src/utils/types/dto/user/updateUser.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(
@@ -37,19 +39,17 @@ export class UserController {
   // But that could be a big security risk
 
   @Post('/signup')
+  @ApiOperation({ summary: 'User registration' })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully',
+    type: AuthResponseDto,
+  })
   async signUp(
     @Body()
     createUserDto: SignUpDto,
-    // @Res({ passthrough: true }) res: express.Response,
   ): Promise<AuthResponseDto> {
     const user = await this.authService.signUp(createUserDto);
-    // res.cookie('FLASH_LEARN_TOKEN', userToken.accessToken, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: 'lax',
-    //   path: '/',
-    //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    // });
     return user;
   }
 
@@ -57,20 +57,17 @@ export class UserController {
 
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'User login' })
+  @ApiResponse({
+    status: 200,
+    description: 'User logged in successfully',
+    type: AuthResponseDto,
+  })
   async signIn(
     @Body()
     signInDto: SignInDto,
-    // @Req() req: express.Request,
-    // @Res({ passthrough: true }) res: express.Response,
   ): Promise<AuthResponseDto> {
     const user = await this.authService.signIn(signInDto);
-    // res.cookie('FLASH_LEARN_TOKEN', userToken.accessToken, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: 'lax',
-    //   path: '/',
-    //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    // });
     return user;
   }
 
@@ -83,6 +80,7 @@ export class UserController {
   //#region User Actions
 
   @Get()
+  @ApiOperation({ summary: 'Get current user profile' })
   @RouteConfig({
     requiresAuth: true,
     message: 'Get Current User',
@@ -92,6 +90,7 @@ export class UserController {
   }
 
   @Patch()
+  @ApiOperation({ summary: 'Update current user profile' })
   @RouteConfig({
     requiresAuth: true,
     roles: ['USER'],
@@ -103,6 +102,7 @@ export class UserController {
   }
 
   @Delete()
+  @ApiOperation({ summary: 'Delete current user account' })
   @RouteConfig({
     requiresAuth: true,
     roles: ['USER'],
@@ -116,6 +116,7 @@ export class UserController {
 
   //#region Admin Actions
   @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID (Admin)' })
   @RouteConfig({
     requiresAuth: true,
     roles: ['ADMIN'],
@@ -126,6 +127,7 @@ export class UserController {
   }
 
   @Get('/all')
+  @ApiOperation({ summary: 'Get all users (Admin)' })
   @RouteConfig({
     requiresAuth: true,
     roles: ['ADMIN'],
@@ -136,6 +138,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update user by ID (Admin)' })
   @RouteConfig({
     requiresAuth: true,
     roles: ['ADMIN'],
@@ -149,6 +152,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete user by ID (Admin)' })
   @RouteConfig({
     requiresAuth: true,
     roles: ['ADMIN'],

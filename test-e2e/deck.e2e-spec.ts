@@ -5,29 +5,50 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { AuthService } from 'src/services/auth/auth.service';
 import { UserService } from 'src/services/user/user.service';
-import { JwtTokenReturn } from 'src/utils/types/JWTTypes';
-import { CardService } from 'src/services/card/card.service';
-import { Deck, User } from '@prisma/client';
+import { Deck } from '@prisma/client';
 import { DeckService } from 'src/services/deck/deck.service';
-import { title } from 'process';
+import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
+import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
+import { createTestUser } from './create-test-user';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let deckService: DeckService;
 
-  const userSignUpDto = {
+  const userSignUpDto: SignUpDto = {
     username: 'e2edeckuser',
     email: 'e2edeckuser@example.com',
     password: 'e2euserpassword',
+    confirmPassword: 'e2euserpassword',
   };
   let testDeck: Deck | null;
-  let userId: number;
-  let jwtToken: JwtTokenReturn | null = null;
+  let testUser: AuthResponseDto;
 
-  beforeEach(async () => {
+  const authRequest = () => {
+    const server = app.getHttpServer();
+    return {
+      get: (url: string) =>
+        request(server)
+          .get(url)
+          .set('Authorization', `Bearer ${testUser?.accessToken}`),
+      post: (url: string) =>
+        request(server)
+          .post(url)
+          .set('Authorization', `Bearer ${testUser?.accessToken}`),
+      patch: (url: string) =>
+        request(server)
+          .patch(url)
+          .set('Authorization', `Bearer ${testUser?.accessToken}`),
+      delete: (url: string) =>
+        request(server)
+          .delete(url)
+          .set('Authorization', `Bearer ${testUser?.accessToken}`),
+    };
+  };
+
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -46,78 +67,82 @@ describe('AppController (e2e)', () => {
     userService = moduleFixture.get<UserService>(UserService);
     deckService = moduleFixture.get<DeckService>(DeckService);
 
-    const authService = moduleFixture.get<AuthService>(AuthService);
-    const existingUser = await userService.findByEmail(userSignUpDto.email);
-    if (!existingUser) {
-      jwtToken = await authService.signUp(userSignUpDto);
-    } else {
-      jwtToken = await authService.signIn({
-        username: userSignUpDto.username,
-        password: userSignUpDto.password,
-      });
-    }
-    userId = (await userService.findByEmail(userSignUpDto.email))!.id;
+    testUser = await createTestUser(moduleFixture, userSignUpDto);
+  });
 
-    testDeck = await deckService.create(userId, {
+  beforeEach(async () => {
+    testDeck = await deckService.create(testUser.id, {
       title: 'Test Deck',
       description: 'This is a test deck',
     });
   });
 
-  afterAll(async () => {
-    const user = await userService.findByEmail(userSignUpDto.email);
-    if (user) {
-      await userService.remove(user.id);
+  afterEach(async () => {
+    if (testDeck) {
+      await deckService.remove(testDeck.id);
     }
+  });
+
+  afterAll(async () => {
+    await userService.remove(testUser.id);
 
     await app.close();
   });
 
-  afterEach(async () => {
-    if (testDeck) await deckService.remove(testDeck.id);
-  });
-
   it('/deck (POST) create Deck', async () => {
-    const res = await request(app.getHttpServer())
+    const res = await authRequest()
       .post('/deck')
-      .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
       .send({
         title: 'Test Deck',
         description: 'This is a test deck',
       })
       .expect(201);
 
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.title).toBe('Test Deck');
+    expect(res.body.data.description).toBe('This is a test deck');
+    expect(res.body.data.userId).toBe(testUser.id);
+
     // Clean up - delete the created deck
-    const createdDeckId = res.body.data.id;
+    const createdDeckId = res.body.data.id as number;
     await deckService.remove(createdDeckId);
   });
 
   it('/deck/:id (GET) ', async () => {
-    const res = await request(app.getHttpServer())
-      .get(`/deck/${testDeck?.id}`)
-      .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
-      .expect(200);
+    const res = await authRequest().get(`/deck/${testDeck?.id}`).expect(200);
 
     // Clean up - delete the created deck
     const getDeck = res.body.data;
     expect(getDeck.id).toBe(testDeck?.id);
+    expect(getDeck.title).toBe(testDeck?.title);
+    expect(getDeck.description).toBe(testDeck?.description);
   });
 
   it('/deck/:id (PATCH) ', async () => {
-    await request(app.getHttpServer())
+    const res = await authRequest()
       .patch(`/deck/${testDeck?.id}`)
-      .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
       .send({
         title: 'Updated Test Deck',
       })
       .expect(200);
+
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.id).toBe(testDeck?.id);
+    expect(res.body.data.title).toBe('Updated Test Deck');
+    // Description should remain unchanged
+    expect(res.body.data.description).toBe(testDeck?.description);
   });
 
   it('/deck/:id (DELETE) ', async () => {
-    await request(app.getHttpServer())
-      .delete(`/deck/${testDeck?.id}`)
-      .set('Authorization', `Bearer ${jwtToken?.accessToken}`)
-      .expect(200);
+    const res = await authRequest().delete(`/deck/${testDeck?.id}`).expect(200);
+
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.id).toBe(testDeck?.id);
+
+    // Verify deletion
+    const deletedDeck = await deckService.findOne(testDeck!.id);
+    expect(deletedDeck).toBeNull();
+
     testDeck = null;
   });
 });

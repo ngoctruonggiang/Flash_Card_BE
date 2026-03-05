@@ -11,6 +11,7 @@ import { GlobalExceptionFilter } from './middleware/filters/global.filter';
 import { RolesGuard } from './middleware/guards/roles.guard';
 import { AuthGuard } from './middleware/guards/auth.guard';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ReviewService } from './services/review/review.service';
 
 @Module({
   imports: [
