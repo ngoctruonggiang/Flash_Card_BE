@@ -6,17 +6,10 @@ import {
   IsDate,
   IsEnum,
   IsInt,
-  IsNumber,
   ValidateNested,
-  IsOptional,
 } from 'class-validator';
 
 export class SubmitReviewItemDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsInt()
-  id?: number;
-
   @ApiProperty()
   @IsInt()
   cardId: number;
@@ -24,28 +17,6 @@ export class SubmitReviewItemDto {
   @ApiProperty({ enum: ReviewQuality })
   @IsEnum(ReviewQuality)
   quality: ReviewQuality;
-
-  @ApiProperty()
-  @IsInt()
-  repetitions: number;
-
-  @ApiProperty()
-  @IsInt()
-  interval: number;
-
-  @ApiProperty()
-  @IsNumber()
-  eFactor: number;
-
-  @ApiProperty()
-  @IsDate()
-  @Type(() => Date)
-  nextReviewDate: Date;
-
-  @ApiProperty()
-  @IsDate()
-  @Type(() => Date)
-  reviewedAt: Date;
 }
 
 export class SubmitReviewDto {
@@ -54,4 +25,9 @@ export class SubmitReviewDto {
   @ValidateNested({ each: true })
   @Type(() => SubmitReviewItemDto)
   CardReviews: SubmitReviewItemDto[];
+
+  @ApiProperty()
+  @IsDate()
+  @Type(() => Date)
+  reviewedAt: Date;
 }

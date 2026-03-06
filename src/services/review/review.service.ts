@@ -34,34 +34,27 @@ export class ReviewService {
     });
   }
 
-  // Rule: Frontend must submit every card review in a session
-  // This will create card review records based on SM-2 algorithm
-  // To get what to review next, use getDueReviews
+  async getLastestReviewByCardId(cardId: number): Promise<CardReview | null> {
+    return this.prismaService.cardReview.findFirst({
+      where: { cardId },
+      orderBy: { reviewedAt: 'desc' },
+    });
+  }
+
   async submitReviews(review: SubmitReviewDto) {
-    const sm2Results: CardReview[] = review.CardReviews.map((r) =>
-      applySm2({
-        id: r.id || 0,
-        cardId: r.cardId,
-        quality: r.quality,
-        repetitions: r.repetitions,
-        interval: r.interval,
-        eFactor: r.eFactor,
-        nextReviewDate: r.nextReviewDate,
-        reviewedAt: r.reviewedAt,
-      }),
-    );
+    const sm2Results: CardReview[] = [];
+    for (const r of review.CardReviews) {
+      const lastCardReview = await this.getLastestReviewByCardId(r.cardId);
+      const result = applySm2(r, new Date(review.reviewedAt), lastCardReview);
+      sm2Results.push(result);
+    }
 
     // Use a transaction to persist all reviews atomically
     const creates = sm2Results.map((r) =>
       this.prismaService.cardReview.create({
         data: {
-          cardId: r.cardId,
-          quality: r.quality,
-          repetitions: r.repetitions,
-          interval: r.interval,
-          eFactor: r.eFactor,
-          nextReviewDate: r.nextReviewDate,
-          reviewedAt: r.reviewedAt,
+          ...r,
+          id: undefined, // Ensure ID is not set
         },
       }),
     );

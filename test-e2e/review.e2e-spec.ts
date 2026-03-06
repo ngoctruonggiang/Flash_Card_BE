@@ -15,6 +15,7 @@ import { ReviewQuality } from '@prisma/client';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { ReviewService } from 'src/services/review/review.service';
+import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
 
 describe('ReviewController (e2e)', () => {
   let app: INestApplication<App>;
@@ -140,18 +141,14 @@ describe('ReviewController (e2e)', () => {
       const nextReviewDate = new Date();
       nextReviewDate.setDate(nextReviewDate.getDate() + 1); // Tomorrow
 
-      const reviewPayload = {
+      const reviewPayload: SubmitReviewDto = {
         CardReviews: [
           {
             cardId: cardToReview.id,
             quality: ReviewQuality.Good,
-            repetitions: 1,
-            interval: 1,
-            eFactor: 2.5,
-            nextReviewDate: nextReviewDate.toISOString(),
-            reviewedAt: new Date().toISOString(),
           },
         ],
+        reviewedAt: new Date(),
       };
 
       // Submit Review
@@ -171,44 +168,5 @@ describe('ReviewController (e2e)', () => {
       const returnedIds = body.map((c) => c.id);
       expect(returnedIds).not.toContain(cardToReview.id);
     });
-
-    // TODO: Fix this
-    // it('should submit a review with "Again" quality and keep it due (if logic allows immediate review)', async () => {
-    //   // Note: The current getDueReviews logic checks for nextReviewDate <= today.
-    //   // If we set nextReviewDate to now or past, it should still be due.
-
-    //   const cardToReview = testCards[1];
-    //   const nextReviewDate = new Date(); // Now (Due immediately)
-
-    //   const reviewPayload = {
-    //     CardReviews: [
-    //       {
-    //         cardId: cardToReview.id,
-    //         quality: ReviewQuality.Again,
-    //         repetitions: 0,
-    //         interval: 0,
-    //         eFactor: 2.5,
-    //         nextReviewDate: nextReviewDate.toISOString(),
-    //         reviewedAt: new Date().toISOString(),
-    //       },
-    //     ],
-    //   };
-
-    //   // Submit Review
-    //   await authRequest()
-    //     .post('/deck/review')
-    //     .send(reviewPayload)
-    //     .expect(HttpStatus.CREATED);
-
-    //   // Check Due Reviews - cardToReview SHOULD be present because nextReviewDate is <= today
-    //   const res = await authRequest()
-    //     .get(`/deck/review/${testDeck.id}`)
-    //     .expect(HttpStatus.OK);
-
-    //   expect(res.body).toBeInstanceOf(Object);
-    //   const body = res.body.data as Card[];
-    //   const returnedIds = body.map((c) => c.id);
-    //   expect(returnedIds).toContain(cardToReview.id);
-    // });
   });
 });

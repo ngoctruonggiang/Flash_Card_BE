@@ -1,7 +1,7 @@
 [ ] Validate various dto
 [ ] Add Soft delete
 [X] Add more unit test to
-[X] User
-[X] Card
-[X] Deck
-[ ] Add S2E algorithm
+  [X] User
+  [X] Card
+  [X] Deck
+[X] Add S2E algorithm

@@ -1,4 +1,5 @@
 import { CardReview, ReviewQuality } from '@prisma/client';
+import { SubmitReviewItemDto } from 'src/utils/types/dto/review/submitReview.dto';
 
 /**
  * Map button -> numeric quality (SM-2 variant described)
@@ -27,11 +28,19 @@ function toQuality(q: ReviewQuality): number {
  *
  * Returns updated card state (does NOT persist).
  */
-export function applySm2(card: CardReview): CardReview {
-  const quality = toQuality(card.quality);
+export function applySm2(
+  submitReview: SubmitReviewItemDto,
+  reviewedAt: Date,
+  prevCardReview: CardReview | null,
+): CardReview {
+  const quality = toQuality(submitReview.quality);
 
-  const previousInterval = card.interval || 0;
-  let { repetitions, interval, eFactor } = card;
+  const previousInterval = prevCardReview?.interval || 0;
+  let { repetitions, interval, eFactor } = prevCardReview || {
+    repetitions: 0,
+    interval: 0,
+    eFactor: 2.5,
+  };
 
   if (quality < 3) {
     // Failure (Again)
@@ -40,7 +49,7 @@ export function applySm2(card: CardReview): CardReview {
     // eFactor unchanged for simplified variant
   } else {
     // Success
-    repetitions = (repetitions || 0) + 1;
+    repetitions = repetitions + 1;
 
     if (repetitions === 1) {
       interval = 1;
@@ -61,18 +70,18 @@ export function applySm2(card: CardReview): CardReview {
     eFactor = Math.max(newE, 1.3);
   }
 
-  const nextReviewDate = card.reviewedAt;
-  nextReviewDate.setDate(card.reviewedAt.getDate() + interval);
+  const nextReviewDate = reviewedAt;
+  nextReviewDate.setDate(reviewedAt.getDate() + interval);
 
   const result: CardReview = {
     id: 0, // placeholder, not used
-    cardId: card.cardId,
-    quality: card.quality,
+    cardId: submitReview.cardId,
+    quality: submitReview.quality,
     repetitions,
     interval,
     eFactor,
     nextReviewDate,
-    reviewedAt: card.reviewedAt,
+    reviewedAt,
   };
 
   return result;
