@@ -255,6 +255,47 @@ Delete a specific deck.
 
 ---
 
+### 2.7 Submit Card Review
+
+Submit reviews for cards in a deck.
+
+- **URL**: `/deck/review`
+- **Method**: `POST`
+- **Auth Required**: Yes
+
+**Request Body (JSON):**
+
+```json
+{
+  "CardReviews": [
+    {
+      "cardId": 1,
+      "quality": "Good"
+    }
+  ],
+  "reviewedAt": "2023-10-27T10:00:00Z"
+}
+```
+
+**Field Descriptions:**
+
+- `CardReviews` (array, required): List of reviews
+  - `cardId` (number, required): ID of the card being reviewed
+  - `quality` (string, required): Review quality. One of: `Again`, `Hard`, `Good`, `Easy`
+- `reviewedAt` (string, required): Timestamp of the review (ISO 8601 format)
+
+### 2.8 Get Due Reviews
+
+Get cards that are due for review in a specific deck.
+
+- **URL**: `/deck/review/:id`
+- **Method**: `GET`
+- **Auth Required**: Yes
+- **URL Parameters**:
+  - `id`: ID of the deck
+
+---
+
 ## 3. Card Endpoints
 
 Manage individual flashcards within decks.

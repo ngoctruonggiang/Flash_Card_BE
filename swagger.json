@@ -653,9 +653,6 @@
       "SubmitReviewItemDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "number"
-          },
           "cardId": {
             "type": "number"
           },
@@ -667,33 +664,11 @@
               "Good",
               "Easy"
             ]
-          },
-          "repetitions": {
-            "type": "number"
-          },
-          "interval": {
-            "type": "number"
-          },
-          "eFactor": {
-            "type": "number"
-          },
-          "nextReviewDate": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "reviewedAt": {
-            "format": "date-time",
-            "type": "string"
           }
         },
         "required": [
           "cardId",
-          "quality",
-          "repetitions",
-          "interval",
-          "eFactor",
-          "nextReviewDate",
-          "reviewedAt"
+          "quality"
         ]
       },
       "SubmitReviewDto": {
@@ -704,10 +679,15 @@
             "items": {
               "$ref": "#/components/schemas/SubmitReviewItemDto"
             }
+          },
+          "reviewedAt": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
-          "CardReviews"
+          "CardReviews",
+          "reviewedAt"
         ]
       },
       "CreateDeckDto": {
