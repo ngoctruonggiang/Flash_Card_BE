@@ -10,6 +10,8 @@ import { ResponseInterceptor } from './middleware/interceptor/response.intercept
 import { GlobalExceptionFilter } from './middleware/filters/global.filter';
 import { RolesGuard } from './middleware/guards/roles.guard';
 import { AuthGuard } from './middleware/guards/auth.guard';
+import { AuthModule } from './modules/auth.module';
+import { StudyModule } from './modules/study.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReviewService } from './services/review/review.service';
 
@@ -21,6 +23,8 @@ import { ReviewService } from './services/review/review.service';
     UserModule,
     DeckModule,
     CardModule,
+    AuthModule,
+    StudyModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],

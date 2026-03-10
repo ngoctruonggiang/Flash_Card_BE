@@ -4,7 +4,7 @@ This document provides a comprehensive reference for the FlashLearn API. The API
 
 ## Base URL
 
-All API requests should be made to the base URL configured for the environment (e.g., `http://localhost:3000`). In this documentation, `{{url}}` refers to the base URL.
+All API requests should be made to the base URL configured for the environment (e.g., `http://localhost:3000/api`). In this documentation, `{{url}}` refers to the base URL.
 
 ## Authentication
 
@@ -19,15 +19,15 @@ Authorization: Bearer <your_token>
 
 ---
 
-## 1. User Endpoints
+## 1. Auth Endpoints
 
-Manage user accounts, authentication, and administrative tasks.
+Manage user registration and authentication.
 
-### 1.1 Sign Up
+### 1.1 Register
 
 Register a new user.
 
-- **URL**: `/user/signup`
+- **URL**: `/auth/register`
 - **Method**: `POST`
 - **Auth Required**: No
 
@@ -49,15 +49,31 @@ Register a new user.
 - `password` (string, required): User's password
 - `confirmPassword` (string, required): Must match the `password` field exactly
 
-**Validation:**
+**Success Response (201 Created):**
 
-- The `confirmPassword` field must match the `password` field, or the request will fail with a validation error.
+```json
+{
+  "statusCode": 201,
+  "timestamp": "2025-11-23T13:44:28.850Z",
+  "message": "",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "id": 7,
+    "username": "test",
+    "email": "test@gmail.com",
+    "role": "USER",
+    "createdAt": "2025-11-23T13:44:28.843Z",
+    "lastLoginAt": "2025-11-23T13:44:28.841Z"
+  },
+  "path": "/api/auth/register"
+}
+```
 
-### 1.2 Sign In
+### 1.2 Login
 
 Authenticate a user and retrieve a JWT token.
 
-- **URL**: `/user/signin`
+- **URL**: `/auth/login`
 - **Method**: `POST`
 - **Auth Required**: No
 
@@ -70,7 +86,33 @@ Authenticate a user and retrieve a JWT token.
 }
 ```
 
-### 1.3 Get Current User
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:28.917Z",
+  "message": "",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "id": 7,
+    "username": "test",
+    "email": "test@gmail.com",
+    "role": "USER",
+    "createdAt": "2025-11-23T13:44:28.843Z",
+    "lastLoginAt": "2025-11-23T13:44:28.841Z"
+  },
+  "path": "/api/auth/login"
+}
+```
+
+---
+
+## 2. User Endpoints
+
+Manage user accounts.
+
+### 2.1 Get Current User
 
 Retrieve details of the currently authenticated user.
 
@@ -78,58 +120,63 @@ Retrieve details of the currently authenticated user.
 - **Method**: `GET`
 - **Auth Required**: Yes
 
-### 1.4 Update Current User
+**Success Response (200 OK):**
 
-Update the currently authenticated user's information. You can update one or more fields at a time.
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:28.928Z",
+  "message": "Get Current User",
+  "data": {
+    "username": "test",
+    "email": "test@gmail.com",
+    "role": "USER",
+    "createdAt": "2025-11-23T13:44:28.843Z",
+    "lastLoginAt": "2025-11-23T13:44:28.841Z"
+  },
+  "path": "/api/user"
+}
+```
+
+### 2.2 Update Current User
+
+Update the currently authenticated user's information.
 
 - **URL**: `/user`
 - **Method**: `PATCH`
 - **Auth Required**: Yes
 
-**Available Fields** (all optional):
-
-- `username`: string - Update username
-- `email`: string - Update email address
-- `password`: string - Update password
-- `role`: string - Update user role (typically admin-only)
-
-**Request Body Examples:**
-
-Update password only:
-
-```json
-{
-  "password": "newPassword123"
-}
-```
-
-Update email only:
-
-```json
-{
-  "email": "newemail@example.com"
-}
-```
-
-Update username only:
-
-```json
-{
-  "username": "newusername"
-}
-```
-
-Update multiple fields at once:
+**Request Body (JSON):**
 
 ```json
 {
   "username": "newusername",
-  "email": "newemail@example.com",
-  "password": "newPassword123"
+  "email": "newemail@example.com"
 }
 ```
 
-### 1.5 Delete Current User
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:28.966Z",
+  "message": "Update User",
+  "data": {
+    "id": 7,
+    "username": "newusername",
+    "email": "newemail@example.com",
+    "role": "USER",
+    "passwordHash": "$2b$10$GGa/AfDJL6EnWiUelTNzi...",
+    "createdAt": "2025-11-23T13:44:28.843Z",
+    "lastLoginAt": "2025-11-23T13:44:28.841Z",
+    "isEmailConfirmed": false
+  },
+  "path": "/api/user"
+}
+```
+
+### 2.3 Delete Current User
 
 Delete the currently authenticated user's account.
 
@@ -137,7 +184,28 @@ Delete the currently authenticated user's account.
 - **Method**: `DELETE`
 - **Auth Required**: Yes
 
-### 1.6 Get User By ID (Admin)
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.189Z",
+  "message": "Delete User",
+  "data": {
+    "id": 7,
+    "username": "test",
+    "email": "test@gmail.com",
+    "role": "USER",
+    "createdAt": "2025-11-23T13:44:28.843Z",
+    "lastLoginAt": "2025-11-23T13:44:28.841Z"
+  },
+  "path": "/api/user"
+}
+```
+
+**Note:** Delete operations may return a 500 error if there are related records (cascading delete issue).
+
+### 2.4 Get User By ID (Admin)
 
 Retrieve details of a specific user by their ID. Requires Admin privileges.
 
@@ -145,7 +213,7 @@ Retrieve details of a specific user by their ID. Requires Admin privileges.
 - **Method**: `GET`
 - **Auth Required**: Yes (Admin)
 
-### 1.7 Get All Users (Admin)
+### 2.5 Get All Users (Admin)
 
 Retrieve a list of all users. Requires Admin privileges.
 
@@ -153,7 +221,7 @@ Retrieve a list of all users. Requires Admin privileges.
 - **Method**: `GET`
 - **Auth Required**: Yes (Admin)
 
-### 1.8 Admin Update User
+### 2.6 Admin Update User
 
 Update a specific user's details (e.g., role). Requires Admin privileges.
 
@@ -161,15 +229,7 @@ Update a specific user's details (e.g., role). Requires Admin privileges.
 - **Method**: `PATCH`
 - **Auth Required**: Yes (Admin)
 
-**Request Body (JSON):**
-
-```json
-{
-  "role": "ADMIN"
-}
-```
-
-### 1.9 Admin Delete User
+### 2.7 Admin Delete User
 
 Delete a specific user by their ID. Requires Admin privileges.
 
@@ -179,11 +239,11 @@ Delete a specific user by their ID. Requires Admin privileges.
 
 ---
 
-## 2. Deck Endpoints
+## 3. Deck Endpoints
 
 Manage collections of flashcards (decks).
 
-### 2.1 Create Deck
+### 3.1 Create Deck
 
 Create a new deck.
 
@@ -200,7 +260,26 @@ Create a new deck.
 }
 ```
 
-### 2.2 Get All Decks For Current User
+**Success Response (201 Created):**
+
+```json
+{
+  "statusCode": 201,
+  "timestamp": "2025-11-23T13:44:29.004Z",
+  "message": "Create Deck",
+  "data": {
+    "id": 3,
+    "userId": 7,
+    "title": "Basic Math",
+    "description": "Simple arithmetic flashcards",
+    "createdAt": "2025-11-23T13:44:28.992Z",
+    "updatedAt": "2025-11-23T13:44:28.992Z"
+  },
+  "path": "/api/deck"
+}
+```
+
+### 3.2 Get All Decks For Current User
 
 Retrieve all decks belonging to the authenticated user.
 
@@ -208,20 +287,41 @@ Retrieve all decks belonging to the authenticated user.
 - **Method**: `GET`
 - **Auth Required**: Yes
 
-### 2.3 Find Decks (Admin/Filter)
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.016Z",
+  "message": "Get All Decks By User",
+  "data": [
+    {
+      "id": 3,
+      "userId": 7,
+      "title": "Basic Math",
+      "description": "Simple arithmetic flashcards",
+      "createdAt": "2025-11-23T13:44:28.992Z",
+      "updatedAt": "2025-11-23T13:44:28.992Z",
+      "cards": []
+    }
+  ],
+  "path": "/api/deck"
+}
+```
+
+### 3.3 Find Decks (Admin/Filter)
 
 Find decks, optionally filtering by user ID.
 
 - **URL**: `/deck/by`
 - **Method**: `GET`
-- **Auth Required**: Yes
+- **Auth Required**: Yes (Admin)
 - **Query Parameters**:
   - `userId`: (Optional) ID of the user to filter decks by.
 
-**Example URL:**
-`{{url}}/deck/by?userId=1`
+**Note:** This endpoint requires Admin privileges.
 
-### 2.4 Get Deck By ID
+### 3.4 Get Deck By ID
 
 Retrieve a specific deck by its ID.
 
@@ -229,7 +329,36 @@ Retrieve a specific deck by its ID.
 - **Method**: `GET`
 - **Auth Required**: Yes
 
-### 2.5 Update Deck
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.038Z",
+  "message": "Get Deck By ID",
+  "data": {
+    "id": 3,
+    "userId": 7,
+    "title": "Basic Math",
+    "description": "Simple arithmetic flashcards",
+    "createdAt": "2025-11-23T13:44:28.992Z",
+    "updatedAt": "2025-11-23T13:44:28.992Z",
+    "user": {
+      "id": 7,
+      "username": "test",
+      "email": "test@gmail.com",
+      "role": "USER",
+      "createdAt": "2025-11-23T13:44:28.843Z",
+      "lastLoginAt": "2025-11-23T13:44:28.841Z",
+      "isEmailConfirmed": false
+    },
+    "cards": []
+  },
+  "path": "/api/deck/3"
+}
+```
+
+### 3.5 Update Deck
 
 Update a deck's details.
 
@@ -241,11 +370,31 @@ Update a deck's details.
 
 ```json
 {
-  "title": "Updated title"
+  "title": "Advanced Math",
+  "description": "Complex arithmetic flashcards"
 }
 ```
 
-### 2.6 Delete Deck
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.050Z",
+  "message": "Update Deck By ID",
+  "data": {
+    "id": 3,
+    "userId": 7,
+    "title": "Advanced Math",
+    "description": "Complex arithmetic flashcards",
+    "createdAt": "2025-11-23T13:44:28.992Z",
+    "updatedAt": "2025-11-23T13:44:29.047Z"
+  },
+  "path": "/api/deck/3"
+}
+```
+
+### 3.6 Delete Deck
 
 Delete a specific deck.
 
@@ -253,13 +402,261 @@ Delete a specific deck.
 - **Method**: `DELETE`
 - **Auth Required**: Yes
 
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.176Z",
+  "message": "Delete Deck By ID",
+  "data": {
+    "id": 3,
+    "userId": 7,
+    "title": "Advanced Math",
+    "description": "Complex arithmetic flashcards",
+    "createdAt": "2025-11-23T13:44:28.992Z",
+    "updatedAt": "2025-11-23T13:44:29.047Z"
+  },
+  "path": "/api/deck/3"
+}
+```
+
+**Note:** Delete operations may return a 500 error if there are related records (cascading delete issue).
+
 ---
 
-### 2.7 Submit Card Review
+## 4. Card Endpoints
 
-Submit reviews for cards in a deck.
+Manage individual flashcards within decks.
 
-- **URL**: `/deck/review`
+### 4.1 Create Card
+
+Add a new card to a deck.
+
+- **URL**: `/card`
+- **Method**: `POST`
+- **Auth Required**: Yes
+
+**Request Body (JSON):**
+
+```json
+{
+  "deckId": 1,
+  "front": "What is 2+2?",
+  "back": "4",
+  "tags": "math,basics"
+}
+```
+
+**Success Response (201 Created):**
+
+```json
+{
+  "statusCode": 201,
+  "timestamp": "2025-11-23T13:44:29.062Z",
+  "message": "Create Card",
+  "data": {
+    "id": 1,
+    "deckId": 3,
+    "front": "What is 2+2?",
+    "back": "4",
+    "createdAt": "2025-11-23T13:44:29.060Z",
+    "updatedAt": "2025-11-23T13:44:29.060Z",
+    "tags": "math,basics"
+  },
+  "path": "/api/card"
+}
+```
+
+### 4.2 Get Cards
+
+Retrieve cards, optionally filtered by deck ID.
+
+- **URL**: `/card`
+- **Method**: `GET`
+- **Auth Required**: Yes
+- **Query Parameters**:
+  - `deckId`: (Optional) ID of the deck to retrieve cards from.
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.073Z",
+  "message": "Get All Cards",
+  "data": [
+    {
+      "id": 1,
+      "deckId": 3,
+      "front": "What is 2+2?",
+      "back": "4",
+      "createdAt": "2025-11-23T13:44:29.060Z",
+      "updatedAt": "2025-11-23T13:44:29.060Z",
+      "tags": "math,basics",
+      "reviews": []
+    }
+  ],
+  "path": "/api/card?deckId=3"
+}
+```
+
+### 4.3 Get Card By ID
+
+Retrieve a specific card by its ID.
+
+- **URL**: `/card/:id`
+- **Method**: `GET`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.081Z",
+  "message": "Get All Cards",
+  "data": {
+    "id": 1,
+    "deckId": 3,
+    "front": "What is 2+2?",
+    "back": "4",
+    "createdAt": "2025-11-23T13:44:29.060Z",
+    "updatedAt": "2025-11-23T13:44:29.060Z",
+    "tags": "math,basics",
+    "deck": {
+      "id": 3,
+      "userId": 7,
+      "title": "Advanced Math",
+      "description": "Complex arithmetic flashcards",
+      "createdAt": "2025-11-23T13:44:28.992Z",
+      "updatedAt": "2025-11-23T13:44:29.047Z",
+      "user": {
+        "id": 7,
+        "username": "test",
+        "email": "test@gmail.com",
+        "role": "USER",
+        "createdAt": "2025-11-23T13:44:28.843Z",
+        "lastLoginAt": "2025-11-23T13:44:28.841Z",
+        "isEmailConfirmed": false
+      }
+    },
+    "reviews": []
+  },
+  "path": "/api/card/1"
+}
+```
+
+### 4.4 Update Card
+
+Update a card's content.
+
+- **URL**: `/card/:id`
+- **Method**: `PATCH`
+- **Auth Required**: Yes
+
+**Request Body (JSON):**
+
+```json
+{
+  "front": "What is 3+3?",
+  "back": "6"
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.094Z",
+  "message": "Get All Cards",
+  "data": {
+    "id": 1,
+    "deckId": 3,
+    "front": "What is 3+3?",
+    "back": "6",
+    "createdAt": "2025-11-23T13:44:29.060Z",
+    "updatedAt": "2025-11-23T13:44:29.091Z",
+    "tags": "math,basics"
+  },
+  "path": "/api/card/1"
+}
+```
+
+### 4.5 Delete Card
+
+Delete a specific card.
+
+- **URL**: `/card/:id`
+- **Method**: `DELETE`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.165Z",
+  "message": "Delete Card",
+  "data": {
+    "id": 1,
+    "deckId": 3,
+    "front": "What is 3+3?",
+    "back": "6",
+    "createdAt": "2025-11-23T13:44:29.060Z",
+    "updatedAt": "2025-11-23T13:44:29.091Z",
+    "tags": "math,basics"
+  },
+  "path": "/api/card/1"
+}
+```
+
+**Note:** Delete operations may return a 500 error if there are related records (cascading delete issue).
+
+---
+
+## 5. Study Endpoints
+
+Manage study sessions and reviews.
+
+### 5.1 Start Study Session
+
+Get cards that are due for review in a specific deck.
+
+- **URL**: `/study/start/:id`
+- **Method**: `GET`
+- **Auth Required**: Yes
+- **URL Parameters**:
+  - `id`: ID of the deck
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-23T13:44:29.106Z",
+  "message": "Start Study Session",
+  "data": [
+    {
+      "id": 1,
+      "deckId": 3,
+      "front": "What is 3+3?",
+      "back": "6",
+      "createdAt": "2025-11-23T13:44:29.060Z",
+      "updatedAt": "2025-11-23T13:44:29.091Z",
+      "tags": "math,basics"
+    }
+  ],
+  "path": "/api/study/start/3"
+}
+```
+
+### 5.2 Submit Card Review
+
+Submit reviews for cards using the SM-2 spaced repetition algorithm.
+
+- **URL**: `/study/review`
 - **Method**: `POST`
 - **Auth Required**: Yes
 
@@ -279,87 +676,97 @@ Submit reviews for cards in a deck.
 
 **Field Descriptions:**
 
-- `CardReviews` (array, required): List of reviews
+- `CardReviews` (array, required): Array of card review objects
   - `cardId` (number, required): ID of the card being reviewed
-  - `quality` (string, required): Review quality. One of: `Again`, `Hard`, `Good`, `Easy`
-- `reviewedAt` (string, required): Timestamp of the review (ISO 8601 format)
+  - `quality` (string, required): Review quality - one of: "Again", "Hard", "Good", "Easy"
+- `reviewedAt` (string, required): ISO 8601 timestamp of when the review occurred
 
-### 2.8 Get Due Reviews
+**Success Response (201 Created):**
 
-Get cards that are due for review in a specific deck.
+```json
+{
+  "statusCode": 201,
+  "timestamp": "2025-11-23T13:44:29.122Z",
+  "message": "Submitting card review",
+  "data": [
+    {
+      "id": 1,
+      "cardId": 1,
+      "repetitions": 1,
+      "interval": 1,
+      "eFactor": 2.5,
+      "nextReviewDate": "2023-10-28T10:00:00.000Z",
+      "reviewedAt": "2023-10-28T10:00:00.000Z",
+      "quality": "Good"
+    }
+  ],
+  "path": "/api/study/review"
+}
+```
 
-- **URL**: `/deck/review/:id`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **URL Parameters**:
-  - `id`: ID of the deck
+**Response Field Descriptions:**
+
+- `repetitions`: Number of consecutive correct reviews
+- `interval`: Days until next review
+- `eFactor`: Easiness factor (used in SM-2 algorithm)
+- `nextReviewDate`: When the card should be reviewed next
+- `reviewedAt`: When the review was recorded
+- `quality`: The quality rating given in the review
 
 ---
 
-## 3. Card Endpoints
+## Error Responses
 
-Manage individual flashcards within decks.
+All endpoints may return error responses in the following format:
 
-### 3.1 Create Card
-
-Add a new card to a deck.
-
-- **URL**: `/card`
-- **Method**: `POST`
-- **Auth Required**: Yes
-
-**Request Body (JSON):**
+**400 Bad Request:**
 
 ```json
 {
-  "deckId": 1,
-  "front": "What is 2+2?",
-  "back": "4",
-  "tags": "math,basics"
+  "statusCode": 400,
+  "message": ["Validation error messages"],
+  "error": "Bad Request"
 }
 ```
 
-### 3.2 Get Cards
-
-Retrieve cards, optionally filtered by deck ID.
-
-- **URL**: `/card`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**:
-  - `deckId`: (Optional) ID of the deck to retrieve cards from.
-
-**Example URL:**
-`{{url}}/card?deckId=1`
-
-### 3.3 Get Card By ID
-
-Retrieve a specific card by its ID.
-
-- **URL**: `/card/:id`
-- **Method**: `GET`
-- **Auth Required**: Yes
-
-### 3.4 Update Card
-
-Update a card's content.
-
-- **URL**: `/card/:id`
-- **Method**: `PATCH`
-- **Auth Required**: Yes
-
-**Request Body (JSON):**
+**401 Unauthorized:**
 
 ```json
 {
-  "front": "New front text"
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "data": null
 }
 ```
 
-### 3.5 Delete Card
+**404 Not Found:**
 
-Delete a specific card.
+```json
+{
+  "statusCode": 404,
+  "message": "Resource not found",
+  "data": null
+}
+```
 
-- **URL**: `/card/:id`
-- **Method**: `DELETE`
-- **Auth Required**: Yes
+**500 Internal Server Error:**
+
+```json
+{
+  "statusCode": 500,
+  "message": "Internal server error",
+  "data": null,
+  "timestamp": "2025-11-23T13:44:29.189Z",
+  "path": "/api/endpoint"
+}
+```
+
+---
+
+## Notes
+
+1. **Authentication**: Store the `accessToken` received from login/register and include it in the `Authorization` header for all authenticated requests.
+2. **Timestamps**: All timestamps are in ISO 8601 format (UTC).
+3. **IDs**: All IDs are integers.
+4. **Cascading Deletes**: Some delete operations may fail with a 500 error if there are related records. This is a known issue with the current implementation.
+5. **Spaced Repetition**: The study system uses the SM-2 algorithm for spaced repetition learning.

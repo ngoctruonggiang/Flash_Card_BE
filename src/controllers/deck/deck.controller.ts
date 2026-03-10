@@ -16,8 +16,6 @@ import { UpdateDeckDto } from 'src/utils/types/dto/deck/updateDeck.dto';
 import { GetUser } from 'src/utils/decorators/user.decorator';
 import * as client from '@prisma/client';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
-import { ReviewService } from 'src/services/review/review.service';
-import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
 import { CardService } from 'src/services/card/card.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -26,32 +24,8 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class DeckController {
   constructor(
     private readonly deckService: DeckService,
-    private readonly reviewService: ReviewService,
     private readonly cardService: CardService,
   ) {}
-
-  // Review
-  @Post('/review')
-  @ApiOperation({ summary: 'Submit card review' })
-  @ApiResponse({ status: 201, description: 'Review submitted successfully' })
-  @RouteConfig({
-    message: 'Submitting card review',
-    requiresAuth: true,
-  })
-  submitReview(@Body() cardReview: SubmitReviewDto) {
-    return this.reviewService.submitReviews(cardReview);
-  }
-
-  @Get('/review/:id')
-  @ApiOperation({ summary: 'Get due reviews for a deck' })
-  @ApiResponse({ status: 200, description: 'Return due reviews' })
-  @RouteConfig({
-    message: 'Get Review Deck By ID',
-    requiresAuth: true,
-  })
-  getDueReviews(@Param() params: IdParamDto) {
-    return this.reviewService.getDueReviews(params.id);
-  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new deck' })
