@@ -52,13 +52,34 @@ export function applySm2(
     repetitions = repetitions + 1;
 
     if (repetitions === 1) {
-      interval = 1;
+      // First review - differentiate by quality
+      if (quality === 3) {
+        // Hard: 1 day
+        interval = 1;
+      } else if (quality === 4) {
+        // Good: 3 days
+        interval = 3;
+      } else {
+        // Easy (quality === 5): 5 days
+        interval = 5;
+      }
     } else if (repetitions === 2) {
       interval = 6;
     } else {
-      // round(previous_interval * eFactor)
+      // Differentiate intervals based on quality when repetitions > 2
       const prev = previousInterval > 0 ? previousInterval : 1;
-      interval = Math.round(prev * eFactor);
+
+      if (quality === 3) {
+        // Hard: Fixed growth of 1.2x
+        interval = Math.round(prev * 1.2);
+      } else if (quality === 4) {
+        // Good: Standard growth using E-Factor
+        interval = Math.round(prev * eFactor);
+      } else {
+        // Easy (quality === 5): Bonus growth using E-Factor * 1.3
+        interval = Math.round(prev * eFactor * 1.3);
+      }
+
       // ensure at least 1 day
       interval = Math.max(1, interval);
     }

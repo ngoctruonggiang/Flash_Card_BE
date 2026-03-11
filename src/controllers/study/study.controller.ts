@@ -4,6 +4,7 @@ import { ReviewService } from 'src/services/review/review.service';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
 import { IdParamDto } from 'src/utils/types/dto/IDParam.dto';
 import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
+import { ReviewPreviewDto } from 'src/utils/types/dto/review/previewReview.dto';
 
 @ApiTags('Study')
 @Controller('study')
@@ -19,6 +20,21 @@ export class StudyController {
   })
   getDueReviews(@Param() params: IdParamDto) {
     return this.reviewService.getDueReviews(params.id);
+  }
+
+  @Get('/preview/:id')
+  @ApiOperation({ summary: 'Get preview of intervals for all quality options' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns preview intervals for Again, Hard, Good, and Easy',
+    type: ReviewPreviewDto,
+  })
+  @RouteConfig({
+    message: 'Get review interval previews',
+    requiresAuth: true,
+  })
+  getReviewPreview(@Param() params: IdParamDto) {
+    return this.reviewService.getReviewPreview(Number(params.id));
   }
 
   @Post('/review')

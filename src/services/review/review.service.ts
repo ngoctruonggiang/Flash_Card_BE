@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
 import { applySm2 } from './sm2Algo';
-import { Card, CardReview } from '@prisma/client';
+import { Card, CardReview, ReviewQuality } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { ReviewPreviewDto } from 'src/utils/types/dto/review/previewReview.dto';
 
 @Injectable()
 export class ReviewService {
@@ -111,5 +112,23 @@ export class ReviewService {
       return minNext(a) - minNext(b);
     });
     return cards.map((c) => ({ ...c, reviews: undefined }) as Card);
+  }
+
+  async getReviewPreview(cardId: number): Promise<ReviewPreviewDto> {
+    const lastReview = await this.getLastestReviewByCardId(cardId);
+    const now = new Date();
+
+    const qualities: ReviewQuality[] = ['Again', 'Hard', 'Good', 'Easy'];
+    const previews: Partial<ReviewPreviewDto> = {};
+
+    for (const quality of qualities) {
+      const submitReview = { cardId, quality };
+      const result = applySm2(submitReview, new Date(now), lastReview);
+
+      const interval = result.interval;
+      previews[quality] = interval === 1 ? '1 day' : `${interval} days`;
+    }
+
+    return previews as ReviewPreviewDto;
   }
 }
