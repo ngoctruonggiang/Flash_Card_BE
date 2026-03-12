@@ -4,6 +4,7 @@ import { applySm2 } from './sm2Algo';
 import { Card, CardReview, ReviewQuality } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { ReviewPreviewDto } from 'src/utils/types/dto/review/previewReview.dto';
+import { ConsecutiveDaysDto } from 'src/utils/types/dto/review/consecutiveDays.dto';
 
 @Injectable()
 export class ReviewService {
@@ -130,5 +131,113 @@ export class ReviewService {
     }
 
     return previews as ReviewPreviewDto;
+  }
+
+  async getConsecutiveStudyDays(deckId: number): Promise<ConsecutiveDaysDto> {
+    // Get all cards for the deck
+    const cards = await this.prismaService.card.findMany({
+      where: { deckId },
+      select: { id: true },
+    });
+
+    if (cards.length === 0) {
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate: null,
+      };
+    }
+
+    const cardIds = cards.map((card) => card.id);
+
+    // Get all reviews for the deck's cards, ordered by date
+    const reviews = await this.prismaService.cardReview.findMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+      orderBy: { reviewedAt: 'desc' },
+      select: { reviewedAt: true },
+    });
+
+    if (reviews.length === 0) {
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate: null,
+      };
+    }
+
+    // Helper function to normalize date to start of day (UTC)
+    const normalizeDate = (date: Date): string => {
+      const d = new Date(date);
+      return new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()),
+      ).toISOString();
+    };
+
+    // Get unique study dates (normalized to day level)
+    const studyDatesSet = new Set<string>();
+    reviews.forEach((review) => {
+      studyDatesSet.add(normalizeDate(review.reviewedAt));
+    });
+
+    // Convert to sorted array (most recent first)
+    const studyDates = Array.from(studyDatesSet)
+      .sort()
+      .reverse()
+      .map((dateStr) => new Date(dateStr));
+
+    if (studyDates.length === 0) {
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate: null,
+      };
+    }
+
+    const lastStudyDate = studyDates[0];
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    // Check if the streak is current (studied today or yesterday)
+    const daysSinceLastStudy = Math.floor(
+      (today.getTime() - lastStudyDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (daysSinceLastStudy > 1) {
+      // Streak is broken
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate,
+      };
+    }
+
+    // Calculate consecutive days
+    let consecutiveDays = 1;
+    let streakStartDate = lastStudyDate;
+
+    for (let i = 1; i < studyDates.length; i++) {
+      const currentDate = studyDates[i];
+      const previousDate = studyDates[i - 1];
+
+      const dayDifference = Math.floor(
+        (previousDate.getTime() - currentDate.getTime()) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      if (dayDifference === 1) {
+        consecutiveDays++;
+        streakStartDate = currentDate;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      consecutiveDays,
+      streakStartDate,
+      lastStudyDate,
+    };
   }
 }

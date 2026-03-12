@@ -91,4 +91,19 @@ export class CardController {
   remove(@Param() params: IdParamDto) {
     return this.cardService.remove(params.id);
   }
+
+  @Get(':id/review-status')
+  @ApiOperation({ summary: 'Get card review status' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns when the card was last reviewed and when it is due next',
+  })
+  @RouteConfig({
+    message: 'Get Card Review Status',
+    requiresAuth: true,
+  })
+  getReviewStatus(@Param() params: IdParamDto) {
+    return this.cardService.getReviewStatus(params.id);
+  }
 }

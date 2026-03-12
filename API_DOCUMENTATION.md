@@ -423,6 +423,231 @@ Delete a specific deck.
 
 **Note:** Delete operations may return a 500 error if there are related records (cascading delete issue).
 
+### 3.7 Get Reviewed Cards Count
+
+Retrieve the number of cards that have been reviewed at least once in a specific deck.
+
+- **URL**: `/deck/:id/reviewed-count`
+- **Method**: `GET`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "deckId": 1,
+  "reviewedCount": 5,
+  "totalCards": 20
+}
+```
+
+**Response Field Descriptions:**
+
+- `deckId` (number): The ID of the deck.
+- `reviewedCount` (number): The number of cards in the deck that have been reviewed at least once.
+- `totalCards` (number): The total number of cards in the deck.
+
+**Notes:**
+
+- This endpoint requires authentication.
+- The `reviewedCount` includes only cards with at least one review.
+
+### 3.8 Get Reviewed Cards Count In Day
+
+Retrieve the number of cards that have been reviewed in a specific deck on a particular day.
+
+- **URL**: `/deck/:id/reviewed-count-day`
+- **Method**: `GET`
+- **Auth Required**: Yes
+- **Query Parameters**:
+  - `date` (Optional): Date in YYYY-MM-DD format (e.g., "2025-11-24"). Defaults to today if not provided.
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T12:00:00.000Z",
+  "message": "Get Reviewed Cards Count In Day",
+  "data": {
+    "deckId": 1,
+    "date": "2025-11-24",
+    "reviewedCount": 8,
+    "totalCards": 20
+  },
+  "path": "/api/deck/1/reviewed-count-day?date=2025-11-24"
+}
+```
+
+**Response Field Descriptions:**
+
+- `deckId` (number): The ID of the deck.
+- `date` (string): The date for which the count was calculated (YYYY-MM-DD format).
+- `reviewedCount` (number): The number of unique cards in the deck that have been reviewed at least once on the specified day.
+- `totalCards` (number): The total number of cards in the deck.
+
+**Example Requests:**
+
+Get reviewed count for today:
+
+```
+GET /api/deck/1/reviewed-count-day
+```
+
+Get reviewed count for a specific date:
+
+```
+GET /api/deck/1/reviewed-count-day?date=2025-11-20
+```
+
+**Notes:**
+
+- This endpoint requires authentication.
+- The `reviewedCount` includes only cards that have at least one review on the specified date.
+- The date range covers the entire day (00:00:00 to 23:59:59) in the server's timezone.
+- If no date is provided, it defaults to the current date.
+- If a card was reviewed multiple times in the same day, it is counted only once.
+
+### 3.9 Get Cards Due Today
+
+Retrieve all cards in a specific deck that are due for review today. This includes cards that have never been reviewed and cards whose next review date is today or earlier.
+
+- **URL**: `/deck/:id/due-today`
+- **Method**: `GET`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T12:00:00.000Z",
+  "message": "Get Cards Due Today",
+  "data": [
+    {
+      "id": 1,
+      "deckId": 3,
+      "front": "What is 2+2?",
+      "back": "4",
+      "createdAt": "2025-11-20T10:00:00.000Z",
+      "updatedAt": "2025-11-23T15:30:00.000Z",
+      "tags": "math,basics",
+      "nextReviewDate": "2025-11-24T10:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "deckId": 3,
+      "front": "What is the capital of France?",
+      "back": "Paris",
+      "createdAt": "2025-11-22T08:00:00.000Z",
+      "updatedAt": "2025-11-22T08:00:00.000Z",
+      "tags": "geography",
+      "nextReviewDate": null
+    }
+  ],
+  "path": "/api/deck/3/due-today"
+}
+```
+
+**Response Field Descriptions:**
+
+- `id` (number): The card ID.
+- `deckId` (number): The deck ID this card belongs to.
+- `front` (string): The front side of the card (question/prompt).
+- `back` (string): The back side of the card (answer).
+- `createdAt` (string): ISO 8601 timestamp when the card was created.
+- `updatedAt` (string): ISO 8601 timestamp when the card was last updated.
+- `tags` (string | null): Comma-separated tags for the card.
+- `nextReviewDate` (string | null): ISO 8601 timestamp of when the card is next due for review. `null` indicates the card has never been reviewed.
+
+**Notes:**
+
+- This endpoint requires authentication.
+- Cards are sorted by their next review date, with never-reviewed cards appearing first.
+- Cards with `nextReviewDate` of today or earlier are included.
+- Cards that have never been reviewed (`nextReviewDate` is `null`) are included as they are due for their first review.
+- The response includes all card information needed for a study session.
+- This endpoint is useful for starting a study session without needing to fetch cards individually.
+
+### 3.10 Get Deck Statistics
+
+Retrieve review statistics for a specific deck, including the percentage of correct reviews and detailed counts by quality.
+
+- **URL**: `/deck/:id/statistics`
+- **Method**: `GET`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T12:00:00.000Z",
+  "message": "Get Deck Statistics",
+  "data": {
+    "totalReviews": 150,
+    "correctReviews": 120,
+    "correctPercentage": 80.0,
+    "againCount": 30,
+    "hardCount": 25,
+    "goodCount": 70,
+    "easyCount": 25
+  },
+  "path": "/api/deck/1/statistics"
+}
+```
+
+**Response Field Descriptions:**
+
+- `totalReviews` (number): Total number of reviews for all cards in the deck.
+- `correctReviews` (number): Number of correct reviews (quality ≥ 3: Hard, Good, Easy).
+- `correctPercentage` (number): Percentage of correct reviews.
+- `againCount` (number): Number of reviews with quality "Again" (quality = 2).
+- `hardCount` (number): Number of reviews with quality "Hard" (quality = 3).
+- `goodCount` (number): Number of reviews with quality "Good" (quality = 4).
+- `easyCount` (number): Number of reviews with quality "Easy" (quality = 5).
+
+**Notes:**
+
+- This endpoint requires authentication.
+- The `correctPercentage` is calculated as `(correctReviews / totalReviews) * 100` and rounded to two decimal places.
+- If there are no reviews, `correctPercentage` will be `0.0`.
+
+### 3.11 Get Deck Last Studied Date
+
+Retrieve when a deck was last studied (i.e., the most recent review date for any card in the deck).
+
+- **URL**: `/deck/:id/last-studied`
+- **Method**: `GET`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T12:00:00.000Z",
+  "message": "Get Deck Last Studied Date",
+  "data": {
+    "deckId": 1,
+    "lastStudiedAt": "2025-11-24T10:30:45.123Z"
+  },
+  "path": "/api/deck/1/last-studied"
+}
+```
+
+**Response Field Descriptions:**
+
+- `deckId` (number): The ID of the deck.
+- `lastStudiedAt` (string | null): ISO 8601 timestamp of the most recent review for any card in the deck. `null` if no cards have been reviewed yet.
+
+**Notes:**
+
+- This endpoint requires authentication.
+- The `lastStudiedAt` field represents when the deck was last studied (most recent review across all cards).
+- If the deck has no reviews, `lastStudiedAt` will be `null`.
+- This is useful for displaying "last studied" information in the UI or tracking study activity.
+
 ---
 
 ## 4. Card Endpoints
@@ -614,6 +839,64 @@ Delete a specific card.
 
 **Note:** Delete operations may return a 500 error if there are related records (cascading delete issue).
 
+### 4.6 Get Card Review Status
+
+Retrieve when a card was last reviewed and when it is due for the next review.
+
+- **URL**: `/card/:id/review-status`
+- **Method**: `GET`
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+Example for a **card that has been reviewed**:
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T12:00:00.000Z",
+  "message": "Get Card Review Status",
+  "data": {
+    "cardId": 1,
+    "lastReviewedAt": "2025-11-23T10:30:00.000Z",
+    "nextReviewDate": "2025-11-25T10:30:00.000Z",
+    "hasBeenReviewed": true
+  },
+  "path": "/api/card/1/review-status"
+}
+```
+
+Example for a **card that has never been reviewed**:
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T12:00:00.000Z",
+  "message": "Get Card Review Status",
+  "data": {
+    "cardId": 1,
+    "lastReviewedAt": null,
+    "nextReviewDate": null,
+    "hasBeenReviewed": false
+  },
+  "path": "/api/card/1/review-status"
+}
+```
+
+**Response Field Descriptions:**
+
+- `cardId` (number): The ID of the card.
+- `lastReviewedAt` (string | null): ISO 8601 timestamp of when the card was last reviewed. `null` if never reviewed.
+- `nextReviewDate` (string | null): ISO 8601 timestamp of when the card is next due for review. `null` if never reviewed.
+- `hasBeenReviewed` (boolean): Whether the card has been reviewed at least once.
+
+**Notes:**
+
+- This endpoint requires authentication.
+- The `lastReviewedAt` and `nextReviewDate` are based on the most recent review.
+- Cards that have never been reviewed will have `null` for both date fields.
+- This is useful for displaying review progress and scheduling information in the UI.
+
 ---
 
 ## 5. Study Endpoints
@@ -791,6 +1074,90 @@ For **third+ reviews** (repetitions > 2):
 - **New cards** (never reviewed) show differentiated intervals: Hard=1, Good=3, Easy=5 days
 - Starting from the **first review**, intervals are differentiated by quality rating
 - Intervals are formatted as human-readable strings (e.g., "1 day", "15 days")
+
+### 5.4 Get Consecutive Study Days
+
+Get the number of consecutive days a deck has been studied. A study streak is considered active if the deck was studied today or yesterday. The streak breaks if more than one day passes without studying.
+
+- **URL**: `/study/consecutive-days/:id`
+- **Method**: `GET`
+- **Auth Required**: Yes
+- **URL Parameters**:
+  - `id`: ID of the deck
+
+**Success Response (200 OK):**
+
+Example for an **active streak**:
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T10:30:00.000Z",
+  "message": "Get consecutive study days",
+  "data": {
+    "consecutiveDays": 7,
+    "streakStartDate": "2025-11-17T00:00:00.000Z",
+    "lastStudyDate": "2025-11-24T00:00:00.000Z"
+  },
+  "path": "/api/study/consecutive-days/3"
+}
+```
+
+Example for a **broken streak** (not studied today or yesterday):
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T10:30:00.000Z",
+  "message": "Get consecutive study days",
+  "data": {
+    "consecutiveDays": 0,
+    "streakStartDate": null,
+    "lastStudyDate": "2025-11-20T00:00:00.000Z"
+  },
+  "path": "/api/study/consecutive-days/3"
+}
+```
+
+Example for a **deck with no study history**:
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-24T10:30:00.000Z",
+  "message": "Get consecutive study days",
+  "data": {
+    "consecutiveDays": 0,
+    "streakStartDate": null,
+    "lastStudyDate": null
+  },
+  "path": "/api/study/consecutive-days/3"
+}
+```
+
+**Response Field Descriptions:**
+
+- `consecutiveDays` (number): The number of consecutive days the deck has been studied. Returns 0 if:
+  - The deck has never been studied
+  - More than one day has passed since the last study session (streak broken)
+- `streakStartDate` (string | null): ISO 8601 timestamp of when the current streak started (normalized to start of day in UTC). `null` if there is no active streak.
+- `lastStudyDate` (string | null): ISO 8601 timestamp of the most recent study session (normalized to start of day in UTC). `null` if the deck has never been studied.
+
+**How Consecutive Days Are Calculated:**
+
+1. All reviews for cards in the deck are collected
+2. Review dates are normalized to the start of the day (UTC) and deduplicated - multiple reviews on the same day count as one study day
+3. The streak is considered active if the last study date is today or yesterday
+4. Starting from the most recent study date, consecutive days are counted backward
+5. The streak breaks when there's a gap of more than one day between study sessions
+
+**Notes:**
+
+- A "study day" is defined by having at least one card review submitted on that day
+- Multiple reviews on the same day count as a single study day
+- The streak continues if you study either today or yesterday (1-day gap is allowed to account for timezone differences and late-night studying)
+- All dates are normalized to UTC for consistency
+- An empty deck (no cards) or a deck with cards but no reviews will return `consecutiveDays: 0`
 
 ---
 

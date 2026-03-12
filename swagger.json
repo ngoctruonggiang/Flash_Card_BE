@@ -300,6 +300,111 @@
         ]
       }
     },
+    "/api/deck/{id}/reviewed-count-day": {
+      "get": {
+        "operationId": "DeckController_getReviewedCountInDay",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Date in YYYY-MM-DD format (defaults to today)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the count of reviewed cards for the specified day"
+          }
+        },
+        "summary": "Get number of cards reviewed in a deck on a specific day",
+        "tags": [
+          "Deck"
+        ]
+      }
+    },
+    "/api/deck/{id}/due-today": {
+      "get": {
+        "operationId": "DeckController_getCardsDueToday",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns cards that are due for review today"
+          }
+        },
+        "summary": "Get cards due for review today in a deck",
+        "tags": [
+          "Deck"
+        ]
+      }
+    },
+    "/api/deck/{id}/statistics": {
+      "get": {
+        "operationId": "DeckController_getDeckStatistics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the percentage of correct reviews and detailed statistics"
+          }
+        },
+        "summary": "Get review statistics for a deck",
+        "tags": [
+          "Deck"
+        ]
+      }
+    },
+    "/api/deck/{id}/last-studied": {
+      "get": {
+        "operationId": "DeckController_getLastStudiedDate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the date when the deck was last studied (most recent review)"
+          }
+        },
+        "summary": "Get when the deck was last studied",
+        "tags": [
+          "Deck"
+        ]
+      }
+    },
     "/api/card": {
       "post": {
         "operationId": "CardController_create",
@@ -425,6 +530,30 @@
         ]
       }
     },
+    "/api/card/{id}/review-status": {
+      "get": {
+        "operationId": "CardController_getReviewStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns when the card was last reviewed and when it is due next"
+          }
+        },
+        "summary": "Get card review status",
+        "tags": [
+          "Card"
+        ]
+      }
+    },
     "/api/auth/register": {
       "post": {
         "operationId": "AuthController_register",
@@ -513,6 +642,37 @@
         ]
       }
     },
+    "/api/study/preview/{id}": {
+      "get": {
+        "operationId": "StudyController_getReviewPreview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns preview intervals for Again, Hard, Good, and Easy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewPreviewDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get preview of intervals for all quality options",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
     "/api/study/review": {
       "post": {
         "operationId": "StudyController_submitReview",
@@ -533,6 +693,37 @@
           }
         },
         "summary": "Submit card review",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
+    "/api/study/consecutive-days/{id}": {
+      "get": {
+        "operationId": "StudyController_getConsecutiveDays",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the number of consecutive days the deck has been studied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsecutiveDaysDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get consecutive days of studying for a deck",
         "tags": [
           "Study"
         ]
@@ -712,6 +903,37 @@
           "password"
         ]
       },
+      "ReviewPreviewDto": {
+        "type": "object",
+        "properties": {
+          "Again": {
+            "type": "string",
+            "example": "1 day",
+            "description": "Interval if reviewed as Again"
+          },
+          "Hard": {
+            "type": "string",
+            "example": "6 days",
+            "description": "Interval if reviewed as Hard"
+          },
+          "Good": {
+            "type": "string",
+            "example": "10 days",
+            "description": "Interval if reviewed as Good"
+          },
+          "Easy": {
+            "type": "string",
+            "example": "14 days",
+            "description": "Interval if reviewed as Easy"
+          }
+        },
+        "required": [
+          "Again",
+          "Hard",
+          "Good",
+          "Easy"
+        ]
+      },
       "SubmitReviewItemDto": {
         "type": "object",
         "properties": {
@@ -750,6 +972,33 @@
         "required": [
           "CardReviews",
           "reviewedAt"
+        ]
+      },
+      "ConsecutiveDaysDto": {
+        "type": "object",
+        "properties": {
+          "consecutiveDays": {
+            "type": "number",
+            "description": "Number of consecutive days the deck has been studied",
+            "example": 7
+          },
+          "streakStartDate": {
+            "type": "string",
+            "description": "Date of the current streak start",
+            "example": "2025-11-17T00:00:00.000Z",
+            "nullable": true
+          },
+          "lastStudyDate": {
+            "type": "string",
+            "description": "Date of the most recent study session",
+            "example": "2025-11-24T00:00:00.000Z",
+            "nullable": true
+          }
+        },
+        "required": [
+          "consecutiveDays",
+          "streakStartDate",
+          "lastStudyDate"
         ]
       }
     }

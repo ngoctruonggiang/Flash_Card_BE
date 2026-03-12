@@ -8,6 +8,7 @@ import { AppModule } from '../src/app.module';
 import { UserService } from 'src/services/user/user.service';
 import { Deck } from '@prisma/client';
 import { DeckService } from 'src/services/deck/deck.service';
+import { PrismaService } from 'src/services/prisma.service';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
@@ -16,6 +17,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let deckService: DeckService;
+  let prismaService: PrismaService;
 
   const userSignUpDto: SignUpDto = {
     username: 'e2edeckuser',
@@ -66,6 +68,7 @@ describe('AppController (e2e)', () => {
 
     userService = moduleFixture.get<UserService>(UserService);
     deckService = moduleFixture.get<DeckService>(DeckService);
+    prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
     testUser = await createTestUser(moduleFixture, userSignUpDto);
   });
@@ -144,5 +147,99 @@ describe('AppController (e2e)', () => {
     expect(deletedDeck).toBeNull();
 
     testDeck = null;
+  });
+
+  it('/deck/:id (DELETE) with cards and reviews - cascade delete', async () => {
+    // Create a deck with cards and reviews
+    const deckWithCards = await deckService.create(testUser.id, {
+      title: 'Deck with Cards',
+      description: 'Deck to test cascade deletion',
+    });
+
+    // Create cards in the deck
+    const card1 = await prismaService.card.create({
+      data: {
+        deckId: deckWithCards.id,
+        front: 'Front 1',
+        back: 'Back 1',
+      },
+    });
+
+    const card2 = await prismaService.card.create({
+      data: {
+        deckId: deckWithCards.id,
+        front: 'Front 2',
+        back: 'Back 2',
+      },
+    });
+
+    // Create reviews for the cards
+    await prismaService.cardReview.create({
+      data: {
+        cardId: card1.id,
+        repetitions: 1,
+        interval: 1,
+        eFactor: 2.5,
+        nextReviewDate: new Date(),
+        reviewedAt: new Date(),
+        quality: 'Good',
+      },
+    });
+
+    await prismaService.cardReview.create({
+      data: {
+        cardId: card2.id,
+        repetitions: 1,
+        interval: 1,
+        eFactor: 2.5,
+        nextReviewDate: new Date(),
+        reviewedAt: new Date(),
+        quality: 'Easy',
+      },
+    });
+
+    // Verify deck, cards, and reviews exist before deletion
+    const deckBefore = await deckService.findOne(deckWithCards.id);
+    expect(deckBefore).not.toBeNull();
+    expect(deckBefore?.cards).toHaveLength(2);
+
+    const reviewsBefore = await prismaService.cardReview.findMany({
+      where: {
+        cardId: {
+          in: [card1.id, card2.id],
+        },
+      },
+    });
+    expect(reviewsBefore).toHaveLength(2);
+
+    // Delete the deck
+    const res = await authRequest()
+      .delete(`/deck/${deckWithCards.id}`)
+      .expect(200);
+
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.id).toBe(deckWithCards.id);
+
+    // Verify deck is deleted
+    const deletedDeck = await deckService.findOne(deckWithCards.id);
+    expect(deletedDeck).toBeNull();
+
+    // Verify cards are deleted
+    const cardsAfter = await prismaService.card.findMany({
+      where: {
+        deckId: deckWithCards.id,
+      },
+    });
+    expect(cardsAfter).toHaveLength(0);
+
+    // Verify reviews are deleted
+    const reviewsAfter = await prismaService.cardReview.findMany({
+      where: {
+        cardId: {
+          in: [card1.id, card2.id],
+        },
+      },
+    });
+    expect(reviewsAfter).toHaveLength(0);
   });
 });

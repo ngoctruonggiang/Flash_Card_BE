@@ -76,4 +76,31 @@ export class CardService {
       where: { id },
     });
   }
+
+  async getReviewStatus(id: number) {
+    const card = await this.prisma.card.findUnique({
+      where: { id },
+      include: {
+        reviews: {
+          orderBy: {
+            reviewedAt: 'desc',
+          },
+          take: 1,
+        },
+      },
+    });
+
+    if (!card) {
+      throw new Error('Card not found');
+    }
+
+    const latestReview = card.reviews[0];
+
+    return {
+      cardId: card.id,
+      lastReviewedAt: latestReview ? latestReview.reviewedAt : null,
+      nextReviewDate: latestReview ? latestReview.nextReviewDate : null,
+      hasBeenReviewed: !!latestReview,
+    };
+  }
 }
