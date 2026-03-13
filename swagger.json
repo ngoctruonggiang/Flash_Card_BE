@@ -774,6 +774,24 @@
           },
           "description": {
             "type": "string"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Icon name for the deck"
+          },
+          "colorCode": {
+            "type": "string",
+            "description": "Color code in hex format (e.g., #FF5733)"
+          },
+          "languageMode": {
+            "type": "string",
+            "enum": [
+              "VN_EN",
+              "EN_VN",
+              "BIDIRECTIONAL"
+            ],
+            "default": "VN_EN",
+            "description": "Language mode: VN_EN (Vietnamese to English), EN_VN (English to Vietnamese), or BIDIRECTIONAL (both directions with auto-generated reverse cards)"
           }
         },
         "required": [
@@ -788,8 +806,42 @@
           },
           "description": {
             "type": "string"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Icon name for the deck"
+          },
+          "colorCode": {
+            "type": "string",
+            "description": "Color code in hex format (e.g., #FF5733)"
+          },
+          "languageMode": {
+            "type": "string",
+            "enum": [
+              "VN_EN",
+              "EN_VN",
+              "BIDIRECTIONAL"
+            ],
+            "description": "Language mode: VN_EN (Vietnamese to English), EN_VN (English to Vietnamese), or BIDIRECTIONAL (both directions with auto-generated reverse cards)"
           }
         }
+      },
+      "ExampleSentenceDto": {
+        "type": "object",
+        "properties": {
+          "sentence": {
+            "type": "string",
+            "description": "Example sentence"
+          },
+          "translation": {
+            "type": "string",
+            "description": "Translation of the example sentence"
+          }
+        },
+        "required": [
+          "sentence",
+          "translation"
+        ]
       },
       "CreateCardDto": {
         "type": "object",
@@ -805,13 +857,27 @@
           },
           "tags": {
             "type": "string"
+          },
+          "wordType": {
+            "type": "string",
+            "description": "Word type (e.g., noun, verb, adjective)"
+          },
+          "pronunciation": {
+            "type": "string",
+            "description": "Pronunciation guide"
+          },
+          "examples": {
+            "description": "Array of example sentences with translations",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExampleSentenceDto"
+            }
           }
         },
         "required": [
           "deckId",
           "front",
-          "back",
-          "tags"
+          "back"
         ]
       },
       "UpdateCardDto": {
@@ -825,6 +891,21 @@
           },
           "tags": {
             "type": "string"
+          },
+          "wordType": {
+            "type": "string",
+            "description": "Word type (e.g., noun, verb, adjective)"
+          },
+          "pronunciation": {
+            "type": "string",
+            "description": "Pronunciation guide"
+          },
+          "examples": {
+            "description": "Array of example sentences with translations",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExampleSentenceDto"
+            }
           }
         }
       },
