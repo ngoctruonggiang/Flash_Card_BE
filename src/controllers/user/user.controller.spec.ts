@@ -3,23 +3,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from 'src/services/user/user.service';
-import { AuthService } from 'src/services/auth/auth.service';
 
 describe('UserController', () => {
   let controller: UserController;
   let userService: UserService;
-  let authService: AuthService;
 
   const mockUserService = {
     getUserById: jest.fn(),
     getAllUsers: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
-  };
-
-  const mockAuthService = {
-    signUp: jest.fn(),
-    signIn: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -30,16 +23,11 @@ describe('UserController', () => {
           provide: UserService,
           useValue: mockUserService,
         },
-        {
-          provide: AuthService,
-          useValue: mockAuthService,
-        },
       ],
     }).compile();
 
     controller = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
-    authService = module.get<AuthService>(AuthService);
   });
 
   afterEach(() => {
@@ -48,78 +36,6 @@ describe('UserController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
-
-  describe('signUp', () => {
-    it('should sign up a new user and return JWT token', async () => {
-      const signUpDto = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
-      const mockJwtToken = {
-        accessToken: 'mocked_jwt_token',
-      };
-
-      mockAuthService.signUp.mockResolvedValue(mockJwtToken);
-
-      const result = await controller.signUp(signUpDto);
-
-      expect(result).toEqual(mockJwtToken);
-      expect(authService.signUp).toHaveBeenCalledWith(signUpDto);
-    });
-
-    it('should handle sign up errors', async () => {
-      const signUpDto = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
-      const mockError = new Error('Email already in use');
-      mockAuthService.signUp.mockRejectedValue(mockError);
-
-      await expect(controller.signUp(signUpDto)).rejects.toThrow(
-        'Email already in use',
-      );
-      expect(authService.signUp).toHaveBeenCalledWith(signUpDto);
-    });
-  });
-
-  describe('signIn', () => {
-    it('should sign in a user and return JWT token', async () => {
-      const signInDto = {
-        username: 'testuser',
-        password: 'password123',
-      };
-
-      const mockJwtToken = {
-        accessToken: 'mocked_jwt_token',
-      };
-
-      mockAuthService.signIn.mockResolvedValue(mockJwtToken);
-
-      const result = await controller.signIn(signInDto);
-
-      expect(result).toEqual(mockJwtToken);
-      expect(authService.signIn).toHaveBeenCalledWith(signInDto);
-    });
-
-    it('should handle sign in errors', async () => {
-      const signInDto = {
-        username: 'wronguser',
-        password: 'wrongpassword',
-      };
-
-      const mockError = new Error('Invalid username or password');
-      mockAuthService.signIn.mockRejectedValue(mockError);
-
-      await expect(controller.signIn(signInDto)).rejects.toThrow(
-        'Invalid username or password',
-      );
-      expect(authService.signIn).toHaveBeenCalledWith(signInDto);
-    });
   });
 
   describe('getCurrentUser', () => {

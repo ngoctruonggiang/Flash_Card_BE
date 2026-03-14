@@ -18,6 +18,13 @@ describe('Deck', () => {
       delete: jest.fn(),
       count: jest.fn(),
     },
+    card: {
+      findMany: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    cardReview: {
+      deleteMany: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -46,13 +53,27 @@ describe('Deck', () => {
         title: 'Test Deck',
         description: 'Test Description',
       };
-      mockPrismaService.deck.create.mockResolvedValue(mockDeck);
+      const mockCreatedDeck = {
+        id: 1,
+        title: 'Test Deck',
+        description: 'Test Description',
+        iconName: undefined,
+        colorCode: undefined,
+        languageMode: 'VN_EN',
+        userId: userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      mockPrismaService.deck.create.mockResolvedValue(mockCreatedDeck);
       const result = await provider.create(userId, mockDeck);
       expect(result).not.toBeNull();
       expect(prismaService.deck.create).toHaveBeenCalledWith({
         data: {
           title: mockDeck.title,
           description: mockDeck.description,
+          iconName: undefined,
+          colorCode: undefined,
+          languageMode: 'VN_EN',
           userId: userId,
         },
       });
@@ -62,10 +83,21 @@ describe('Deck', () => {
   describe('Remove', () => {
     it('should remove a deck', async () => {
       const mockDeck = { id: 1, name: 'Test Deck', userId: 1 };
+      const mockCards = [{ id: 1 }, { id: 2 }];
 
+      mockPrismaService.card.findMany.mockResolvedValue(mockCards);
+      mockPrismaService.cardReview.deleteMany.mockResolvedValue({ count: 5 });
+      mockPrismaService.card.deleteMany.mockResolvedValue({ count: 2 });
       mockPrismaService.deck.delete.mockResolvedValue(mockDeck);
       const result = await provider.remove(1);
       expect(result).toEqual(mockDeck);
+      expect(prismaService.card.findMany).toHaveBeenCalledWith({
+        where: { deckId: 1 },
+        select: { id: true },
+      });
+      expect(prismaService.card.deleteMany).toHaveBeenCalledWith({
+        where: { deckId: 1 },
+      });
       expect(prismaService.deck.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });

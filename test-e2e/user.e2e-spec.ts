@@ -85,7 +85,7 @@ describe('AppController (e2e)', () => {
         confirmPassword: 'e2euserpassword',
       };
       const res = await request(app.getHttpServer())
-        .post('/user/signup')
+        .post('/auth/register')
         .send(createUserDto)
         .expect(HttpStatus.CREATED);
 
@@ -112,7 +112,7 @@ describe('AppController (e2e)', () => {
       };
 
       await request(app.getHttpServer())
-        .post('/user/signup')
+        .post('/auth/register')
         .send(createUserDto)
         .expect(HttpStatus.CONFLICT);
     });
@@ -126,7 +126,7 @@ describe('AppController (e2e)', () => {
       };
 
       await request(app.getHttpServer())
-        .post('/user/signup')
+        .post('/auth/register')
         .send(createUserDto)
         .expect(HttpStatus.CONFLICT);
     });
@@ -139,7 +139,7 @@ describe('AppController (e2e)', () => {
         password: testUserLoginDto.password,
       };
       const res = await request(app.getHttpServer())
-        .post('/user/signin')
+        .post('/auth/login')
         .send(loginUserDto)
         .expect(HttpStatus.OK);
 
@@ -159,7 +159,7 @@ describe('AppController (e2e)', () => {
         password: 'wrongpassword',
       };
       await request(app.getHttpServer())
-        .post('/user/signin')
+        .post('/auth/login')
         .send(signInDto)
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {
@@ -173,7 +173,7 @@ describe('AppController (e2e)', () => {
         password: 'wrongpassword',
       };
       await request(app.getHttpServer())
-        .post('/user/signin')
+        .post('/auth/login')
         .send(signInDto)
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {

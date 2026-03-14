@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 import { DeckStatisticsDto } from 'src/utils/types/dto/deck/deckStatistics.dto';
-import { ReviewQuality } from '@prisma/client';
+import { ReviewQuality, LanguageMode } from '@prisma/client';
 
 @Injectable()
 export class DeckService {
@@ -13,6 +13,9 @@ export class DeckService {
       data: {
         title: data.title,
         description: data.description,
+        iconName: data.iconName,
+        colorCode: data.colorCode,
+        languageMode: data.languageMode || 'VN_EN',
         userId: userId,
       },
     });
@@ -60,6 +63,9 @@ export class DeckService {
     data: {
       title?: string;
       description?: string;
+      iconName?: string;
+      colorCode?: string;
+      languageMode?: LanguageMode;
     },
   ) {
     return await this.prisma.deck.update({
@@ -185,11 +191,13 @@ export class DeckService {
     });
 
     // Return cards without the reviews array to keep response clean
+    // Parse examples JSON string to object for each card
     return sortedCards.map((card) => {
       const { reviews, ...cardData } = card;
       return {
         ...cardData,
         nextReviewDate: reviews[0]?.nextReviewDate || null,
+        examples: cardData.examples ? JSON.parse(cardData.examples) : null,
       };
     });
   }

@@ -120,10 +120,10 @@ describe('ReviewController (e2e)', () => {
     await app.close();
   });
 
-  describe('/deck/review/:id (GET)', () => {
+  describe('/study/start/:id (GET)', () => {
     it('should return all cards as due when no reviews exist', async () => {
       const res = await authRequest()
-        .get(`/deck/review/${testDeck.id}`)
+        .get(`/study/start/${testDeck.id}`)
         .expect(HttpStatus.OK);
 
       expect(res.body).toBeInstanceOf(Object);
@@ -135,7 +135,7 @@ describe('ReviewController (e2e)', () => {
     });
   });
 
-  describe('/deck/review (POST)', () => {
+  describe('/study/review (POST)', () => {
     it('should submit a review and update card schedule', async () => {
       const cardToReview = testCards[0];
       const nextReviewDate = new Date();
@@ -153,13 +153,13 @@ describe('ReviewController (e2e)', () => {
 
       // Submit Review
       await authRequest()
-        .post('/deck/review')
+        .post('/study/review')
         .send(reviewPayload)
         .expect(HttpStatus.CREATED);
 
       // Check Due Reviews - cardToReview should NOT be present (next review is tomorrow)
       const res = await authRequest()
-        .get(`/deck/review/${testDeck.id}`)
+        .get(`/study/start/${testDeck.id}`)
         .expect(HttpStatus.OK);
 
       expect(res.body).toBeInstanceOf(Object);

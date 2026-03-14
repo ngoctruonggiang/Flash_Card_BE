@@ -35,13 +35,22 @@ model User {
   @@index([username])
 }
 
+enum LanguageMode {
+  VN_EN
+  EN_VN
+  BIDIRECTIONAL
+}
+
 model Deck {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int          @id @default(autoincrement())
+  userId       Int
+  title        String
+  description  String?
+  iconName     String?
+  colorCode    String?
+  languageMode LanguageMode @default(VN_EN)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   // Relations
   user  User   @relation(fields: [userId], references: [id])
@@ -58,13 +67,16 @@ enum ReviewQuality {
 }
 
 model Card {
-  id        Int      @id @default(autoincrement())
-  deckId    Int
-  front     String
-  back      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tags      String?
+  id            Int      @id @default(autoincrement())
+  deckId        Int
+  front         String
+  back          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  tags          String?
+  wordType      String?
+  pronunciation String?
+  examples      String? // JSON string storing array of example objects
 
   // Relations
   deck    Deck         @relation(fields: [deckId], references: [id])
