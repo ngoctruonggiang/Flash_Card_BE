@@ -22,17 +22,26 @@ export class DeckService {
   }
 
   async findAll() {
-    return await this.prisma.deck.findMany({
+    const decks = await this.prisma.deck.findMany({
       include: {
         user: true,
         cards: true,
       },
     });
+
+    // Parse examples JSON for cards
+    return decks.map((deck) => ({
+      ...deck,
+      cards: deck.cards.map((card) => ({
+        ...card,
+        examples: card.examples ? JSON.parse(card.examples) : null,
+      })),
+    }));
   }
 
   async findOne(id: number) {
     try {
-      return await this.prisma.deck.findUnique({
+      const deck = await this.prisma.deck.findUnique({
         where: { id },
         include: {
           user: true,
@@ -43,6 +52,16 @@ export class DeckService {
           },
         },
       });
+
+      if (!deck) return null;
+
+      return {
+        ...deck,
+        cards: deck.cards.map((card) => ({
+          ...card,
+          examples: card.examples ? JSON.parse(card.examples) : null,
+        })),
+      };
     } catch (error) {
       console.error('Error finding deck:', error);
       throw error;
@@ -50,12 +69,21 @@ export class DeckService {
   }
 
   async findByUser(userId: number) {
-    return await this.prisma.deck.findMany({
+    const decks = await this.prisma.deck.findMany({
       where: { userId },
       include: {
         cards: true,
       },
     });
+
+    // Parse examples JSON for cards
+    return decks.map((deck) => ({
+      ...deck,
+      cards: deck.cards.map((card) => ({
+        ...card,
+        examples: card.examples ? JSON.parse(card.examples) : null,
+      })),
+    }));
   }
 
   async update(

@@ -49,15 +49,16 @@ export class CardService {
     // If deck is BIDIRECTIONAL, create reverse card automatically
     if (deck.languageMode === 'BIDIRECTIONAL') {
       // Create reverse card with swapped front and back
-      // Note: Rich fields (wordType, pronunciation, examples) are only on the primary card
-      // The reverse card has plain text only
+      // Now duplicate rich content fields on the reverse card as requested
       await this.prisma.card.create({
         data: {
           deckId: data.deckId,
           front: data.back, // Swap: English word becomes front
           back: data.front, // Vietnamese word becomes back
           tags: data.tags,
-          // Don't include rich fields on reverse card to avoid giving away the answer
+          wordType: data.wordType,
+          pronunciation: data.pronunciation,
+          examples: examplesJson,
         },
       });
     }

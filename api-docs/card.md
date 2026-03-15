@@ -95,25 +95,33 @@ If the deck has languageMode set to BIDIRECTIONAL, creating a card will automati
 }
 ```
 
-**Auto-Generated Reverse Card:**
+**Auto-Generated Reverse Card (now includes rich content):**
 
 ```json
 {
   "id": 2,
   "front": "hello",
   "back": "xin chào",
-  "wordType": null,
-  "pronunciation": null,
-  "examples": null
+  "wordType": "interjection",
+  "pronunciation": "həˈləʊ",
+  "examples": [
+    {
+      "sentence": "Hello, how are you?",
+      "translation": "Xin chào, bạn khỏe không?"
+    },
+    {
+      "sentence": "Hello everyone!",
+      "translation": "Xin chào mọi người!"
+    }
+  ]
 }
 ```
 
 **Notes:**
 
-- Rich content fields (wordType, pronunciation, examples) are only stored on the primary card
-- The reverse card contains only the swapped front/back text to avoid giving away the answer
+- Rich content fields (wordType, pronunciation, examples) are now duplicated on the reverse card for BIDIRECTIONAL decks
 - This automatic creation only happens when languageMode is BIDIRECTIONAL
-- Both cards will be created in a single API call
+- Both cards are created in a single API call
 
 ### **4.2 Get Cards**
 

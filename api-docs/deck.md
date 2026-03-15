@@ -46,7 +46,7 @@ Create a new deck with optional customization options.
     "title": "Basic Vietnamese",
     "description": "Essential Vietnamese phrases",
     "iconName": "flag-vietnam",
-    "colorCode": "\#DA251D",
+    "colorCode": "#DA251D",
     "languageMode": "BIDIRECTIONAL",
     "createdAt": "2025-11-24T15:00:00.000Z",
     "updatedAt": "2025-11-24T15:00:00.000Z"
@@ -57,7 +57,7 @@ Create a new deck with optional customization options.
 
 **Notes:**
 
-- When languageMode is set to BIDIRECTIONAL, creating a card will automatically generate a reverse card with swapped front/back content
+- When languageMode is set to BIDIRECTIONAL, creating a card will automatically generate a reverse card with swapped front/back content and duplicated rich content fields (wordType, pronunciation, examples)
 - The colorCode must match the pattern `/^\#(\[A-Fa-f0-9\]{6}|\[A-Fa-f0-9\]{3})$/`
 - All new fields are optional for backward compatibility
 
@@ -184,7 +184,7 @@ Update a deck's details including customization options.
     "title": "Advanced Vietnamese",
     "description": "Complex Vietnamese phrases",
     "iconName": "star",
-    "colorCode": "\#4CAF50",
+    "colorCode": "#4CAF50",
     "languageMode": "VN_EN",
     "createdAt": "2025-11-24T15:00:00.000Z",
     "updatedAt": "2025-11-24T15:05:00.000Z"
@@ -337,8 +337,8 @@ Retrieve all cards in a specific deck that are due for review today. This includ
           "translation": "Xin chào, bạn khỏe không?"
         },
         {
-          "sentence": "Hello everyone\!",
-          "translation": "Xin chào mọi người\!"
+          "sentence": "Hello everyone!",
+          "translation": "Xin chào mọi người!"
         }
       ],
       "tags": "greetings,basics",

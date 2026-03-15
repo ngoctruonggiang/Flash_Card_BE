@@ -157,9 +157,10 @@ describe('Bidirectional Card Creation (e2e)', () => {
       expect(reverseCard).toBeDefined();
       expect(reverseCard.front).toBe('hello'); // Swapped
       expect(reverseCard.back).toBe('xin chào'); // Swapped
-      expect(reverseCard.wordType).toBeNull(); // No rich content
-      expect(reverseCard.pronunciation).toBeNull();
-      expect(reverseCard.examples).toBeNull();
+      // Reverse card now duplicates rich content fields
+      expect(reverseCard.wordType).toBe('greeting');
+      expect(reverseCard.pronunciation).toBe('/həˈləʊ/');
+      expect(reverseCard.examples).toHaveLength(1);
     });
 
     it('should create two cards with simple content', async () => {
