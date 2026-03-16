@@ -74,12 +74,14 @@ Submit reviews for cards using the SM-2 spaced repetition algorithm.
     {
       "id": 1,
       "cardId": 1,
-      "repetitions": 1,
+      "repetitions": 0,
       "interval": 1,
       "eFactor": 2.5,
       "nextReviewDate": "2023-10-28T10:00:00.000Z",
       "reviewedAt": "2023-10-28T10:00:00.000Z",
-      "quality": "Good"
+      "quality": "Good",
+      "previousStatus": "learning",
+      "newStatus": "review"
     }
   ],
   "path": "/api/study/review"
@@ -88,16 +90,19 @@ Submit reviews for cards using the SM-2 spaced repetition algorithm.
 
 **Response Field Descriptions:**
 
-- repetitions: Number of consecutive correct reviews
-- interval: Days until next review
+- repetitions: (Deprecated) Number of consecutive correct reviews. Currently always 0.
+- interval: Days (or minutes) until next review
 - eFactor: Easiness factor (used in SM-2 algorithm)
 - nextReviewDate: When the card should be reviewed next
 - reviewedAt: When the review was recorded
 - quality: The quality rating given in the review
+- previousStatus: Status of the card before this review (new, learning, review, relearning)
+- newStatus: Status of the card after this review
 
 ### **5.3 Get Review Preview**
 
 Preview future review intervals for all quality options without submitting a review. This allows users to see what the next review date would be for each quality rating (Again, Hard, Good, Easy) before making their selection.
+v
 
 - **URL**: /study/preview/:id
 - **Method**: GET
@@ -140,39 +145,6 @@ Example for a card after 2 reviews (repetitions=2, interval=6, eFactor=2.5):
   "path": "/api/study/preview/1"
 }
 ```
-
-**Response Field Descriptions:**
-
-- Again: Interval if the card is marked as "Again" (forgotten/incorrect) \- always resets to 1 day
-- Hard: Interval if the card is marked as "Hard" (difficult to recall) \- uses fixed 1.2x growth (for repetitions \> 2\)
-- Good: Interval if the card is marked as "Good" (correctly recalled) \- uses standard SM-2 eFactor growth
-- Easy: Interval if the card is marked as "Easy" (very easy to recall) \- uses eFactor with 1.3x bonus multiplier
-
-**Interval Calculation:**
-
-For **first review** (repetitions \= 1):
-
-- **Hard:** 1 day
-- **Good:** 3 days
-- **Easy:** 5 days
-
-For **second review** (repetitions \= 2):
-
-- All qualities: 6 days
-
-For **third+ reviews** (repetitions \> 2):
-
-- **Hard:** round(previous_interval \* 1.2) \- Fixed 20% growth
-- **Good:** round(previous_interval \* eFactor) \- Standard SM-2 growth
-- **Easy:** round(previous_interval \* eFactor \* 1.3) \- Bonus 30% growth
-
-**Notes:**
-
-- This endpoint performs a read-only simulation and does not modify the card's review history
-- Intervals are calculated using the SM-2 algorithm based on the card's current state
-- **New cards** (never reviewed) show differentiated intervals: Hard=1, Good=3, Easy=5 days
-- Starting from the **first review**, intervals are differentiated by quality rating
-- Intervals are formatted as human-readable strings (e.g., "1 day", "15 days")
 
 ### **5.4 Get Consecutive Study Days**
 

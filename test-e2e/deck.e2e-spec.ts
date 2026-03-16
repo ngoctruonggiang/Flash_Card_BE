@@ -6,7 +6,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { UserService } from 'src/services/user/user.service';
-import { Deck } from '@prisma/client';
+import { Deck, CardStatus } from '@prisma/client';
 import { DeckService } from 'src/services/deck/deck.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
@@ -183,6 +183,8 @@ describe('AppController (e2e)', () => {
         nextReviewDate: new Date(),
         reviewedAt: new Date(),
         quality: 'Good',
+        previousStatus: CardStatus.new,
+        newStatus: CardStatus.learning,
       },
     });
 
@@ -195,6 +197,8 @@ describe('AppController (e2e)', () => {
         nextReviewDate: new Date(),
         reviewedAt: new Date(),
         quality: 'Easy',
+        previousStatus: CardStatus.learning,
+        newStatus: CardStatus.review,
       },
     });
 

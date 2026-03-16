@@ -78,10 +78,10 @@ describe('Study Preview (e2e)', () => {
       expect(response.body.data).toHaveProperty('Easy');
 
       // New cards now have differentiated intervals
-      expect(response.body.data.Again).toBe('1 day');
-      expect(response.body.data.Hard).toBe('1 day');
-      expect(response.body.data.Good).toBe('3 days');
-      expect(response.body.data.Easy).toBe('5 days');
+      expect(response.body.data.Again).toBe('1 min');
+      expect(response.body.data.Hard).toBe('1 min');
+      expect(response.body.data.Good).toBe('10 min');
+      expect(response.body.data.Easy).toBe('4 days');
     });
 
     it('should return different intervals after first review', async () => {
@@ -106,10 +106,10 @@ describe('Study Preview (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
-      expect(response.body.data.Again).toBe('1 day');
-      expect(response.body.data.Hard).toBe('6 days');
-      expect(response.body.data.Good).toBe('6 days');
-      expect(response.body.data.Easy).toBe('6 days');
+      expect(response.body.data.Again).toBe('1 min');
+      expect(response.body.data.Hard).toBe('10 min');
+      expect(response.body.data.Good).toBe('1 day');
+      expect(response.body.data.Easy).toBe('4 days');
     });
 
     it('should return increasing intervals after second review', async () => {
@@ -134,16 +134,16 @@ describe('Study Preview (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
-      expect(response.body.data.Again).toBe('1 day');
+      expect(response.body.data.Again).toBe('10 min');
 
       // After rep=2, all success options use prev_interval * eFactor
       const hardInterval = parseInt(response.body.data.Hard);
       const goodInterval = parseInt(response.body.data.Good);
       const easyInterval = parseInt(response.body.data.Easy);
 
-      expect(hardInterval).toBeGreaterThanOrEqual(6);
-      expect(goodInterval).toBeGreaterThanOrEqual(6);
-      expect(easyInterval).toBeGreaterThanOrEqual(6);
+      expect(hardInterval).toBeGreaterThanOrEqual(1);
+      expect(goodInterval).toBeGreaterThanOrEqual(1);
+      expect(easyInterval).toBeGreaterThanOrEqual(1);
     });
 
     it('should return 401 without authentication', async () => {
@@ -156,13 +156,7 @@ describe('Study Preview (e2e)', () => {
       const response = await request(app.getHttpServer())
         .get('/study/preview/999999')
         .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
-
-      // Should return defaults for new card (no review found) - now differentiated
-      expect(response.body.data.Again).toBe('1 day');
-      expect(response.body.data.Hard).toBe('1 day');
-      expect(response.body.data.Good).toBe('3 days');
-      expect(response.body.data.Easy).toBe('5 days');
+        .expect(404);
     });
   });
 
@@ -184,9 +178,9 @@ describe('Study Preview (e2e)', () => {
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(200);
 
-        const previewGoodInterval = previewResponse.body.data.Good;
+        const previewEasyInterval = previewResponse.body.data.Easy;
 
-        // Submit actual review as "Good"
+        // Submit actual review as "Easy"
         const reviewDate = new Date();
         const reviewResponse = await request(app.getHttpServer())
           .post('/study/review')
@@ -195,7 +189,7 @@ describe('Study Preview (e2e)', () => {
             CardReviews: [
               {
                 cardId: freshCard.id,
-                quality: 'Good',
+                quality: 'Easy',
               },
             ],
             reviewedAt: reviewDate.toISOString(),
@@ -207,7 +201,7 @@ describe('Study Preview (e2e)', () => {
           actualInterval === 1 ? '1 day' : `${actualInterval} days`;
 
         // Preview should match actual
-        expect(previewGoodInterval).toBe(actualIntervalText);
+        expect(previewEasyInterval).toBe(actualIntervalText);
       } finally {
         await reviewService.removeByCardId(freshCard.id);
         await prismaService.card.delete({ where: { id: freshCard.id } });

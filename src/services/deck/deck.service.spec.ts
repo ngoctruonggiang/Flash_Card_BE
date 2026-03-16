@@ -136,8 +136,8 @@ describe('Deck', () => {
     describe('findAll', () => {
       it('should return all decks', async () => {
         const mockDecks = [
-          { id: 1, name: 'Deck 1', userId: 1 },
-          { id: 2, name: 'Deck 2', userId: 1 },
+          { id: 1, name: 'Deck 1', userId: 1, cards: [] },
+          { id: 2, name: 'Deck 2', userId: 1, cards: [] },
         ];
 
         mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
@@ -157,8 +157,8 @@ describe('Deck', () => {
     describe('findByUser', () => {
       it('should return decks by userId', async () => {
         const mockDecks = [
-          { id: 1, name: 'Deck 1', userId: 1 },
-          { id: 2, name: 'Deck 2', userId: 1 },
+          { id: 1, name: 'Deck 1', userId: 1, cards: [] },
+          { id: 2, name: 'Deck 2', userId: 1, cards: [] },
         ];
         mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
 
@@ -176,7 +176,7 @@ describe('Deck', () => {
 
     describe('findOne', () => {
       it('should return a single deck by id', async () => {
-        const mockDeck = { id: 1, name: 'Deck 1', userId: 1 };
+        const mockDeck = { id: 1, name: 'Deck 1', userId: 1, cards: [] };
 
         mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
 

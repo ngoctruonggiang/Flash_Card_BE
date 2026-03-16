@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/services/prisma.service';
+import { CardStatus } from '@prisma/client';
 import { ReviewService } from '../src/services/review/review.service';
 import { createTestUser } from './create-test-user';
 
@@ -100,6 +101,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(today.getTime() + 24 * 60 * 60 * 1000),
           reviewedAt: today,
         },
@@ -136,6 +139,8 @@ describe('Study Consecutive Days (e2e)', () => {
             interval: 1,
             eFactor: 2.5,
             quality: 'Good',
+            previousStatus: CardStatus.new,
+            newStatus: CardStatus.learning,
             nextReviewDate: new Date(
               reviewDate.getTime() + 24 * 60 * 60 * 1000,
             ),
@@ -174,6 +179,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(
             lastStudyDate.getTime() + 24 * 60 * 60 * 1000,
           ),
@@ -214,6 +221,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(yesterday.getTime() + 24 * 60 * 60 * 1000),
           reviewedAt: yesterday,
         },
@@ -226,6 +235,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(twoDaysAgo.getTime() + 24 * 60 * 60 * 1000),
           reviewedAt: twoDaysAgo,
         },
@@ -259,6 +270,8 @@ describe('Study Consecutive Days (e2e)', () => {
             interval: 1,
             eFactor: 2.5,
             quality: 'Good',
+            previousStatus: CardStatus.new,
+            newStatus: CardStatus.learning,
             nextReviewDate: new Date(today.getTime() + 24 * 60 * 60 * 1000),
             reviewedAt: new Date(today.getTime() + i * 60 * 60 * 1000), // Different times same day
           },
@@ -318,6 +331,8 @@ describe('Study Consecutive Days (e2e)', () => {
             interval: i + 1,
             eFactor: 2.5,
             quality: 'Good',
+            previousStatus: CardStatus.new,
+            newStatus: CardStatus.learning,
             nextReviewDate: new Date(
               reviewDate.getTime() + 24 * 60 * 60 * 1000,
             ),
@@ -365,6 +380,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(today.getTime() + 24 * 60 * 60 * 1000),
           reviewedAt: today,
         },
@@ -377,6 +394,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(yesterday.getTime() + 24 * 60 * 60 * 1000),
           reviewedAt: yesterday,
         },
@@ -389,6 +408,8 @@ describe('Study Consecutive Days (e2e)', () => {
           interval: 1,
           eFactor: 2.5,
           quality: 'Good',
+          previousStatus: CardStatus.new,
+          newStatus: CardStatus.learning,
           nextReviewDate: new Date(fourDaysAgo.getTime() + 24 * 60 * 60 * 1000),
           reviewedAt: fourDaysAgo,
         },

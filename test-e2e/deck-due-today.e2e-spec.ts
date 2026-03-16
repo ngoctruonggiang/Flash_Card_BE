@@ -8,7 +8,7 @@ import { AppModule } from '../src/app.module';
 import { UserService } from 'src/services/user/user.service';
 import { CardService } from 'src/services/card/card.service';
 import { DeckService } from 'src/services/deck/deck.service';
-import { Deck } from '@prisma/client';
+import { Deck, LanguageMode } from '@prisma/client';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
@@ -72,7 +72,7 @@ describe('Deck Due Today Endpoint (e2e)', () => {
   beforeEach(async () => {
     testDeck = await deckService.create(testUser.id, {
       title: 'Due Today Test Deck',
-      languageMode: 'VN_EN',
+      languageMode: LanguageMode.VN_EN,
     });
   });
 
@@ -276,7 +276,7 @@ describe('Deck Due Today Endpoint (e2e)', () => {
         CardReviews: [
           {
             cardId: card.id,
-            quality: 'Good',
+            quality: 'Easy',
           },
         ],
         reviewedAt: new Date(),
