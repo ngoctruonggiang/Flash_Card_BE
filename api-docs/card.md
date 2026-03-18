@@ -329,12 +329,12 @@ Example for a **card that has been reviewed**:
 ```json
 {
   "statusCode": 200,
-  "timestamp": "2025-11-24T12:00:00.000Z",
+  "timestamp": "2025-11-25T12:37:00.701Z",
   "message": "Get Card Review Status",
   "data": {
     "cardId": 1,
-    "lastReviewedAt": "2025-11-23T10:30:00.000Z",
-    "nextReviewDate": "2025-11-25T10:30:00.000Z",
+    "lastReviewedAt": "2025-11-25T12:37:00.687Z",
+    "nextReviewDate": "2025-11-25T12:47:00.686Z",
     "hasBeenReviewed": true
   },
   "path": "/api/card/1/review-status"
@@ -346,7 +346,7 @@ Example for a **card that has never been reviewed**:
 ```json
 {
   "statusCode": 200,
-  "timestamp": "2025-11-24T12:00:00.000Z",
+  "timestamp": "2025-11-25T12:37:00.642Z",
   "message": "Get Card Review Status",
   "data": {
     "cardId": 1,

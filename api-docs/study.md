@@ -102,7 +102,6 @@ Submit reviews for cards using the SM-2 spaced repetition algorithm.
 ### **5.3 Get Review Preview**
 
 Preview future review intervals for all quality options without submitting a review. This allows users to see what the next review date would be for each quality rating (Again, Hard, Good, Easy) before making their selection.
-v
 
 - **URL**: /study/preview/:id
 - **Method**: GET
@@ -120,16 +119,16 @@ Example for a **new card** (never reviewed):
   "timestamp": "2025-11-24T10:30:00.000Z",
   "message": "Get Review Preview",
   "data": {
-    "Again": "1 day",
-    "Hard": "1 day",
-    "Good": "3 days",
-    "Easy": "5 days"
+    "Again": "1 min",
+    "Hard": "1 min",
+    "Good": "10 min",
+    "Easy": "4 days"
   },
   "path": "/api/study/preview/1"
 }
 ```
 
-Example for a card after 2 reviews (repetitions=2, interval=6, eFactor=2.5):
+Example for a **graduated card** (Review Mode):
 
 ```json
 {
@@ -137,10 +136,10 @@ Example for a card after 2 reviews (repetitions=2, interval=6, eFactor=2.5):
   "timestamp": "2025-11-24T10:30:00.000Z",
   "message": "Get Review Preview",
   "data": {
-    "Again": "1 day",
-    "Hard": "7 days",
-    "Good": "15 days",
-    "Easy": "20 days"
+    "Again": "10 min",
+    "Hard": "1 day",
+    "Good": "3 days",
+    "Easy": "4 days"
   },
   "path": "/api/study/preview/1"
 }
