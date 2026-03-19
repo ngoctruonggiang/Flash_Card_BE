@@ -228,3 +228,43 @@ Example for a **deck with no study history**:
 - The streak continues if you study either today or yesterday (1-day gap is allowed to account for timezone differences and late-night studying)
 - All dates are normalized to UTC for consistency
 - An empty deck (no cards) or a deck with cards but no reviews will return consecutiveDays: 0
+
+### **5.5 Start Cram Session (Practice Mode)**
+
+Get cards for practice without affecting their scheduling (Cram Mode). This allows users to review cards immediately, regardless of their due date.
+
+- **URL**: /study/cram/:deckId
+- **Method**: GET
+- **Auth Required**: Yes
+- **URL Parameters**:
+  - deckId: ID of the deck
+- **Query Parameters**:
+  - limit: (Optional) Number of cards to fetch (default: 50)
+
+**Success Response (200 OK):**
+
+```json
+{
+  "message": "Cram session started",
+  "data": [
+    {
+      "id": 1,
+      "deckId": 3,
+      "front": "What is 3+3?",
+      "back": "6",
+      "createdAt": "2025-11-23T13:44:29.060Z",
+      "updatedAt": "2025-11-23T13:44:29.091Z",
+      "tags": "math,basics",
+      "status": "review",
+      "nextReviewDate": "2025-12-01T10:00:00.000Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+**Notes:**
+
+- Cards are selected randomly from the deck.
+- Reviews submitted during a cram session should **NOT** be sent to the `/study/review` endpoint if you want to avoid updating the card's schedule.
+- This mode is purely for extra practice.

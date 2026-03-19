@@ -728,6 +728,38 @@
           "Study"
         ]
       }
+    },
+    "/api/study/cram/{deckId}": {
+      "get": {
+        "operationId": "StudyController_startCramSession",
+        "parameters": [
+          {
+            "name": "deckId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get cards for practice (Cram Mode) - Ignores schedule",
+        "tags": [
+          "Study"
+        ]
+      }
     }
   },
   "info": {
