@@ -174,19 +174,18 @@ export class DeckService {
   }
 
   async getCardsDueToday(deckId: number) {
-    const today = new Date();
-    today.setHours(23, 59, 59, 999); // End of today
+    const now = new Date();
 
     // Get all cards in the deck with their latest review
     const cards = await this.prisma.card.findMany({
       where: {
         deckId,
         OR: [
-          // Cards that have reviews due today or earlier
+          // Cards that have reviews due now or earlier
           {
             reviews: {
               some: {
-                nextReviewDate: { lte: today },
+                nextReviewDate: { lte: now },
               },
             },
           },
