@@ -13,63 +13,19 @@ import {
 } from '@nestjs/common';
 import express from 'express';
 import { UserService } from '../../services/user/user.service';
-import { AuthService } from 'src/services/auth/auth.service';
-import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
-import { SignInDto } from 'src/utils/types/dto/user/signIn.dto';
-import { JwtTokenReturn } from 'src/utils/types/JWTTypes';
+
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
 import { GetUser } from 'src/utils/decorators/user.decorator';
 import type { User } from '@prisma/client';
 import { IdParamDto } from 'src/utils/types/dto/IDParam.dto';
 import { UpdateUserDto } from 'src/utils/types/dto/user/updateUser.dto';
-import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
+
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) {}
-
-  // User Login and Registration
-
-  // These won't set cookies because i'm using Bearer tokens
-  // But that could be a big security risk
-
-  @Post('/signup')
-  @ApiOperation({ summary: 'User registration' })
-  @ApiResponse({
-    status: 201,
-    description: 'User registered successfully',
-    type: AuthResponseDto,
-  })
-  async signUp(
-    @Body()
-    createUserDto: SignUpDto,
-  ): Promise<AuthResponseDto> {
-    const user = await this.authService.signUp(createUserDto);
-    return user;
-  }
-
-  // TODO: Add refresh, logout, etc.
-
-  @Post('/signin')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'User login' })
-  @ApiResponse({
-    status: 200,
-    description: 'User logged in successfully',
-    type: AuthResponseDto,
-  })
-  async signIn(
-    @Body()
-    signInDto: SignInDto,
-  ): Promise<AuthResponseDto> {
-    const user = await this.authService.signIn(signInDto);
-    return user;
-  }
+  constructor(private readonly userService: UserService) {}
 
   // User Update and Delete
   // To update or delete own user account,

@@ -1,0 +1,320 @@
+{
+  "register": {
+    "status_code": 201,
+    "body": {
+      "statusCode": 201,
+      "timestamp": "2025-11-23T13:44:28.850Z",
+      "message": "",
+      "data": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hbWUiOiJ0ZXN0dXNlcjc4OSIsImlhdCI6MTc2MzkwNTQ2OCwiZXhwIjoxNzYzOTI3MDY4fQ.2IVDWBmUDvm6li6ueyVCRl6xhMnJh343vrGDs0cmgSo",
+        "id": 7,
+        "username": "testuser789",
+        "email": "testuser789@example.com",
+        "role": "USER",
+        "createdAt": "2025-11-23T13:44:28.843Z",
+        "lastLoginAt": "2025-11-23T13:44:28.841Z"
+      },
+      "path": "/api/auth/register"
+    }
+  },
+  "login": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:28.917Z",
+      "message": "",
+      "data": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hbWUiOiJ0ZXN0dXNlcjc4OSIsImlhdCI6MTc2MzkwNTQ2OCwiZXhwIjoxNzYzOTI3MDY4fQ.2IVDWBmUDvm6li6ueyVCRl6xhMnJh343vrGDs0cmgSo",
+        "id": 7,
+        "username": "testuser789",
+        "email": "testuser789@example.com",
+        "role": "USER",
+        "createdAt": "2025-11-23T13:44:28.843Z",
+        "lastLoginAt": "2025-11-23T13:44:28.841Z"
+      },
+      "path": "/api/auth/login"
+    }
+  },
+  "getCurrentUser": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:28.928Z",
+      "message": "Get Current User",
+      "data": {
+        "username": "testuser789",
+        "email": "testuser789@example.com",
+        "role": "USER",
+        "createdAt": "2025-11-23T13:44:28.843Z",
+        "lastLoginAt": "2025-11-23T13:44:28.841Z"
+      },
+      "path": "/api/user"
+    }
+  },
+  "updateCurrentUser": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:28.966Z",
+      "message": "Update User",
+      "data": {
+        "id": 7,
+        "username": "updateduser789",
+        "email": "testuser789@example.com",
+        "role": "USER",
+        "passwordHash": "$2b$10$GGa/AfDJL6EnWiUelTNzi.TBIWHO3uGEbyYXQgfRaKxOwqDfAZyCy",
+        "createdAt": "2025-11-23T13:44:28.843Z",
+        "lastLoginAt": "2025-11-23T13:44:28.841Z",
+        "isEmailConfirmed": false
+      },
+      "path": "/api/user"
+    }
+  },
+  "createDeck": {
+    "status_code": 201,
+    "body": {
+      "statusCode": 201,
+      "timestamp": "2025-11-23T13:44:29.004Z",
+      "message": "Create Deck",
+      "data": {
+        "id": 3,
+        "userId": 7,
+        "title": "Basic Math",
+        "description": "Simple arithmetic flashcards",
+        "createdAt": "2025-11-23T13:44:28.992Z",
+        "updatedAt": "2025-11-23T13:44:28.992Z"
+      },
+      "path": "/api/deck"
+    }
+  },
+  "getAllDecks": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.016Z",
+      "message": "Get All Decks By User",
+      "data": [
+        {
+          "id": 3,
+          "userId": 7,
+          "title": "Basic Math",
+          "description": "Simple arithmetic flashcards",
+          "createdAt": "2025-11-23T13:44:28.992Z",
+          "updatedAt": "2025-11-23T13:44:28.992Z",
+          "cards": []
+        }
+      ],
+      "path": "/api/deck"
+    }
+  },
+  "getDeckById": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.038Z",
+      "message": "Get Deck By ID",
+      "data": {
+        "id": 3,
+        "userId": 7,
+        "title": "Basic Math",
+        "description": "Simple arithmetic flashcards",
+        "createdAt": "2025-11-23T13:44:28.992Z",
+        "updatedAt": "2025-11-23T13:44:28.992Z",
+        "user": {
+          "id": 7,
+          "username": "updateduser789",
+          "email": "testuser789@example.com",
+          "role": "USER",
+          "passwordHash": "$2b$10$GGa/AfDJL6EnWiUelTNzi.TBIWHO3uGEbyYXQgfRaKxOwqDfAZyCy",
+          "createdAt": "2025-11-23T13:44:28.843Z",
+          "lastLoginAt": "2025-11-23T13:44:28.841Z",
+          "isEmailConfirmed": false
+        },
+        "cards": []
+      },
+      "path": "/api/deck/3"
+    }
+  },
+  "updateDeck": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.050Z",
+      "message": "Update Deck By ID",
+      "data": {
+        "id": 3,
+        "userId": 7,
+        "title": "Advanced Math",
+        "description": "Complex arithmetic flashcards",
+        "createdAt": "2025-11-23T13:44:28.992Z",
+        "updatedAt": "2025-11-23T13:44:29.047Z"
+      },
+      "path": "/api/deck/3"
+    }
+  },
+  "createCard": {
+    "status_code": 201,
+    "body": {
+      "statusCode": 201,
+      "timestamp": "2025-11-23T13:44:29.062Z",
+      "message": "Create Card",
+      "data": {
+        "id": 1,
+        "deckId": 3,
+        "front": "What is 2+2?",
+        "back": "4",
+        "createdAt": "2025-11-23T13:44:29.060Z",
+        "updatedAt": "2025-11-23T13:44:29.060Z",
+        "tags": "math,basics"
+      },
+      "path": "/api/card"
+    }
+  },
+  "getCardsByDeck": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.073Z",
+      "message": "Get All Cards",
+      "data": [
+        {
+          "id": 1,
+          "deckId": 3,
+          "front": "What is 2+2?",
+          "back": "4",
+          "createdAt": "2025-11-23T13:44:29.060Z",
+          "updatedAt": "2025-11-23T13:44:29.060Z",
+          "tags": "math,basics",
+          "reviews": []
+        }
+      ],
+      "path": "/api/card?deckId=3"
+    }
+  },
+  "getCardById": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.081Z",
+      "message": "Get All Cards",
+      "data": {
+        "id": 1,
+        "deckId": 3,
+        "front": "What is 2+2?",
+        "back": "4",
+        "createdAt": "2025-11-23T13:44:29.060Z",
+        "updatedAt": "2025-11-23T13:44:29.060Z",
+        "tags": "math,basics",
+        "deck": {
+          "id": 3,
+          "userId": 7,
+          "title": "Advanced Math",
+          "description": "Complex arithmetic flashcards",
+          "createdAt": "2025-11-23T13:44:28.992Z",
+          "updatedAt": "2025-11-23T13:44:29.047Z",
+          "user": {
+            "id": 7,
+            "username": "updateduser789",
+            "email": "testuser789@example.com",
+            "role": "USER",
+            "passwordHash": "$2b$10$GGa/AfDJL6EnWiUelTNzi.TBIWHO3uGEbyYXQgfRaKxOwqDfAZyCy",
+            "createdAt": "2025-11-23T13:44:28.843Z",
+            "lastLoginAt": "2025-11-23T13:44:28.841Z",
+            "isEmailConfirmed": false
+          }
+        },
+        "reviews": []
+      },
+      "path": "/api/card/1"
+    }
+  },
+  "updateCard": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.094Z",
+      "message": "Get All Cards",
+      "data": {
+        "id": 1,
+        "deckId": 3,
+        "front": "What is 3+3?",
+        "back": "6",
+        "createdAt": "2025-11-23T13:44:29.060Z",
+        "updatedAt": "2025-11-23T13:44:29.091Z",
+        "tags": "math,basics"
+      },
+      "path": "/api/card/1"
+    }
+  },
+  "startStudySession": {
+    "status_code": 200,
+    "body": {
+      "statusCode": 200,
+      "timestamp": "2025-11-23T13:44:29.106Z",
+      "message": "Start Study Session",
+      "data": [
+        {
+          "id": 1,
+          "deckId": 3,
+          "front": "What is 3+3?",
+          "back": "6",
+          "createdAt": "2025-11-23T13:44:29.060Z",
+          "updatedAt": "2025-11-23T13:44:29.091Z",
+          "tags": "math,basics"
+        }
+      ],
+      "path": "/api/study/start/3"
+    }
+  },
+  "submitCardReview": {
+    "status_code": 201,
+    "body": {
+      "statusCode": 201,
+      "timestamp": "2025-11-23T13:44:29.122Z",
+      "message": "Submitting card review",
+      "data": [
+        {
+          "id": 1,
+          "cardId": 1,
+          "repetitions": 1,
+          "interval": 1,
+          "eFactor": 2.5,
+          "nextReviewDate": "2023-10-28T10:00:00.000Z",
+          "reviewedAt": "2023-10-28T10:00:00.000Z",
+          "quality": "Good"
+        }
+      ],
+      "path": "/api/study/review"
+    }
+  },
+  "deleteCard": {
+    "status_code": 500,
+    "body": {
+      "statusCode": 500,
+      "message": "Internal server error",
+      "data": null,
+      "timestamp": "2025-11-23T13:44:29.165Z",
+      "path": "/api/card/1"
+    }
+  },
+  "deleteDeck": {
+    "status_code": 500,
+    "body": {
+      "statusCode": 500,
+      "message": "Internal server error",
+      "data": null,
+      "timestamp": "2025-11-23T13:44:29.176Z",
+      "path": "/api/deck/3"
+    }
+  },
+  "deleteCurrentUser": {
+    "status_code": 500,
+    "body": {
+      "statusCode": 500,
+      "message": "Internal server error",
+      "data": null,
+      "timestamp": "2025-11-23T13:44:29.189Z",
+      "path": "/api/user"
+    }
+  }
+}

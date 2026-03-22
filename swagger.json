@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/": {
+    "/api": {
       "get": {
         "operationId": "AppController_getHello",
         "parameters": [],
@@ -16,71 +16,7 @@
         ]
       }
     },
-    "/user/signup": {
-      "post": {
-        "operationId": "UserController_signUp",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignUpDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User registered successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "summary": "User registration",
-        "tags": [
-          "User"
-        ]
-      }
-    },
-    "/user/signin": {
-      "post": {
-        "operationId": "UserController_signIn",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignInDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User logged in successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "summary": "User login",
-        "tags": [
-          "User"
-        ]
-      }
-    },
-    "/user": {
+    "/api/user": {
       "get": {
         "operationId": "UserController_getCurrentUser",
         "parameters": [],
@@ -131,7 +67,7 @@
         ]
       }
     },
-    "/user/{id}": {
+    "/api/user/{id}": {
       "get": {
         "operationId": "UserController_getUserById",
         "parameters": [
@@ -209,7 +145,7 @@
         ]
       }
     },
-    "/user/all": {
+    "/api/user/all": {
       "get": {
         "operationId": "UserController_getAllUser",
         "parameters": [],
@@ -224,56 +160,7 @@
         ]
       }
     },
-    "/deck/review": {
-      "post": {
-        "operationId": "DeckController_submitReview",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubmitReviewDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Review submitted successfully"
-          }
-        },
-        "summary": "Submit card review",
-        "tags": [
-          "Deck"
-        ]
-      }
-    },
-    "/deck/review/{id}": {
-      "get": {
-        "operationId": "DeckController_getDueReviews",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Return due reviews"
-          }
-        },
-        "summary": "Get due reviews for a deck",
-        "tags": [
-          "Deck"
-        ]
-      }
-    },
-    "/deck": {
+    "/api/deck": {
       "post": {
         "operationId": "DeckController_create",
         "parameters": [],
@@ -311,7 +198,7 @@
         ]
       }
     },
-    "/deck/by": {
+    "/api/deck/by": {
       "get": {
         "operationId": "DeckController_findAllByUser",
         "parameters": [
@@ -335,7 +222,7 @@
         ]
       }
     },
-    "/deck/{id}": {
+    "/api/deck/{id}": {
       "get": {
         "operationId": "DeckController_findOne",
         "parameters": [
@@ -413,7 +300,7 @@
         ]
       }
     },
-    "/card": {
+    "/api/card": {
       "post": {
         "operationId": "CardController_create",
         "parameters": [],
@@ -460,7 +347,7 @@
         ]
       }
     },
-    "/card/{id}": {
+    "/api/card/{id}": {
       "get": {
         "operationId": "CardController_findOne",
         "parameters": [
@@ -537,6 +424,119 @@
           "Card"
         ]
       }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "User registration",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/study/start/{id}": {
+      "get": {
+        "operationId": "StudyController_getDueReviews",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return due reviews"
+          }
+        },
+        "summary": "Get due reviews for a deck",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
+    "/api/study/review": {
+      "post": {
+        "operationId": "StudyController_submitReview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review submitted successfully"
+          }
+        },
+        "summary": "Submit card review",
+        "tags": [
+          "Study"
+        ]
+      }
     }
   },
   "info": {
@@ -554,6 +554,89 @@
   "servers": [],
   "components": {
     "schemas": {
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ]
+          }
+        }
+      },
+      "CreateDeckDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "UpdateDeckDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateCardDto": {
+        "type": "object",
+        "properties": {
+          "deckId": {
+            "type": "number"
+          },
+          "front": {
+            "type": "string"
+          },
+          "back": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "deckId",
+          "front",
+          "back",
+          "tags"
+        ]
+      },
+      "UpdateCardDto": {
+        "type": "object",
+        "properties": {
+          "front": {
+            "type": "string"
+          },
+          "back": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          }
+        }
+      },
       "SignUpDto": {
         "type": "object",
         "properties": {
@@ -629,33 +712,9 @@
           "password"
         ]
       },
-      "UpdateUserDto": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "USER",
-              "ADMIN"
-            ]
-          }
-        }
-      },
       "SubmitReviewItemDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "number"
-          },
           "cardId": {
             "type": "number"
           },
@@ -667,33 +726,11 @@
               "Good",
               "Easy"
             ]
-          },
-          "repetitions": {
-            "type": "number"
-          },
-          "interval": {
-            "type": "number"
-          },
-          "eFactor": {
-            "type": "number"
-          },
-          "nextReviewDate": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "reviewedAt": {
-            "format": "date-time",
-            "type": "string"
           }
         },
         "required": [
           "cardId",
-          "quality",
-          "repetitions",
-          "interval",
-          "eFactor",
-          "nextReviewDate",
-          "reviewedAt"
+          "quality"
         ]
       },
       "SubmitReviewDto": {
@@ -704,73 +741,16 @@
             "items": {
               "$ref": "#/components/schemas/SubmitReviewItemDto"
             }
-          }
-        },
-        "required": [
-          "CardReviews"
-        ]
-      },
-      "CreateDeckDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
           },
-          "description": {
+          "reviewedAt": {
+            "format": "date-time",
             "type": "string"
           }
         },
         "required": [
-          "title"
+          "CardReviews",
+          "reviewedAt"
         ]
-      },
-      "UpdateDeckDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        }
-      },
-      "CreateCardDto": {
-        "type": "object",
-        "properties": {
-          "deckId": {
-            "type": "number"
-          },
-          "front": {
-            "type": "string"
-          },
-          "back": {
-            "type": "string"
-          },
-          "tags": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "deckId",
-          "front",
-          "back",
-          "tags"
-        ]
-      },
-      "UpdateCardDto": {
-        "type": "object",
-        "properties": {
-          "front": {
-            "type": "string"
-          },
-          "back": {
-            "type": "string"
-          },
-          "tags": {
-            "type": "string"
-          }
-        }
       }
     }
   }
