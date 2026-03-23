@@ -513,6 +513,37 @@
         ]
       }
     },
+    "/api/study/preview/{id}": {
+      "get": {
+        "operationId": "StudyController_getReviewPreview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns preview intervals for Again, Hard, Good, and Easy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewPreviewDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get preview of intervals for all quality options",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
     "/api/study/review": {
       "post": {
         "operationId": "StudyController_submitReview",
@@ -710,6 +741,37 @@
         "required": [
           "email",
           "password"
+        ]
+      },
+      "ReviewPreviewDto": {
+        "type": "object",
+        "properties": {
+          "Again": {
+            "type": "string",
+            "example": "1 day",
+            "description": "Interval if reviewed as Again"
+          },
+          "Hard": {
+            "type": "string",
+            "example": "6 days",
+            "description": "Interval if reviewed as Hard"
+          },
+          "Good": {
+            "type": "string",
+            "example": "10 days",
+            "description": "Interval if reviewed as Good"
+          },
+          "Easy": {
+            "type": "string",
+            "example": "14 days",
+            "description": "Interval if reviewed as Easy"
+          }
+        },
+        "required": [
+          "Again",
+          "Hard",
+          "Good",
+          "Easy"
         ]
       },
       "SubmitReviewItemDto": {
