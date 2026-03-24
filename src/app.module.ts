@@ -1,4 +1,9 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -14,6 +19,7 @@ import { AuthModule } from './modules/auth.module';
 import { StudyModule } from './modules/study.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReviewService } from './services/review/review.service';
+import { RequestLoggerMiddleware } from './middleware/interceptor/requestLog.interceptor';
 
 @Module({
   imports: [
@@ -48,4 +54,8 @@ import { ReviewService } from './services/review/review.service';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}
