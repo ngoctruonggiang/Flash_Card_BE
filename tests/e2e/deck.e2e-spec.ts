@@ -246,4 +246,51 @@ describe('AppController (e2e)', () => {
     });
     expect(reviewsAfter).toHaveLength(0);
   });
+
+  it('/deck (GET) Get all decks for current user', async () => {
+    const res = await authRequest().get('/deck').expect(200);
+    expect(res.body.data).toBeInstanceOf(Array);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    const deckIds = res.body.data.map((d: Deck) => d.id);
+    expect(deckIds).toContain(testDeck?.id);
+  });
+
+  it('/deck/:id/reviewed-count-day (GET)', async () => {
+    const res = await authRequest()
+      .get(`/deck/${testDeck?.id}/reviewed-count-day`)
+      .expect(200);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data).toHaveProperty('reviewedCount');
+    expect(typeof res.body.data.reviewedCount).toBe('number');
+  });
+
+  it('/deck/:id/statistics (GET)', async () => {
+    const res = await authRequest()
+      .get(`/deck/${testDeck?.id}/statistics`)
+      .expect(200);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data).toHaveProperty('totalReviews');
+    expect(res.body.data).toHaveProperty('correctReviews');
+    expect(res.body.data).toHaveProperty('correctPercentage');
+    expect(res.body.data).toHaveProperty('againCount');
+    expect(res.body.data).toHaveProperty('hardCount');
+    expect(res.body.data).toHaveProperty('goodCount');
+    expect(res.body.data).toHaveProperty('easyCount');
+  });
+
+  it('/deck/:id/last-studied (GET)', async () => {
+    const res = await authRequest()
+      .get(`/deck/${testDeck?.id}/last-studied`)
+      .expect(200);
+    expect(res.body.data).toBeDefined();
+    // It might be null if never studied, or a date string
+  });
+
+  it('/deck/:id/due-today (GET)', async () => {
+    const res = await authRequest()
+      .get(`/deck/${testDeck?.id}/due-today`)
+      .expect(200);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data).toBeInstanceOf(Array);
+  });
 });

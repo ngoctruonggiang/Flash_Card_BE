@@ -143,6 +143,36 @@ describe('AuthService', () => {
       );
       expect(userService.findByUsername).toHaveBeenCalledWith('existinguser');
     });
+
+    it('should fail with invalid email', async () => {
+      await expect(
+        provider.signUp({
+          username: 'validUser',
+          email: 'invalid-email',
+          password: 'Password123',
+        }),
+      ).rejects.toThrow('Invalid email format');
+    });
+
+    it('should fail with invalid username', async () => {
+      await expect(
+        provider.signUp({
+          username: 'ab', // too short
+          email: 'test@example.com',
+          password: 'Password123',
+        }),
+      ).rejects.toThrow('Invalid username format');
+    });
+
+    it('should fail with weak password', async () => {
+      await expect(
+        provider.signUp({
+          username: 'validUser',
+          email: 'test@example.com',
+          password: 'weak',
+        }),
+      ).rejects.toThrow('Password must be at least 8 characters long');
+    });
   });
 
   describe('signIn', () => {

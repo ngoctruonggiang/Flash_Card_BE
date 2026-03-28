@@ -181,4 +181,25 @@ describe('AppController (e2e)', () => {
 
     testCards = testCards.filter((card) => card.id !== testCards[0].id);
   });
+
+  it('/card/:id (GET) Get card by id', async () => {
+    const res = await authRequest()
+      .get(`/card/${testCards[0].id}`)
+      .expect(HttpStatus.OK);
+
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.id).toBe(testCards[0].id);
+    expect(res.body.data.front).toBe(testCards[0].front);
+    expect(res.body.data.back).toBe(testCards[0].back);
+  });
+
+  it('/card/:id/review-status (GET) Get card review status', async () => {
+    const res = await authRequest()
+      .get(`/card/${testCards[0].id}/review-status`)
+      .expect(HttpStatus.OK);
+
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data).toHaveProperty('nextReviewDate');
+    expect(res.body.data).toHaveProperty('lastReviewedAt');
+  });
 });

@@ -267,4 +267,148 @@ describe('AppController (e2e)', () => {
       expect(res.body.data.role).toBe('ADMIN');
     });
   });
+  describe('/user (DELETE)', () => {
+    it('should delete current user', async () => {
+      // Create a temp user
+      const tempUserDto: SignUpDto = {
+        username: 'tempDeleteUser',
+        email: 'tempDeleteUser@example.com',
+        password: 'password123',
+        confirmPassword: 'password123',
+      };
+
+      // We need a way to get the moduleFixture to call createTestUser
+      // But moduleFixture is local to beforeAll.
+      // We can just use the app to register normally.
+
+      const registerRes = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(tempUserDto)
+        .expect(HttpStatus.CREATED);
+
+      const tempToken = registerRes.body.data.accessToken;
+      const tempUserId = registerRes.body.data.id;
+
+      // Delete the user
+      await request(app.getHttpServer())
+        .delete('/user')
+        .set('Authorization', `Bearer ${tempToken}`)
+        .expect(HttpStatus.OK);
+
+      // Verify user is gone
+      const user = await userService.getUserById(tempUserId);
+      expect(user).toBeNull();
+    });
+  });
+
+  describe('Admin Actions', () => {
+    let adminUser: AuthResponseDto;
+    let targetUser: AuthResponseDto;
+
+    beforeAll(async () => {
+      // Create Admin User
+      const adminDto: SignUpDto = {
+        username: 'adminTestUser',
+        email: 'adminTestUser@example.com',
+        password: 'password123',
+        confirmPassword: 'password123',
+      };
+
+      const adminRes = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(adminDto)
+        .expect(HttpStatus.CREATED);
+
+      adminUser = adminRes.body.data;
+
+      // Promote to ADMIN
+      await request(app.getHttpServer())
+        .patch('/user')
+        .set('Authorization', `Bearer ${adminUser.accessToken}`)
+        .send({ role: 'ADMIN' })
+        .expect(HttpStatus.OK);
+
+      // Create Target User for Admin operations
+      const targetDto: SignUpDto = {
+        username: 'targetUser',
+        email: 'targetUser@example.com',
+        password: 'password123',
+        confirmPassword: 'password123',
+      };
+
+      const targetRes = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(targetDto)
+        .expect(HttpStatus.CREATED);
+
+      targetUser = targetRes.body.data;
+    });
+
+    afterAll(async () => {
+      if (adminUser) {
+        try {
+          await userService.remove(adminUser.id);
+        } catch (e) {}
+      }
+      if (targetUser) {
+        try {
+          await userService.remove(targetUser.id);
+        } catch (e) {}
+      }
+    });
+
+    it('/user/:id (GET) Admin get user by id', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/user/${targetUser.id}`)
+        .set('Authorization', `Bearer ${adminUser.accessToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.id).toBe(targetUser.id);
+      expect(res.body.data.username).toBe(targetUser.username);
+    });
+
+    it('/user/all (GET) Admin get all users', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/user/all')
+        .set('Authorization', `Bearer ${adminUser.accessToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(res.body.data).toBeInstanceOf(Array);
+      expect(res.body.data.length).toBeGreaterThan(0);
+      const ids = res.body.data.map((u: any) => u.id);
+      expect(ids).toContain(targetUser.id);
+      expect(ids).toContain(adminUser.id);
+    });
+
+    it('/user/:id (PATCH) Admin update user', async () => {
+      const res = await request(app.getHttpServer())
+        .patch(`/user/${targetUser.id}`)
+        .set('Authorization', `Bearer ${adminUser.accessToken}`)
+        .send({ username: 'updatedByAdmin' })
+        .expect(HttpStatus.OK);
+
+      expect(res.body.data.username).toBe('updatedByAdmin');
+
+      // Verify update
+      const updatedUser = await userService.getUserById(targetUser.id);
+      expect(updatedUser?.username).toBe('updatedByAdmin');
+    });
+
+    it('/user/:id (DELETE) Admin delete user', async () => {
+      await request(app.getHttpServer())
+        .delete(`/user/${targetUser.id}`)
+        .set('Authorization', `Bearer ${adminUser.accessToken}`)
+        .expect(HttpStatus.OK);
+
+      // Verify deletion
+      const deletedUser = await userService.getUserById(targetUser.id);
+      expect(deletedUser).toBeNull();
+
+      // Set targetUser to null so afterAll doesn't try to delete it again
+      // (although userService.remove handles it gracefully usually, but good practice)
+      // Actually we can't set targetUser to null easily here as it's let variable in describe scope
+      // but we can just ignore it.
+    });
+  });
 });

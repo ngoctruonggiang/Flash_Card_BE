@@ -71,17 +71,6 @@ export class UserController {
   //#endregion
 
   //#region Admin Actions
-  @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID (Admin)' })
-  @RouteConfig({
-    requiresAuth: true,
-    roles: ['ADMIN'],
-    message: 'Get User By Id',
-  })
-  getUserById(@Param() params: IdParamDto) {
-    return this.userService.getUserById(params.id);
-  }
-
   @Get('/all')
   @ApiOperation({ summary: 'Get all users (Admin)' })
   @RouteConfig({
@@ -91,6 +80,17 @@ export class UserController {
   })
   getAllUser() {
     return this.userService.getAllUsers();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID (Admin)' })
+  @RouteConfig({
+    requiresAuth: true,
+    roles: ['ADMIN'],
+    message: 'Get User By Id',
+  })
+  getUserById(@Param() params: IdParamDto) {
+    return this.userService.getUserById(params.id);
   }
 
   @Patch(':id')

@@ -497,4 +497,106 @@ describe('Card', () => {
       });
     });
   });
+
+  describe('create (advanced)', () => {
+    it('should create bidirectional cards', async () => {
+      const createCardDto = {
+        deckId: 1,
+        front: 'Hello',
+        back: 'Xin chao',
+      };
+
+      const mockDeck = {
+        id: 1,
+        languageMode: 'BIDIRECTIONAL',
+      };
+
+      const mockCard = {
+        id: 1,
+        ...createCardDto,
+        examples: null,
+      };
+
+      mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
+      mockPrismaService.card.create.mockResolvedValue(mockCard);
+
+      const result = await provider.create(createCardDto);
+
+      expect(result).toEqual(expect.objectContaining(createCardDto));
+      expect(prismaService.card.create).toHaveBeenCalledTimes(2);
+      // First call: primary card
+      expect(prismaService.card.create).toHaveBeenNthCalledWith(1, {
+        data: expect.objectContaining({
+          front: 'Hello',
+          back: 'Xin chao',
+        }),
+      });
+      // Second call: reverse card
+      expect(prismaService.card.create).toHaveBeenNthCalledWith(2, {
+        data: expect.objectContaining({
+          front: 'Xin chao',
+          back: 'Hello',
+        }),
+      });
+    });
+
+    it('should handle examples JSON', async () => {
+      const createCardDto = {
+        deckId: 1,
+        front: 'Word',
+        back: 'Meaning',
+        examples: [{ sentence: 'Ex 1', translation: 'Trans 1' }],
+      };
+
+      const mockDeck = { id: 1, languageMode: 'VN_EN' };
+      const mockCard = {
+        id: 1,
+        ...createCardDto,
+        examples: JSON.stringify(createCardDto.examples),
+      };
+
+      mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
+      mockPrismaService.card.create.mockResolvedValue(mockCard);
+
+      const result = await provider.create(createCardDto);
+
+      expect(result.examples).toEqual(createCardDto.examples);
+      expect(prismaService.card.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          examples: JSON.stringify(createCardDto.examples),
+        }),
+      });
+    });
+  });
+
+  describe('getReviewStatus', () => {
+    it('should return review status', async () => {
+      const mockCard = {
+        id: 1,
+        reviews: [
+          {
+            reviewedAt: new Date('2025-11-28'),
+            nextReviewDate: new Date('2025-11-29'),
+          },
+        ],
+      };
+      mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
+
+      const result = await provider.getReviewStatus(1);
+
+      expect(result).toEqual({
+        cardId: 1,
+        lastReviewedAt: mockCard.reviews[0].reviewedAt,
+        nextReviewDate: mockCard.reviews[0].nextReviewDate,
+        hasBeenReviewed: true,
+      });
+    });
+
+    it('should throw error if card not found', async () => {
+      mockPrismaService.card.findUnique.mockResolvedValue(null);
+      await expect(provider.getReviewStatus(999)).rejects.toThrow(
+        'Card not found',
+      );
+    });
+  });
 });

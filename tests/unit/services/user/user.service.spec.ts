@@ -426,4 +426,39 @@ describe('User', () => {
       });
     });
   });
+
+  describe('markEmailAsConfirmed', () => {
+    it('should mark email as confirmed', async () => {
+      const mockUser = {
+        id: 1,
+        isEmailConfirmed: true,
+      };
+      mockPrismaService.user.update.mockResolvedValue(mockUser);
+
+      const result = await provider.markEmailAsConfirmed(1);
+
+      expect(result).toEqual(mockUser);
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { isEmailConfirmed: true },
+      });
+    });
+  });
+
+  describe('removeByUsername', () => {
+    it('should remove user by username', async () => {
+      const mockUser = {
+        id: 1,
+        username: 'testuser',
+      };
+      mockPrismaService.user.delete.mockResolvedValue(mockUser);
+
+      const result = await provider.removeByUsername('testuser');
+
+      expect(result).toEqual(mockUser);
+      expect(prismaService.user.delete).toHaveBeenCalledWith({
+        where: { username: 'testuser' },
+      });
+    });
+  });
 });

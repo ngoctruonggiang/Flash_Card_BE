@@ -169,4 +169,19 @@ describe('ReviewController (e2e)', () => {
       expect(returnedIds).not.toContain(cardToReview.id);
     });
   });
+
+  describe('/study/cram/:deckId (GET)', () => {
+    it('should start a cram session and return cards', async () => {
+      const res = await authRequest()
+        .get(`/study/cram/${testDeck.id}?limit=10`)
+        .expect(HttpStatus.OK);
+
+      expect(res.body).toBeDefined();
+      expect(res.body.message).toBe('Start Cram Session');
+      expect(res.body.data.data).toBeInstanceOf(Array);
+      // We created 3 cards, so we expect 3 cards in cram session
+      expect(res.body.data.data.length).toBe(3);
+      expect(res.body.data.total).toBe(3);
+    });
+  });
 });
