@@ -760,6 +760,31 @@
           "Study"
         ]
       }
+    },
+    "/api/study/cram/review": {
+      "post": {
+        "operationId": "StudyController_submitCramReview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cram review submitted successfully"
+          }
+        },
+        "summary": "Submit cram session review (does not affect scheduling)",
+        "tags": [
+          "Study"
+        ]
+      }
     }
   },
   "info": {

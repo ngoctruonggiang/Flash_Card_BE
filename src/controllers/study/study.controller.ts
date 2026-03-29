@@ -99,4 +99,20 @@ export class StudyController {
       total: cards.length,
     };
   }
+
+  @Post('/cram/review')
+  @ApiOperation({
+    summary: 'Submit cram session review (does not affect scheduling)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Cram review submitted successfully',
+  })
+  @RouteConfig({
+    message: 'Submitting cram review',
+    requiresAuth: true,
+  })
+  submitCramReview(@Body() cardReview: SubmitReviewDto) {
+    return this.reviewService.submitCramReviews(cardReview);
+  }
 }
