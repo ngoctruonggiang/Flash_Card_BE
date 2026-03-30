@@ -36,7 +36,7 @@ export class AuthService {
     }
 
     // Validate input
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/g;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/g;
     if (signUpDto.password.match(passwordRegex) === null) {
       throw new HttpException(
         'Password must be at least 8 characters long and contain at least one letter and one number',
