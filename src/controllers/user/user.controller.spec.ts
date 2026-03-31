@@ -3,23 +3,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from 'src/services/user/user.service';
-import { AuthService } from 'src/services/auth/auth.service';
 
 describe('UserController', () => {
   let controller: UserController;
   let userService: UserService;
-  let authService: AuthService;
 
   const mockUserService = {
     getUserById: jest.fn(),
     getAllUsers: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
-  };
-
-  const mockAuthService = {
-    signUp: jest.fn(),
-    signIn: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -30,16 +23,11 @@ describe('UserController', () => {
           provide: UserService,
           useValue: mockUserService,
         },
-        {
-          provide: AuthService,
-          useValue: mockAuthService,
-        },
       ],
     }).compile();
 
     controller = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
-    authService = module.get<AuthService>(AuthService);
   });
 
   afterEach(() => {

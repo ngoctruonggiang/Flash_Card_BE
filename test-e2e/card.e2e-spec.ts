@@ -141,6 +141,15 @@ describe('AppController (e2e)', () => {
     expect(cardIds).toEqual(expectedIds);
   });
 
+  it('/card (Get) Get all cards without deckId parameter', async () => {
+    const res = await authRequest().get('/card').expect(HttpStatus.OK);
+
+    expect(res.body).toBeDefined();
+    expect(res.body.data).toBeInstanceOf(Array);
+    // Should return all cards (at least the 3 test cards we created)
+    expect(res.body.data.length).toBeGreaterThanOrEqual(3);
+  });
+
   it('/card/id (Patch) update card', async () => {
     const res = await authRequest()
       .patch(`/card/${testCards[0].id}`)

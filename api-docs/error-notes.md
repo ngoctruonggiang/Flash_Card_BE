@@ -1,0 +1,111 @@
+# **Error Handling & Response Structure**
+
+This document outlines how the FlashLearn API handles errors and formats responses for both successful operations and exceptions.
+
+## **1. Overview**
+
+The API uses a standardized JSON structure for all responses to ensure consistency across the frontend and backend.
+
+- **Success Responses**: Handled by a global `ResponseInterceptor`.
+- **Error Responses**: Handled by a global `GlobalExceptionFilter`.
+
+## **2. Standard Response Format**
+
+All API responses follow the `ApiResponseDto` structure:
+
+```json
+{
+  "statusCode": number,      // HTTP Status Code (e.g., 200, 201, 400, 401, 500)
+  "timestamp": string,       // ISO 8601 Date String (e.g., "2025-11-26T08:00:00.000Z")
+  "message": string,         // Success message or Error description
+  "data": T | null,          // The actual data payload (null for errors)
+  "path": string             // The request URL path
+}
+```
+
+## **3. Success Responses**
+
+Successful requests (HTTP 2xx) are automatically wrapped by the `ResponseInterceptor`.
+
+- **Message**: The `message` field is populated via the `@RouteConfig({ message: '...' })` decorator on the controller method. If not specified, it defaults to an empty string.
+- **Data**: The return value of the controller method is placed in the `data` field.
+
+### **Example: Get All Cards (200 OK)**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-11-26T08:00:00.000Z",
+  "message": "Get All Cards",
+  "data": [
+    {
+      "id": 1,
+      "front": "Hello",
+      "back": "Xin chào"
+    }
+  ],
+  "path": "/api/card"
+}
+```
+
+## **4. Error Responses**
+
+All exceptions are caught by the `GlobalExceptionFilter`.
+
+### **4.1 Client Errors (4xx)**
+
+These occur when the request is invalid (e.g., validation failure, resource not found).
+
+- **Status Code**: Corresponds to the specific HTTP exception (e.g., 400, 404).
+- **Message**: The error message provided by the exception or validation pipe.
+- **Data**: Always `null`.
+
+#### **Example: Validation Error (400 Bad Request)**
+
+```json
+{
+  "statusCode": 400,
+  "timestamp": "2025-11-26T08:05:00.000Z",
+  "message": "Validation failed: email must be an email",
+  "data": null,
+  "path": "/api/auth/login"
+}
+```
+
+#### **Example: Resource Not Found (404 Not Found)**
+
+```json
+{
+  "statusCode": 404,
+  "timestamp": "2025-11-26T08:06:00.000Z",
+  "message": "Deck not found",
+  "data": null,
+  "path": "/api/deck/999"
+}
+```
+
+### **4.2 Server Errors (500)**
+
+Any unhandled exception or generic `Error` thrown in the application is caught and converted to a 500 Internal Server Error.
+
+- **Status Code**: 500
+- **Message**: "Internal server error" (Generic message to prevent leaking sensitive info).
+- **Data**: `null`.
+
+#### **Example: Internal Server Error**
+
+```json
+{
+  "statusCode": 500,
+  "timestamp": "2025-11-26T08:10:00.000Z",
+  "message": "Internal server error",
+  "data": null,
+  "path": "/api/card"
+}
+```
+
+## **5. Implementation Details**
+
+- **Filter**: `src/middleware/filters/global.filter.ts`
+- **Interceptor**: `src/middleware/interceptor/response.interceptor.ts`
+- **DTO**: `src/utils/types/dto/api-response.dto.ts`

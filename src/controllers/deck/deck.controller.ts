@@ -100,4 +100,77 @@ export class DeckController {
   remove(@Param() params: IdParamDto) {
     return this.deckService.remove(params.id);
   }
+
+  @Get(':id/reviewed-count-day')
+  @ApiOperation({
+    summary: 'Get number of cards reviewed in a deck on a specific day',
+  })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: 'Date in YYYY-MM-DD format (defaults to today)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the count of reviewed cards for the specified day',
+  })
+  @RouteConfig({
+    message: 'Get Reviewed Cards Count In Day',
+    requiresAuth: true,
+  })
+  getReviewedCountInDay(
+    @Param() params: IdParamDto,
+    @Query('date') date?: string,
+  ) {
+    const targetDate = date ? new Date(date) : new Date();
+    return this.deckService.getReviewedCardsCountInDay(params.id, targetDate);
+  }
+
+  @Get(':id/due-today')
+  @ApiOperation({ summary: 'Get cards due for review today in a deck' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns cards that are due for review today',
+  })
+  @RouteConfig({
+    message: 'Get Cards Due Today',
+    requiresAuth: true,
+  })
+  async getCardsDueToday(@Param() params: IdParamDto) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    return await this.deckService.getCardsDueToday(params.id);
+  }
+
+  @Get(':id/statistics')
+  @ApiOperation({ summary: 'Get review statistics for a deck' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns the percentage of correct reviews and detailed statistics',
+  })
+  @RouteConfig({
+    message: 'Get Deck Statistics',
+    requiresAuth: true,
+  })
+  async getDeckStatistics(@Param() params: IdParamDto) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    return await this.deckService.getDeckStatistics(params.id);
+  }
+
+  @Get(':id/last-studied')
+  @ApiOperation({ summary: 'Get when the deck was last studied' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns the date when the deck was last studied (most recent review)',
+  })
+  @RouteConfig({
+    message: 'Get Deck Last Studied Date',
+    requiresAuth: true,
+  })
+  async getLastStudiedDate(@Param() params: IdParamDto) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    return await this.deckService.getLastStudiedDate(params.id);
+  }
 }

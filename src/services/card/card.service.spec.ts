@@ -17,6 +17,9 @@ describe('Card', () => {
       delete: jest.fn(),
       count: jest.fn(),
     },
+    deck: {
+      findUnique: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -54,10 +57,19 @@ describe('Card', () => {
       const mockCard = {
         id: 1,
         ...createCardDto,
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
+      const mockDeck = {
+        id: 1,
+        languageMode: 'VN_EN',
+      };
+
+      mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
       mockPrismaService.card.create.mockResolvedValue(mockCard);
 
       const result = await provider.create(createCardDto);
@@ -79,10 +91,19 @@ describe('Card', () => {
         id: 2,
         ...createCardDto,
         tags: null,
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
+      const mockDeck = {
+        id: 1,
+        languageMode: 'VN_EN',
+      };
+
+      mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
       mockPrismaService.card.create.mockResolvedValue(mockCard);
 
       const result = await provider.create(createCardDto);
@@ -103,6 +124,9 @@ describe('Card', () => {
           front: 'Question 1',
           back: 'Answer 1',
           tags: 'tag1',
+          examples: null,
+          wordType: null,
+          pronunciation: null,
           createdAt: new Date(),
           updatedAt: new Date(),
           deck: {
@@ -125,6 +149,9 @@ describe('Card', () => {
           front: 'Question 2',
           back: 'Answer 2',
           tags: null,
+          examples: null,
+          wordType: null,
+          pronunciation: null,
           createdAt: new Date(),
           updatedAt: new Date(),
           deck: {
@@ -167,6 +194,9 @@ describe('Card', () => {
         front: 'Question 1',
         back: 'Answer 1',
         tags: 'tag1,tag2',
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date(),
         updatedAt: new Date(),
         deck: {
@@ -250,6 +280,9 @@ describe('Card', () => {
           front: 'Question 1',
           back: 'Answer 1',
           tags: 'tag1',
+          examples: null,
+          wordType: null,
+          pronunciation: null,
           createdAt: new Date(),
           updatedAt: new Date(),
           reviews: [
@@ -267,6 +300,9 @@ describe('Card', () => {
           front: 'Question 2',
           back: 'Answer 2',
           tags: null,
+          examples: null,
+          wordType: null,
+          pronunciation: null,
           createdAt: new Date(),
           updatedAt: new Date(),
           reviews: [],
@@ -323,6 +359,9 @@ describe('Card', () => {
         id: 1,
         deckId: 1,
         ...updateDto,
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date('2025-11-01'),
         updatedAt: new Date('2025-11-10'),
       };
@@ -349,6 +388,9 @@ describe('Card', () => {
         front: 'New question',
         back: 'Original answer',
         tags: 'original,tags',
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date('2025-11-01'),
         updatedAt: new Date('2025-11-10'),
       };
@@ -375,6 +417,9 @@ describe('Card', () => {
         front: 'Original question',
         back: 'New answer',
         tags: 'original,tags',
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date('2025-11-01'),
         updatedAt: new Date('2025-11-10'),
       };
@@ -401,6 +446,9 @@ describe('Card', () => {
         front: 'Original question',
         back: 'Original answer',
         tags: 'new,tags',
+        examples: null,
+        wordType: null,
+        pronunciation: null,
         createdAt: new Date('2025-11-01'),
         updatedAt: new Date('2025-11-10'),
       };

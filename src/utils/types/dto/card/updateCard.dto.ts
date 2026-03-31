@@ -1,5 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class ExampleSentenceDto {
+  @ApiProperty({ description: 'Example sentence' })
+  @IsString()
+  sentence: string;
+
+  @ApiProperty({ description: 'Translation of the example sentence' })
+  @IsString()
+  translation: string;
+}
 
 export class UpdateCardDto {
   @ApiProperty({ required: false })
@@ -16,4 +27,28 @@ export class UpdateCardDto {
   @IsString()
   @IsOptional()
   tags?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Word type (e.g., noun, verb, adjective)',
+  })
+  @IsString()
+  @IsOptional()
+  wordType?: string;
+
+  @ApiProperty({ required: false, description: 'Pronunciation guide' })
+  @IsString()
+  @IsOptional()
+  pronunciation?: string;
+
+  @ApiProperty({
+    required: false,
+    type: [ExampleSentenceDto],
+    description: 'Array of example sentences with translations',
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => ExampleSentenceDto)
+  examples?: ExampleSentenceDto[];
 }

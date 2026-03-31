@@ -120,7 +120,7 @@ describe('ReviewController (e2e)', () => {
     await app.close();
   });
 
-  describe('/study/review/:id (GET)', () => {
+  describe('/study/start/:id (GET)', () => {
     it('should return all cards as due when no reviews exist', async () => {
       const res = await authRequest()
         .get(`/study/start/${testDeck.id}`)

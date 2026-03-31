@@ -35,16 +35,25 @@ model User {
   @@index([username])
 }
 
+enum LanguageMode {
+  VN_EN
+  EN_VN
+  BIDIRECTIONAL
+}
+
 model Deck {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int          @id @default(autoincrement())
+  userId       Int
+  title        String
+  description  String?
+  iconName     String?
+  colorCode    String?
+  languageMode LanguageMode @default(VN_EN)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   // Relations
-  user  User   @relation(fields: [userId], references: [id])
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   cards Card[]
 
   @@index([userId])
@@ -57,17 +66,34 @@ enum ReviewQuality {
   Easy
 }
 
+enum CardStatus {
+  new
+  learning
+  review
+  relearning
+}
+
 model Card {
-  id        Int      @id @default(autoincrement())
-  deckId    Int
-  front     String
-  back      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tags      String?
+  id            Int      @id @default(autoincrement())
+  deckId        Int
+  front         String
+  back          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  tags          String?
+  wordType      String?
+  pronunciation String?
+  examples      String? // JSON string storing array of example objects
+
+  // Anki V2 State
+  status         CardStatus @default(new)
+  stepIndex      Int        @default(0)    // Tracks progress in learning steps
+  interval       Float      @default(0)    // Days (review) or minutes (learning)
+  easeFactor     Float      @default(2.5)  // Multiplier (min 1.3)
+  nextReviewDate DateTime?
 
   // Relations
-  deck    Deck         @relation(fields: [deckId], references: [id])
+  deck    Deck         @relation(fields: [deckId], references: [id], onDelete: Cascade)
   reviews CardReview[]
 
   @@index([deckId])
@@ -77,15 +103,18 @@ model Card {
 model CardReview {
   id             Int           @id @default(autoincrement())
   cardId         Int
-  repetitions    Int
-  interval       Int
+  repetitions    Int           @default(0)
+  interval       Float
   eFactor        Float
   nextReviewDate DateTime
-  reviewedAt     DateTime
+  reviewedAt     DateTime      @default(now())
   quality        ReviewQuality
+  
+  previousStatus CardStatus
+  newStatus      CardStatus
 
   // Relations
-  card Card @relation(fields: [cardId], references: [id])
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@index([cardId])
   @@index([nextReviewDate])

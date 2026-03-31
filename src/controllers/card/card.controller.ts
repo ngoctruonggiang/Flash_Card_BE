@@ -37,6 +37,9 @@ export class CardController {
       front: createCardDto.front,
       back: createCardDto.back,
       tags: createCardDto.tags,
+      wordType: createCardDto.wordType,
+      pronunciation: createCardDto.pronunciation,
+      examples: createCardDto.examples,
     });
   }
 
@@ -48,7 +51,9 @@ export class CardController {
     message: 'Get All Cards',
     requiresAuth: true,
   })
-  findAll(@Query('deckId', ParseIntPipe) deckId?: number) {
+  findAll(
+    @Query('deckId', new ParseIntPipe({ optional: true })) deckId?: number,
+  ) {
     if (deckId) {
       return this.cardService.findByDeck(deckId);
     }
@@ -70,7 +75,7 @@ export class CardController {
   @ApiOperation({ summary: 'Update a card' })
   @ApiResponse({ status: 200, description: 'Card updated successfully' })
   @RouteConfig({
-    message: 'Get All Cards',
+    message: 'Update Card',
     requiresAuth: true,
   })
   update(
@@ -78,7 +83,14 @@ export class CardController {
     @Body()
     updateCardDto: UpdateCardDto,
   ) {
-    return this.cardService.update(params.id, updateCardDto);
+    return this.cardService.update(params.id, {
+      front: updateCardDto.front,
+      back: updateCardDto.back,
+      tags: updateCardDto.tags,
+      wordType: updateCardDto.wordType,
+      pronunciation: updateCardDto.pronunciation,
+      examples: updateCardDto.examples,
+    });
   }
 
   @Delete(':id')
@@ -90,5 +102,20 @@ export class CardController {
   })
   remove(@Param() params: IdParamDto) {
     return this.cardService.remove(params.id);
+  }
+
+  @Get(':id/review-status')
+  @ApiOperation({ summary: 'Get card review status' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns when the card was last reviewed and when it is due next',
+  })
+  @RouteConfig({
+    message: 'Get Card Review Status',
+    requiresAuth: true,
+  })
+  getReviewStatus(@Param() params: IdParamDto) {
+    return this.cardService.getReviewStatus(params.id);
   }
 }

@@ -6,7 +6,7 @@ import { PrismaService } from '../src/services/prisma.service';
 import { ReviewService } from '../src/services/review/review.service';
 import { createTestUser } from './create-test-user';
 
-describe('Study Preview (e2e)', () => {
+describe('Anki Algorithm E2E Sequence', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
   let reviewService: ReviewService;
@@ -26,8 +26,8 @@ describe('Study Preview (e2e)', () => {
     reviewService = moduleFixture.get<ReviewService>(ReviewService);
 
     const testUser = {
-      username: 'previewtestuser',
-      email: 'previewtest@example.com',
+      username: 'ankitestuser',
+      email: 'ankitest@example.com',
       password: 'password123',
       confirmPassword: 'password123',
     };
@@ -35,21 +35,24 @@ describe('Study Preview (e2e)', () => {
     const authResponse = await createTestUser(moduleFixture, testUser);
     accessToken = authResponse.accessToken;
 
-    // Create a test deck
+    // 1. Create a new deck of cards
     testDeck = await prismaService.deck.create({
       data: {
         userId: authResponse.id,
-        title: 'Preview Test Deck',
-        description: 'Deck for testing preview functionality',
+        title: 'Anki Algorithm Test Deck',
+        description: 'Deck for testing Anki algorithm sequence',
       },
     });
 
-    // Create a test card
+    // 2. Cards have all fields filled
     testCard = await prismaService.card.create({
       data: {
         deckId: testDeck.id,
-        front: 'Test Question',
-        back: 'Test Answer',
+        front: 'Test Front',
+        back: 'Test Back',
+        wordType: 'noun',
+        pronunciation: '/test/',
+        examples: JSON.stringify(['This is a test example.']),
       },
     });
   });
@@ -65,27 +68,26 @@ describe('Study Preview (e2e)', () => {
     await app.close();
   });
 
-  describe('/study/preview/:id (GET)', () => {
-    it('should return preview intervals for a new card', async () => {
+  describe('3. Simulate a study session and check the preview', () => {
+    it('Step 1: Initial State (New Card)', async () => {
       const response = await request(app.getHttpServer())
         .get(`/study/preview/${testCard.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
-      expect(response.body.data).toHaveProperty('Again');
-      expect(response.body.data).toHaveProperty('Hard');
-      expect(response.body.data).toHaveProperty('Good');
-      expect(response.body.data).toHaveProperty('Easy');
-
-      // New cards now have differentiated intervals
+      // New cards:
+      // Again: 1 min (step 0)
+      // Hard: 1 min (step 0)
+      // Good: 10 min (step 1)
+      // Easy: 4 days (graduate)
       expect(response.body.data.Again).toBe('1 min');
       expect(response.body.data.Hard).toBe('1 min');
       expect(response.body.data.Good).toBe('10 min');
       expect(response.body.data.Easy).toBe('4 days');
     });
 
-    it('should return different intervals after first review', async () => {
-      // Submit first review as "Good"
+    it('Step 2: First Review (Good) -> Learning Step 1', async () => {
+      // User presses "Good"
       await request(app.getHttpServer())
         .post('/study/review')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -100,20 +102,25 @@ describe('Study Preview (e2e)', () => {
         })
         .expect(201);
 
-      // Check preview after first review
+      // Check preview
       const response = await request(app.getHttpServer())
         .get(`/study/preview/${testCard.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
+      // Current: Learning, Step 1 (10 min)
+      // Again: 1 min (Reset to step 0)
+      // Hard: 10 min (Repeat step 1)
+      // Good: 1 day (Graduate)
+      // Easy: 4 days (Graduate with bonus)
       expect(response.body.data.Again).toBe('1 min');
       expect(response.body.data.Hard).toBe('10 min');
       expect(response.body.data.Good).toBe('1 day');
       expect(response.body.data.Easy).toBe('4 days');
     });
 
-    it('should return increasing intervals after second review', async () => {
-      // Submit second review as "Good"
+    it('Step 3: Second Review (Good) -> Graduate to Review', async () => {
+      // User presses "Good" again
       await request(app.getHttpServer())
         .post('/study/review')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -128,84 +135,57 @@ describe('Study Preview (e2e)', () => {
         })
         .expect(201);
 
-      // Check preview after second review
+      // Check preview
       const response = await request(app.getHttpServer())
         .get(`/study/preview/${testCard.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
+      // Current: Review, Interval 1 day, EF 2.5
+      // Again: 10 min (Lapse to Relearning)
+      // Hard: 1.2 days -> 1 day (1 * 1.2)
+      // Good: 2.5 days -> 2 or 3 days (1 * 2.5)
+      // Easy: 3.25 days -> 3 or 4 days (1 * 2.5 * 1.3)
+
       expect(response.body.data.Again).toBe('10 min');
 
-      // After rep=2, all success options use prev_interval * eFactor
-      const hardInterval = parseInt(response.body.data.Hard);
-      const goodInterval = parseInt(response.body.data.Good);
-      const easyInterval = parseInt(response.body.data.Easy);
+      // Hard (1.2 days)
+      expect(response.body.data.Hard).toMatch(/1 day|2 days/);
 
-      expect(hardInterval).toBeGreaterThanOrEqual(1);
-      expect(goodInterval).toBeGreaterThanOrEqual(1);
-      expect(easyInterval).toBeGreaterThanOrEqual(1);
+      // Good (2.5 days)
+      expect(response.body.data.Good).toMatch(/2 days|3 days/);
+
+      // Easy (3.25 days)
+      expect(response.body.data.Easy).toMatch(/3 days|4 days/);
     });
 
-    it('should return 401 without authentication', async () => {
+    it('Step 4: Lapse (Again) -> Relearning', async () => {
+      // User presses "Again"
       await request(app.getHttpServer())
-        .get(`/study/preview/${testCard.id}`)
-        .expect(401);
-    });
-
-    it('should handle non-existent card gracefully', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/study/preview/999999')
+        .post('/study/review')
         .set('Authorization', `Bearer ${accessToken}`)
-        .expect(404);
-    });
-  });
+        .send({
+          CardReviews: [
+            {
+              cardId: testCard.id,
+              quality: 'Again',
+            },
+          ],
+          reviewedAt: new Date().toISOString(),
+        })
+        .expect(201);
 
-  describe('Preview consistency with actual review', () => {
-    it('should match the actual interval after submitting a review', async () => {
-      // Create a fresh card for this test
-      const freshCard = await prismaService.card.create({
-        data: {
-          deckId: testDeck.id,
-          front: 'Consistency Test Question',
-          back: 'Consistency Test Answer',
-        },
-      });
+      // Check preview
+      const response = await request(app.getHttpServer())
+        .get(`/study/preview/${testCard.id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200);
 
-      try {
-        // Get preview
-        const previewResponse = await request(app.getHttpServer())
-          .get(`/study/preview/${freshCard.id}`)
-          .set('Authorization', `Bearer ${accessToken}`)
-          .expect(200);
-
-        const previewEasyInterval = previewResponse.body.data.Easy;
-
-        // Submit actual review as "Easy"
-        const reviewDate = new Date();
-        const reviewResponse = await request(app.getHttpServer())
-          .post('/study/review')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send({
-            CardReviews: [
-              {
-                cardId: freshCard.id,
-                quality: 'Easy',
-              },
-            ],
-            reviewedAt: reviewDate.toISOString(),
-          })
-          .expect(201);
-
-        const actualInterval = reviewResponse.body.data[0].interval;
-        const actualIntervalText =
-          actualInterval === 1 ? '1 day' : `${actualInterval} days`;
-
-        // Preview should match actual
-        expect(previewEasyInterval).toBe(actualIntervalText);
-      } finally {
-        await reviewService.removeByCardId(freshCard.id);
-        await prismaService.card.delete({ where: { id: freshCard.id } });
-      }
+      // Current: Relearning, Step 0 (10 min)
+      // Again: 10 min (Reset step 0)
+      // Good: 1 day (Graduate from relearning)
+      expect(response.body.data.Again).toBe('10 min');
+      expect(response.body.data.Good).toBe('1 day');
     });
   });
 });

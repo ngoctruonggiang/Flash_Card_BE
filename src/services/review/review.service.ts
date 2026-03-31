@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
-import { applySm2 } from './sm2Algo';
 import { Card, CardReview, ReviewQuality } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { ReviewPreviewDto } from 'src/utils/types/dto/review/previewReview.dto';
+import { ConsecutiveDaysDto } from 'src/utils/types/dto/review/consecutiveDays.dto';
+import { AnkiScheduler, Rating, SchedulerCard } from '../scheduler';
 
 @Injectable()
 export class ReviewService {
@@ -31,6 +32,8 @@ export class ReviewService {
         eFactor: cardReview.eFactor,
         nextReviewDate: cardReview.nextReviewDate,
         reviewedAt: cardReview.reviewedAt,
+        previousStatus: cardReview.previousStatus,
+        newStatus: cardReview.newStatus,
       },
     });
   }
@@ -43,24 +46,80 @@ export class ReviewService {
   }
 
   async submitReviews(review: SubmitReviewDto) {
-    const sm2Results: CardReview[] = [];
+    const scheduler = new AnkiScheduler();
+    const results: CardReview[] = [];
+
+    // Process each review sequentially (or parallel if independent)
     for (const r of review.CardReviews) {
-      const lastCardReview = await this.getLastestReviewByCardId(r.cardId);
-      const result = applySm2(r, new Date(review.reviewedAt), lastCardReview);
-      sm2Results.push(result);
+      // 1. Fetch current card state
+      const card = await this.prismaService.card.findUnique({
+        where: { id: r.cardId },
+      });
+
+      if (!card) continue;
+
+      // 2. Prepare scheduler input
+      const schedulerInput: SchedulerCard = {
+        status: card.status,
+        stepIndex: card.stepIndex,
+        easeFactor: card.easeFactor,
+        interval: card.interval,
+      };
+
+      // 3. Calculate next state
+      const rating = r.quality as Rating; // Ensure type match
+      const nextState = scheduler.calculateNext(schedulerInput, rating);
+
+      // 4. Update Card and Create Review in a transaction
+      // We'll do this one by one to ensure consistency, or batch them if needed.
+      // For now, let's just collect the promises and execute them.
+      // But wait, we need to return the results.
+
+      // Let's execute immediately for simplicity and correctness
+      const now = new Date();
+
+      await this.prismaService.$transaction([
+        this.prismaService.card.update({
+          where: { id: card.id },
+          data: {
+            status: nextState.status,
+            stepIndex: nextState.stepIndex,
+            easeFactor: nextState.easeFactor,
+            interval: nextState.interval,
+            nextReviewDate: nextState.nextReviewDate,
+          },
+        }),
+        this.prismaService.cardReview.create({
+          data: {
+            cardId: card.id,
+            quality: r.quality,
+            repetitions: 0, // Deprecated/Legacy
+            interval: nextState.interval,
+            eFactor: nextState.easeFactor,
+            nextReviewDate: nextState.nextReviewDate || now, // Fallback if null (shouldn't happen for active cards)
+            reviewedAt: now,
+            previousStatus: card.status,
+            newStatus: nextState.status,
+          },
+        }),
+      ]);
+
+      // Add to results for response (mocking the review object)
+      results.push({
+        id: 0,
+        cardId: card.id,
+        quality: r.quality,
+        repetitions: 0,
+        interval: nextState.interval,
+        eFactor: nextState.easeFactor,
+        nextReviewDate: nextState.nextReviewDate || now,
+        reviewedAt: now,
+        previousStatus: card.status,
+        newStatus: nextState.status,
+      });
     }
 
-    // Use a transaction to persist all reviews atomically
-    const creates = sm2Results.map((r) =>
-      this.prismaService.cardReview.create({
-        data: {
-          ...r,
-          id: undefined, // Ensure ID is not set
-        },
-      }),
-    );
-
-    return this.prismaService.$transaction(creates);
+    return results;
   }
 
   async getDueReviews(deckId: number, limit?: number): Promise<Card[]> {
@@ -72,63 +131,171 @@ export class ReviewService {
         OR: [
           // has reviews that are due
           {
-            reviews: {
-              some: {
-                nextReviewDate: { lte: today },
-              },
-            },
+            nextReviewDate: { lte: today },
           },
-          // never reviewed
+          // never reviewed (new cards)
           {
-            reviews: {
-              none: {},
-            },
+            status: 'new',
+          },
+          // learning cards (often due immediately)
+          {
+            status: 'learning',
+            nextReviewDate: { lte: today },
+          },
+          {
+            status: 'relearning',
+            nextReviewDate: { lte: today },
           },
         ],
       },
       take: limit,
-      include: {
-        reviews: {
-          take: 1,
-          orderBy: { nextReviewDate: 'asc' },
-        },
-      },
+      orderBy: { nextReviewDate: 'asc' },
     });
 
-    // WTF?
-    cards.sort((a, b) => {
-      const minNext = (c: Card & { reviews: CardReview[] }) => {
-        if (!c.reviews || c.reviews.length === 0)
-          return Number.POSITIVE_INFINITY;
-        return Math.min(
-          ...c.reviews.map((r) =>
-            r.nextReviewDate
-              ? new Date(r.nextReviewDate).getTime()
-              : Number.POSITIVE_INFINITY,
-          ),
-        );
-      };
-
-      return minNext(a) - minNext(b);
-    });
-    return cards.map((c) => ({ ...c, reviews: undefined }) as Card);
+    return cards;
   }
 
   async getReviewPreview(cardId: number): Promise<ReviewPreviewDto> {
-    const lastReview = await this.getLastestReviewByCardId(cardId);
-    const now = new Date();
+    const card = await this.prismaService.card.findUnique({
+      where: { id: cardId },
+    });
 
-    const qualities: ReviewQuality[] = ['Again', 'Hard', 'Good', 'Easy'];
+    if (!card) {
+      throw new NotFoundException('Card not found');
+    }
+
+    const scheduler = new AnkiScheduler();
+    const input: SchedulerCard = {
+      status: card.status,
+      stepIndex: card.stepIndex,
+      easeFactor: card.easeFactor,
+      interval: card.interval,
+    };
+
+    const qualities: Rating[] = ['Again', 'Hard', 'Good', 'Easy'];
     const previews: Partial<ReviewPreviewDto> = {};
 
-    for (const quality of qualities) {
-      const submitReview = { cardId, quality };
-      const result = applySm2(submitReview, new Date(now), lastReview);
+    const formatIvl = (c: SchedulerCard) => {
+      if (c.status === 'learning' || c.status === 'relearning') {
+        return `${Math.round(c.interval)} min`;
+      }
+      const days = Math.round(c.interval);
+      return `${days} ${days === 1 ? 'day' : 'days'}`;
+    };
 
-      const interval = result.interval;
-      previews[quality] = interval === 1 ? '1 day' : `${interval} days`;
+    for (const quality of qualities) {
+      const result = scheduler.calculateNext(input, quality);
+      previews[quality] = formatIvl(result);
     }
 
     return previews as ReviewPreviewDto;
+  }
+
+  async getConsecutiveStudyDays(deckId: number): Promise<ConsecutiveDaysDto> {
+    // Get all cards for the deck
+    const cards = await this.prismaService.card.findMany({
+      where: { deckId },
+      select: { id: true },
+    });
+
+    if (cards.length === 0) {
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate: null,
+      };
+    }
+
+    const cardIds = cards.map((card) => card.id);
+
+    // Get all reviews for the deck's cards, ordered by date
+    const reviews = await this.prismaService.cardReview.findMany({
+      where: {
+        cardId: { in: cardIds },
+      },
+      orderBy: { reviewedAt: 'desc' },
+      select: { reviewedAt: true },
+    });
+
+    if (reviews.length === 0) {
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate: null,
+      };
+    }
+
+    // Helper function to normalize date to start of day (UTC)
+    const normalizeDate = (date: Date): string => {
+      const d = new Date(date);
+      return new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()),
+      ).toISOString();
+    };
+
+    // Get unique study dates (normalized to day level)
+    const studyDatesSet = new Set<string>();
+    reviews.forEach((review) => {
+      studyDatesSet.add(normalizeDate(review.reviewedAt));
+    });
+
+    // Convert to sorted array (most recent first)
+    const studyDates = Array.from(studyDatesSet)
+      .sort()
+      .reverse()
+      .map((dateStr) => new Date(dateStr));
+
+    if (studyDates.length === 0) {
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate: null,
+      };
+    }
+
+    const lastStudyDate = studyDates[0];
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    // Check if the streak is current (studied today or yesterday)
+    const daysSinceLastStudy = Math.floor(
+      (today.getTime() - lastStudyDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (daysSinceLastStudy > 1) {
+      // Streak is broken
+      return {
+        consecutiveDays: 0,
+        streakStartDate: null,
+        lastStudyDate,
+      };
+    }
+
+    // Calculate consecutive days
+    let consecutiveDays = 1;
+    let streakStartDate = lastStudyDate;
+
+    for (let i = 1; i < studyDates.length; i++) {
+      const currentDate = studyDates[i];
+      const previousDate = studyDates[i - 1];
+
+      const dayDifference = Math.floor(
+        (previousDate.getTime() - currentDate.getTime()) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      if (dayDifference === 1) {
+        consecutiveDays++;
+        streakStartDate = currentDate;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      consecutiveDays,
+      streakStartDate,
+      lastStudyDate,
+    };
   }
 }

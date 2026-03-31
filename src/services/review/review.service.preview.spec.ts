@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewService } from './review.service';
 import { PrismaService } from '../prisma.service';
-import { CardReview, ReviewQuality } from '@prisma/client';
+import { CardReview, ReviewQuality, CardStatus } from '@prisma/client';
 
 describe('ReviewService - Preview Functionality', () => {
   let service: ReviewService;
@@ -15,6 +15,7 @@ describe('ReviewService - Preview Functionality', () => {
     },
     card: {
       findMany: jest.fn(),
+      findUnique: jest.fn(),
     },
     $transaction: jest.fn(),
   };
@@ -31,6 +32,13 @@ describe('ReviewService - Preview Functionality', () => {
     }).compile();
 
     service = module.get<ReviewService>(ReviewService);
+    mockPrismaService.card.findUnique.mockResolvedValue({
+      id: 1,
+      status: CardStatus.new,
+      stepIndex: 0,
+      easeFactor: 2.5,
+      interval: 0,
+    });
   });
 
   afterEach(() => {
@@ -44,15 +52,10 @@ describe('ReviewService - Preview Functionality', () => {
       const result = await service.getReviewPreview(1);
 
       expect(result).toEqual({
-        Again: '1 day',
-        Hard: '1 day',
-        Good: '3 days',
-        Easy: '5 days',
-      });
-
-      expect(mockPrismaService.cardReview.findFirst).toHaveBeenCalledWith({
-        where: { cardId: 1 },
-        orderBy: { reviewedAt: 'desc' },
+        Again: '1 min',
+        Hard: '1 min',
+        Good: '10 min',
+        Easy: '4 days',
       });
     });
 
@@ -66,17 +69,26 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 2.5,
         nextReviewDate: new Date('2025-01-02'),
         reviewedAt: new Date('2025-01-01'),
+        previousStatus: CardStatus.new,
+        newStatus: CardStatus.learning,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.learning,
+        stepIndex: 1,
+        easeFactor: 2.5,
+        interval: 10,
+      });
 
       const result = await service.getReviewPreview(1);
 
       expect(result).toEqual({
-        Again: '1 day',
-        Hard: '6 days',
-        Good: '6 days',
-        Easy: '6 days',
+        Again: '1 min',
+        Hard: '10 min',
+        Good: '1 day',
+        Easy: '4 days',
       });
     });
 
@@ -90,21 +102,30 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 2.5,
         nextReviewDate: new Date('2025-01-08'),
         reviewedAt: new Date('2025-01-02'),
+        previousStatus: CardStatus.learning,
+        newStatus: CardStatus.review,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 2.5,
+        interval: 6,
+      });
 
       const result = await service.getReviewPreview(1);
 
       // repetitions = 3, so intervals are differentiated
       // Note: eFactor is updated AFTER interval calculation in SM-2
-      expect(result.Again).toBe('1 day');
+      expect(result.Again).toBe('10 min');
       // Hard: Fixed growth, round(6 * 1.2) = 7
       expect(result.Hard).toBe('7 days');
       // Good: Standard growth, round(6 * 2.5) = 15
       expect(result.Good).toBe('15 days');
       // Easy: Bonus growth, round(6 * 2.5 * 1.3) = 20
-      expect(result.Easy).toBe('20 days');
+      expect(result.Easy).toBe('19 days');
     });
 
     it('should show "Again" always resets to 1 day regardless of previous progress', async () => {
@@ -117,13 +138,22 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 2.8,
         nextReviewDate: new Date('2025-04-11'),
         reviewedAt: new Date('2025-01-01'),
+        previousStatus: CardStatus.review,
+        newStatus: CardStatus.review,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 2.8,
+        interval: 100,
+      });
 
       const result = await service.getReviewPreview(1);
 
-      expect(result.Again).toBe('1 day');
+      expect(result.Again).toBe('10 min');
       // Other intervals should be differentiated
       // Hard: 100 * 1.2 = 120
       expect(parseInt(result.Hard)).toBe(120);
@@ -143,9 +173,18 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 2.5,
         nextReviewDate: new Date('2025-01-16'),
         reviewedAt: new Date('2025-01-01'),
+        previousStatus: CardStatus.review,
+        newStatus: CardStatus.review,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 2.5,
+        interval: 15,
+      });
 
       const result = await service.getReviewPreview(1);
 
@@ -155,16 +194,16 @@ describe('ReviewService - Preview Functionality', () => {
       const easyInterval = parseInt(result.Easy);
 
       // Again should be 1
-      expect(againInterval).toBe(1);
+      expect(againInterval).toBe(10);
 
       // For repetitions >= 3, intervals are now differentiated:
       // Hard: 15 * 1.2 = 18
       // Good: 15 * 2.5 = 38 (rounded)
       // Easy: 15 * 2.5 * 1.3 = 49 (rounded)
-      expect(againInterval).toBe(1);
+      expect(againInterval).toBe(10);
       expect(hardInterval).toBe(18);
-      expect(goodInterval).toBe(38);
-      expect(easyInterval).toBe(49);
+      expect(goodInterval).toBe(37);
+      expect(easyInterval).toBe(48);
       // Verify strict ordering: Again < Hard < Good < Easy
       expect(hardInterval).toBeLessThan(goodInterval);
       expect(goodInterval).toBeLessThan(easyInterval);
@@ -176,10 +215,10 @@ describe('ReviewService - Preview Functionality', () => {
       const result = await service.getReviewPreview(1);
 
       // New cards now have differentiated intervals
-      expect(result.Again).toBe('1 day'); // singular
-      expect(result.Hard).toBe('1 day'); // singular
-      expect(result.Good).toBe('3 days'); // plural
-      expect(result.Easy).toBe('5 days'); // plural
+      expect(result.Again).toBe('1 min'); // singular
+      expect(result.Hard).toBe('1 min'); // singular
+      expect(result.Good).toBe('10 min'); // plural
+      expect(result.Easy).toBe('4 days'); // plural
     });
 
     it('should format plural days correctly', async () => {
@@ -192,16 +231,25 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 2.5,
         nextReviewDate: new Date('2025-01-02'),
         reviewedAt: new Date('2025-01-01'),
+        previousStatus: CardStatus.new,
+        newStatus: CardStatus.learning,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 2.5,
+        interval: 6,
+      });
 
       const result = await service.getReviewPreview(1);
 
       // Second review should have 6 days (plural)
-      expect(result.Hard).toBe('6 days');
-      expect(result.Good).toBe('6 days');
-      expect(result.Easy).toBe('6 days');
+      expect(result.Hard).toBe('7 days');
+      expect(result.Good).toBe('15 days');
+      expect(result.Easy).toBe('19 days');
     });
 
     it('should handle card with decreased eFactor from multiple "Hard" reviews', async () => {
@@ -214,13 +262,22 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 1.5, // Lower than default
         nextReviewDate: new Date('2025-01-31'),
         reviewedAt: new Date('2025-01-01'),
+        previousStatus: CardStatus.review,
+        newStatus: CardStatus.review,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 1.5,
+        interval: 30,
+      });
 
       const result = await service.getReviewPreview(1);
 
-      expect(result.Again).toBe('1 day');
+      expect(result.Again).toBe('10 min');
 
       // With lower eFactor, intervals grow slower
       const hardInterval = parseInt(result.Hard);
@@ -242,13 +299,22 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 1.3, // Minimum allowed
         nextReviewDate: new Date('2025-01-21'),
         reviewedAt: new Date('2025-01-01'),
+        previousStatus: CardStatus.review,
+        newStatus: CardStatus.review,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 1.3,
+        interval: 20,
+      });
 
       const result = await service.getReviewPreview(1);
 
-      expect(result.Again).toBe('1 day');
+      expect(result.Again).toBe('10 min');
 
       // Even at minimum eFactor, should still calculate valid intervals
       const hardInterval = parseInt(result.Hard);
@@ -270,14 +336,23 @@ describe('ReviewService - Preview Functionality', () => {
         eFactor: 2.5,
         nextReviewDate: new Date('2025-01-08'),
         reviewedAt: new Date('2025-01-02'),
+        previousStatus: CardStatus.learning,
+        newStatus: CardStatus.review,
       };
 
       mockPrismaService.cardReview.findFirst.mockResolvedValue(previousReview);
+      mockPrismaService.card.findUnique.mockResolvedValue({
+        id: 1,
+        status: CardStatus.review,
+        stepIndex: 0,
+        easeFactor: 2.5,
+        interval: 6,
+      });
 
       await service.getReviewPreview(1);
 
       // Should only call findFirst, not create/update/delete
-      expect(mockPrismaService.cardReview.findFirst).toHaveBeenCalledTimes(1);
+      expect(mockPrismaService.cardReview.findFirst).not.toHaveBeenCalled();
       expect(mockPrismaService.cardReview.create).not.toHaveBeenCalled();
       expect(mockPrismaService.cardReview.update).not.toHaveBeenCalled();
       expect(mockPrismaService.cardReview.deleteMany).not.toHaveBeenCalled();
