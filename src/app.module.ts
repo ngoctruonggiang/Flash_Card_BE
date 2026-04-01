@@ -56,6 +56,6 @@ import { RequestLoggerMiddleware } from './middleware/interceptor/requestLog.int
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*path');
   }
 }

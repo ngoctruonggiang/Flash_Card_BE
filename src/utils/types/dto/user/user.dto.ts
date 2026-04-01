@@ -4,6 +4,9 @@ import { IsDate, IsEmail, IsEnum, IsString } from 'class-validator';
 
 export class UserDto {
   @ApiProperty()
+  id: number;
+
+  @ApiProperty()
   @IsString()
   username: string;
 
@@ -24,6 +27,7 @@ export class UserDto {
   lastLoginAt: Date;
 
   constructor(user: User) {
+    this.id = user.id;
     this.username = user.username;
     this.email = user.email;
     this.role = user.role;

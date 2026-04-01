@@ -268,3 +268,56 @@ Get cards for practice without affecting their scheduling (Cram Mode). This allo
 - Cards are selected randomly from the deck.
 - Reviews submitted during a cram session should **NOT** be sent to the `/study/review` endpoint if you want to avoid updating the card's schedule.
 - This mode is purely for extra practice.
+
+### **5.6 Submit Cram Review**
+
+Submit reviews for cram sessions. These reviews are recorded to count towards study streaks but do **NOT** update the card's SRS schedule (interval, ease factor, etc.).
+
+- **URL**: /study/cram/review
+- **Method**: POST
+- **Auth Required**: Yes
+
+**Request Body (JSON):**
+
+```json
+{
+  "CardReviews": [
+    {
+      "cardId": 1,
+      "quality": "Good"
+    }
+  ],
+  "reviewedAt": "2023-10-27T10:00:00Z"
+}
+```
+
+**Success Response (201 Created):**
+
+```json
+{
+  "statusCode": 201,
+  "timestamp": "2025-11-23T13:44:29.122Z",
+  "message": "Submitting cram review",
+  "data": [
+    {
+      "id": 105,
+      "cardId": 1,
+      "repetitions": 0,
+      "interval": 1,
+      "eFactor": 2.5,
+      "nextReviewDate": "2023-10-28T10:00:00.000Z",
+      "reviewedAt": "2023-10-27T10:00:00Z",
+      "quality": "Good",
+      "previousStatus": "review",
+      "newStatus": "review"
+    }
+  ],
+  "path": "/api/study/cram/review"
+}
+```
+
+**Notes:**
+
+- Use this endpoint to log progress during cram sessions.
+- It ensures that cramming contributes to the user's daily study streak.
+- The `previousStatus` and `newStatus` will be identical, and `interval` will remain unchanged.

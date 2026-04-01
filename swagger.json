@@ -67,6 +67,21 @@
         ]
       }
     },
+    "/api/user/all": {
+      "get": {
+        "operationId": "UserController_getAllUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get all users (Admin)",
+        "tags": [
+          "User"
+        ]
+      }
+    },
     "/api/user/{id}": {
       "get": {
         "operationId": "UserController_getUserById",
@@ -140,21 +155,6 @@
           }
         },
         "summary": "Delete user by ID (Admin)",
-        "tags": [
-          "User"
-        ]
-      }
-    },
-    "/api/user/all": {
-      "get": {
-        "operationId": "UserController_getAllUser",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Get all users (Admin)",
         "tags": [
           "User"
         ]
@@ -756,6 +756,31 @@
           }
         },
         "summary": "Get cards for practice (Cram Mode) - Ignores schedule",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
+    "/api/study/cram/review": {
+      "post": {
+        "operationId": "StudyController_submitCramReview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cram review submitted successfully"
+          }
+        },
+        "summary": "Submit cram session review (does not affect scheduling)",
         "tags": [
           "Study"
         ]

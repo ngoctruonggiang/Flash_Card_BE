@@ -122,6 +122,38 @@ export class ReviewService {
     return results;
   }
 
+  async submitCramReviews(review: SubmitReviewDto) {
+    const results: CardReview[] = [];
+    const now = new Date();
+
+    for (const r of review.CardReviews) {
+      const card = await this.prismaService.card.findUnique({
+        where: { id: r.cardId },
+      });
+
+      if (!card) continue;
+
+      // Create review record but DO NOT update card schedule
+      // This allows the review to count towards study streaks
+      const cardReview = await this.prismaService.cardReview.create({
+        data: {
+          cardId: card.id,
+          quality: r.quality,
+          repetitions: 0,
+          interval: card.interval,
+          eFactor: card.easeFactor,
+          nextReviewDate: card.nextReviewDate || now,
+          reviewedAt: review.reviewedAt || now,
+          previousStatus: card.status,
+          newStatus: card.status,
+        },
+      });
+      results.push(cardReview);
+    }
+
+    return results;
+  }
+
   async getDueReviews(deckId: number, limit?: number): Promise<Card[]> {
     const today = new Date();
 
