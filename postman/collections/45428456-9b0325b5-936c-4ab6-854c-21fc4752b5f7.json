@@ -456,7 +456,102 @@
 							],
 							"variable": [
 								{
-									"key": "id"
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Card Review Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/card/:id/review-status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"card",
+								":id",
+								"review-status"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Card Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/card/:id/statistics",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"card",
+								":id",
+								"statistics"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cards Statistics By Deck",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/card/deck/:deckId/statistics",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"card",
+								"deck",
+								":deckId",
+								"statistics"
+							],
+							"variable": [
+								{
+									"key": "deckId",
+									"value": "1"
 								}
 							]
 						}
@@ -691,6 +786,461 @@
 								"deck",
 								"review",
 								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deck Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/deck/:id/statistics",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"deck",
+								":id",
+								"statistics"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Advanced Deck Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/deck/:id/advanced-statistics",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"deck",
+								":id",
+								"advanced-statistics"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deck Last Studied Date",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/deck/:id/last-studied",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"deck",
+								":id",
+								"last-studied"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviewed Cards Count In Day",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/deck/:id/reviewed-count-day?date=2024-12-01",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"deck",
+								":id",
+								"reviewed-count-day"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-12-01"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cards Due Today",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/deck/:id/due-today",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"deck",
+								":id",
+								"due-today"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/study",
+			"item": [
+				{
+					"name": "Start Study Session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/study/start/:id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"start",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Card Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"CardReviews\": [\r\n    {\r\n      \"cardId\": 1,\r\n      \"quality\": \"Good\"\r\n    }\r\n  ],\r\n  \"reviewedAt\": \"2023-10-27T10:00:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/study/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review Preview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/study/preview/:id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"preview",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Consecutive Study Days",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/study/consecutive-days/:id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"consecutive-days",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start Cram Session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/study/cram/:deckId?limit=50",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"cram",
+								":deckId"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							],
+							"variable": [
+								{
+									"key": "deckId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Cram Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"CardReviews\": [\r\n    {\r\n      \"cardId\": 1,\r\n      \"quality\": \"Good\"\r\n    }\r\n  ],\r\n  \"reviewedAt\": \"2023-10-27T10:00:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/study/cram/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"cram",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Session Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/study/session-statistics/:deckId?startDate=2024-12-03T10:00:00Z&endDate=2024-12-03T11:00:00Z",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"session-statistics",
+								":deckId"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-12-03T10:00:00Z"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-03T11:00:00Z"
+								}
+							],
+							"variable": [
+								{
+									"key": "deckId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Time Range Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/study/time-range-statistics/:deckId?startDate=2024-11-01T00:00:00Z&endDate=2024-11-30T23:59:59Z",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"study",
+								"time-range-statistics",
+								":deckId"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-11-01T00:00:00Z"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-11-30T23:59:59Z"
+								}
+							],
+							"variable": [
+								{
+									"key": "deckId",
+									"value": "1"
+								}
 							]
 						}
 					},

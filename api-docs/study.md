@@ -321,3 +321,142 @@ Submit reviews for cram sessions. These reviews are recorded to count towards st
 - Use this endpoint to log progress during cram sessions.
 - It ensures that cramming contributes to the user's daily study streak.
 - The `previousStatus` and `newStatus` will be identical, and `interval` will remain unchanged.
+
+### **5.7 Get Study Session Statistics**
+
+Get detailed statistics for a specific study session time range.
+
+- **URL**: /study/session-statistics/:deckId
+- **Method**: GET
+- **Auth Required**: Yes
+- **URL Parameters**:
+  - deckId: ID of the deck
+- **Query Parameters**:
+  - startDate (required): Session start date/time in ISO 8601 format
+  - endDate (required): Session end date/time in ISO 8601 format
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-12-06T10:00:00.000Z",
+  "message": "Get Study Session Statistics",
+  "data": {
+    "totalCardsReviewed": 25,
+    "newCardsIntroduced": 5,
+    "learningCardsReviewed": 8,
+    "reviewCardsReviewed": 12,
+    "correctAnswers": 20,
+    "incorrectAnswers": 5,
+    "accuracyPercentage": 80.0,
+    "totalStudyTime": 450,
+    "averageTimePerCard": 18.0,
+    "againCount": 5,
+    "hardCount": 3,
+    "goodCount": 15,
+    "easyCount": 2,
+    "sessionStartTime": "2025-12-03T10:00:00.000Z",
+    "sessionEndTime": "2025-12-03T10:15:00.000Z",
+    "deckId": "123",
+    "deckName": "Spanish Vocabulary"
+  },
+  "path": "/api/study/session-statistics/123?startDate=2025-12-03T10:00:00Z&endDate=2025-12-03T10:15:00Z"
+}
+```
+
+**Response Field Descriptions:**
+
+- totalCardsReviewed (number): Total cards reviewed in session
+- newCardsIntroduced (number): New cards studied for the first time
+- learningCardsReviewed (number): Cards in learning phase reviewed
+- reviewCardsReviewed (number): Cards in review phase reviewed
+- correctAnswers (number): Number of Good/Easy responses
+- incorrectAnswers (number): Number of Again responses
+- accuracyPercentage (number): Percentage of correct answers
+- totalStudyTime (number): Total session duration in seconds
+- averageTimePerCard (number): Average time per card in seconds
+- againCount, hardCount, goodCount, easyCount (number): Quality distribution
+- sessionStartTime, sessionEndTime (string): ISO timestamps
+- deckId (string): ID of the deck
+- deckName (string): Name of the deck
+
+### **5.8 Get Time Range Statistics**
+
+Get comprehensive statistics for a custom date range including daily breakdowns, streaks, and consistency metrics.
+
+- **URL**: /study/time-range-statistics/:deckId
+- **Method**: GET
+- **Auth Required**: Yes
+- **URL Parameters**:
+  - deckId: ID of the deck
+- **Query Parameters**:
+  - startDate (required): Range start date in ISO 8601 format
+  - endDate (required): Range end date in ISO 8601 format
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-12-06T10:00:00.000Z",
+  "message": "Get Time Range Statistics",
+  "data": {
+    "startDate": "2024-11-01T00:00:00.000Z",
+    "endDate": "2024-11-30T23:59:59.999Z",
+    "totalCardsReviewed": 450,
+    "totalSessions": 25,
+    "totalStudyTime": 12000,
+    "averageSessionTime": 480,
+    "daysStudied": 23,
+    "totalDaysInRange": 30,
+    "consistencyPercentage": 76.7,
+    "correctReviews": 380,
+    "incorrectReviews": 70,
+    "accuracyPercentage": 84.4,
+    "newCardsIntroduced": 60,
+    "cardsMatured": 45,
+    "averageReviewsPerDay": 15.0,
+    "qualityDistribution": {
+      "Again": 70,
+      "Hard": 50,
+      "Good": 280,
+      "Easy": 50
+    },
+    "dailyBreakdown": [
+      { "date": "2024-11-01", "reviewCount": 15, "studyTime": 400 },
+      { "date": "2024-11-02", "reviewCount": 18, "studyTime": 480 }
+    ],
+    "currentStreak": 12,
+    "longestStreak": 15
+  },
+  "path": "/api/study/time-range-statistics/1?startDate=2024-11-01&endDate=2024-11-30"
+}
+```
+
+**Response Field Descriptions:**
+
+- startDate, endDate (string): ISO timestamps of the time range
+- totalCardsReviewed (number): Total cards reviewed in range
+- totalSessions (number): Number of unique study days
+- totalStudyTime (number): Total study time in seconds
+- averageSessionTime (number): Average study time per session in seconds
+- daysStudied (number): Number of days with at least one review
+- totalDaysInRange (number): Total days between start and end dates
+- consistencyPercentage (number): (daysStudied / totalDaysInRange) \* 100
+- correctReviews, incorrectReviews (number): Review counts by correctness
+- accuracyPercentage (number): Percentage of correct reviews
+- newCardsIntroduced (number): New cards first reviewed in this range
+- cardsMatured (number): Cards that reached mature status (interval ≥ 21 days)
+- averageReviewsPerDay (number): Average reviews per day
+- qualityDistribution (object): Review counts by quality rating
+- dailyBreakdown (array): Day-by-day review counts and study times
+- currentStreak (number): Current consecutive study days from end date
+- longestStreak (number): Longest consecutive study streak in range
+
+**Notes:**
+
+- Study time is estimated at 10 seconds per review (timeSpent field not yet implemented)
+- Streaks count backward from the end date
+- Daily breakdown includes only days with at least one review
+- All percentages rounded to 2 decimal places

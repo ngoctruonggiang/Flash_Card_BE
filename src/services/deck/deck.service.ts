@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 import { DeckStatisticsDto } from 'src/utils/types/dto/deck/deckStatistics.dto';
+import { AdvancedDeckStatisticsDto } from 'src/utils/types/dto/deck/advancedDeckStatistics.dto';
 import { ReviewQuality, LanguageMode } from '@prisma/client';
 
 @Injectable()
@@ -296,5 +297,222 @@ export class DeckService {
       deckId,
       lastStudiedAt: latestReview?.reviewedAt || null,
     };
+  }
+
+  async getAdvancedStatistics(
+    deckId: number,
+  ): Promise<AdvancedDeckStatisticsDto> {
+    const now = new Date();
+
+    // Get all cards in the deck with their reviews
+    const cards = await this.prisma.card.findMany({
+      where: { deckId },
+      include: {
+        reviews: {
+          orderBy: {
+            reviewedAt: 'desc',
+          },
+        },
+      },
+    });
+
+    const totalCards = cards.length;
+
+    // Card distribution by status
+    const newCards = cards.filter((c) => c.status === 'new').length;
+    const learningCards = cards.filter((c) => c.status === 'learning').length;
+    const reviewCards = cards.filter((c) => c.status === 'review').length;
+    const relearningCards = cards.filter(
+      (c) => c.status === 'relearning',
+    ).length;
+
+    // Mature and young cards (based on interval >= 21 days)
+    const matureCards = cards.filter(
+      (c) => c.status === 'review' && c.interval >= 21,
+    ).length;
+    const youngCards = cards.filter(
+      (c) => c.status === 'review' && c.interval < 21,
+    ).length;
+
+    // Cards due today and next week
+    const cardsDueToday = cards.filter(
+      (c) => c.nextReviewDate && c.nextReviewDate <= now,
+    ).length;
+
+    const nextWeekDate = new Date(now);
+    nextWeekDate.setDate(nextWeekDate.getDate() + 7);
+    const cardsDueNextWeek = cards.filter(
+      (c) =>
+        c.nextReviewDate &&
+        c.nextReviewDate > now &&
+        c.nextReviewDate <= nextWeekDate,
+    ).length;
+
+    // Get all reviews for the deck
+    const allReviews = await this.prisma.cardReview.findMany({
+      where: {
+        card: {
+          deckId,
+        },
+      },
+      select: {
+        quality: true,
+        reviewedAt: true,
+      },
+    });
+
+    const totalReviews = allReviews.length;
+
+    // Quality distribution
+    const againCount = allReviews.filter((r) => r.quality === 'Again').length;
+    const hardCount = allReviews.filter((r) => r.quality === 'Hard').length;
+    const goodCount = allReviews.filter((r) => r.quality === 'Good').length;
+    const easyCount = allReviews.filter((r) => r.quality === 'Easy').length;
+
+    const correctReviews = goodCount + easyCount;
+    const correctPercentage =
+      totalReviews > 0 ? (correctReviews / totalReviews) * 100 : 0;
+
+    // Calculate average ease factor and interval for review cards
+    const reviewCardsData = cards.filter((c) => c.status === 'review');
+    const averageEaseFactor =
+      reviewCardsData.length > 0
+        ? reviewCardsData.reduce((sum, c) => sum + c.easeFactor, 0) /
+          reviewCardsData.length
+        : 0;
+
+    const averageInterval =
+      reviewCardsData.length > 0
+        ? reviewCardsData.reduce((sum, c) => sum + c.interval, 0) /
+          reviewCardsData.length
+        : 0;
+
+    // Get last studied date
+    const lastReview =
+      allReviews.length > 0
+        ? allReviews.reduce((latest, current) =>
+            current.reviewedAt > latest.reviewedAt ? current : latest,
+          )
+        : null;
+
+    // Calculate consecutive days studied (reuse existing logic if available)
+    // For now, we'll calculate a simple version
+    const consecutiveDaysStudied = await this.getConsecutiveStudyDays(deckId);
+
+    // Calculate average reviews per day (last 30 days)
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentReviews = allReviews.filter(
+      (r) => r.reviewedAt >= thirtyDaysAgo,
+    );
+    const averageReviewsPerDay = recentReviews.length / 30;
+
+    // Estimated review time (assuming 10 seconds per card)
+    const estimatedReviewTime = Math.ceil((cardsDueToday * 10) / 60);
+
+    // Completion percentage (cards that have been reviewed at least once)
+    const reviewedCards = cards.filter((c) => c.reviews.length > 0).length;
+    const completionPercentage =
+      totalCards > 0 ? (reviewedCards / totalCards) * 100 : 0;
+
+    // Maturity percentage
+    const maturityPercentage =
+      totalCards > 0 ? (matureCards / totalCards) * 100 : 0;
+
+    return {
+      totalCards,
+      newCards,
+      learningCards,
+      reviewCards,
+      relearningCards,
+      matureCards,
+      youngCards,
+      cardsDueToday,
+      cardsDueNextWeek,
+      retentionRate: parseFloat(correctPercentage.toFixed(2)),
+      averageEaseFactor: parseFloat(averageEaseFactor.toFixed(2)),
+      averageInterval: parseFloat(averageInterval.toFixed(2)),
+      totalReviews,
+      correctPercentage: parseFloat(correctPercentage.toFixed(2)),
+      lastStudiedDate: lastReview ? lastReview.reviewedAt : null,
+      consecutiveDaysStudied,
+      cardDistribution: {
+        new: newCards,
+        learning: learningCards,
+        review: reviewCards,
+        relearning: relearningCards,
+      },
+      qualityDistribution: {
+        Again: againCount,
+        Hard: hardCount,
+        Good: goodCount,
+        Easy: easyCount,
+      },
+      averageReviewsPerDay: parseFloat(averageReviewsPerDay.toFixed(2)),
+      estimatedReviewTime,
+      completionPercentage: parseFloat(completionPercentage.toFixed(2)),
+      maturityPercentage: parseFloat(maturityPercentage.toFixed(2)),
+    };
+  }
+
+  private async getConsecutiveStudyDays(deckId: number): Promise<number> {
+    const reviews = await this.prisma.cardReview.findMany({
+      where: {
+        card: {
+          deckId,
+        },
+      },
+      orderBy: {
+        reviewedAt: 'desc',
+      },
+      select: {
+        reviewedAt: true,
+      },
+    });
+
+    if (reviews.length === 0) return 0;
+
+    // Group reviews by date
+    const uniqueDates = new Set(
+      reviews.map((r) => r.reviewedAt.toISOString().split('T')[0]),
+    );
+
+    const sortedDates = Array.from(uniqueDates).sort().reverse();
+
+    let consecutiveDays = 0;
+    const today = new Date().toISOString().split('T')[0];
+
+    // Check if studied today or yesterday
+    if (sortedDates[0] === today) {
+      consecutiveDays = 1;
+    } else {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      if (sortedDates[0] === yesterdayStr) {
+        consecutiveDays = 1;
+      } else {
+        return 0; // Streak broken
+      }
+    }
+
+    // Count consecutive days backward
+    for (let i = 1; i < sortedDates.length; i++) {
+      const currentDate = new Date(sortedDates[i]);
+      const previousDate = new Date(sortedDates[i - 1]);
+      const diffDays = Math.floor(
+        (previousDate.getTime() - currentDate.getTime()) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      if (diffDays === 1) {
+        consecutiveDays++;
+      } else {
+        break;
+      }
+    }
+
+    return consecutiveDays;
   }
 }

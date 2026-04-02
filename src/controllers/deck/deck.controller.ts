@@ -13,6 +13,8 @@ import { DeckService } from '../../services/deck/deck.service';
 import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 import { IdParamDto } from 'src/utils/types/dto/IDParam.dto';
 import { UpdateDeckDto } from 'src/utils/types/dto/deck/updateDeck.dto';
+import { DeckStatisticsDto } from 'src/utils/types/dto/deck/deckStatistics.dto';
+import { AdvancedDeckStatisticsDto } from 'src/utils/types/dto/deck/advancedDeckStatistics.dto';
 import { GetUser } from 'src/utils/decorators/user.decorator';
 import * as client from '@prisma/client';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
@@ -45,6 +47,10 @@ export class DeckController {
   @Get('/by')
   @ApiOperation({ summary: 'Get all decks by user ID (Admin)' })
   @ApiQuery({ name: 'userId', required: false, type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all decks or decks by user ID',
+  })
   @RouteConfig({
     message: 'Get All Decks By UserID or All Decks',
     requiresAuth: true,
@@ -59,6 +65,10 @@ export class DeckController {
 
   @Get()
   @ApiOperation({ summary: 'Get all decks for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all decks for the current user',
+  })
   @RouteConfig({
     message: 'Get All Decks By User',
     requiresAuth: true,
@@ -69,6 +79,10 @@ export class DeckController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a deck by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the deck with the specified ID',
+  })
   @RouteConfig({
     message: 'Get Deck By ID',
     requiresAuth: true,
@@ -79,6 +93,7 @@ export class DeckController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a deck' })
+  @ApiResponse({ status: 200, description: 'Deck updated successfully' })
   @RouteConfig({
     message: 'Update Deck By ID',
     requiresAuth: true,
@@ -93,6 +108,7 @@ export class DeckController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a deck' })
+  @ApiResponse({ status: 200, description: 'Deck deleted successfully' })
   @RouteConfig({
     message: 'Delete Deck By ID',
     requiresAuth: true,
@@ -138,7 +154,6 @@ export class DeckController {
     requiresAuth: true,
   })
   async getCardsDueToday(@Param() params: IdParamDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     return await this.deckService.getCardsDueToday(params.id);
   }
 
@@ -148,13 +163,13 @@ export class DeckController {
     status: 200,
     description:
       'Returns the percentage of correct reviews and detailed statistics',
+    type: DeckStatisticsDto,
   })
   @RouteConfig({
     message: 'Get Deck Statistics',
     requiresAuth: true,
   })
   async getDeckStatistics(@Param() params: IdParamDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     return await this.deckService.getDeckStatistics(params.id);
   }
 
@@ -170,7 +185,22 @@ export class DeckController {
     requiresAuth: true,
   })
   async getLastStudiedDate(@Param() params: IdParamDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     return await this.deckService.getLastStudiedDate(params.id);
+  }
+
+  @Get(':id/advanced-statistics')
+  @ApiOperation({ summary: 'Get advanced statistics for a deck' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns comprehensive statistics including card distribution, retention rate, maturity data, and more',
+    type: AdvancedDeckStatisticsDto,
+  })
+  @RouteConfig({
+    message: 'Get Advanced Deck Statistics',
+    requiresAuth: true,
+  })
+  async getAdvancedStatistics(@Param() params: IdParamDto) {
+    return await this.deckService.getAdvancedStatistics(params.id);
   }
 }

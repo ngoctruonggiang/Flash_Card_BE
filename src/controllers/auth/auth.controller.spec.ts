@@ -7,7 +7,7 @@ import { AuthController } from './auth.controller';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { SignInDto } from 'src/utils/types/dto/user/signIn.dto';
 
-describe('AUTHController', () => {
+describe('AuthController', () => {
   let controller: AuthController;
   let authService: AuthService;
 

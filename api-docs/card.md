@@ -371,3 +371,98 @@ Example for a **card that has never been reviewed**:
 - The lastReviewedAt and nextReviewDate are based on the most recent review.
 - Cards that have never been reviewed will have null for both date fields.
 - This is useful for displaying review progress and scheduling information in the UI.
+
+### **4.8 Get Card Statistics**
+
+Get comprehensive statistics for a specific card including review history, retention rates, and performance metrics.
+
+- **URL**: /card/:id/statistics
+- **Method**: GET
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-12-06T10:00:00.000Z",
+  "message": "Get Card Statistics",
+  "data": {
+    "totalReviews": 15,
+    "correctReviews": 12,
+    "correctPercentage": 80.0,
+    "againCount": 2,
+    "hardCount": 1,
+    "goodCount": 10,
+    "easyCount": 2,
+    "currentInterval": 7,
+    "easeFactor": 2.5,
+    "nextReviewDate": "2025-12-10T00:00:00.000Z",
+    "lastReviewDate": "2025-12-03T10:30:00.000Z",
+    "status": "review",
+    "averageTimePerReview": null,
+    "cardAge": 45,
+    "retentionRate": 80.0
+  },
+  "path": "/api/card/1/statistics"
+}
+```
+
+**Response Field Descriptions:**
+
+- totalReviews (number): Total number of times the card has been reviewed
+- correctReviews (number): Number of reviews with "Good" or "Easy" quality
+- correctPercentage (number): Percentage of correct reviews
+- againCount, hardCount, goodCount, easyCount (number): Distribution of review qualities
+- currentInterval (number): Current interval in days until next review
+- easeFactor (number): Current ease factor of the card (used in SM-2 algorithm)
+- nextReviewDate (string): ISO 8601 timestamp of when the card is due for next review
+- lastReviewDate (string | null): ISO 8601 timestamp of the most recent review (null if never reviewed)
+- status (string): Current status (new, learning, review, relearning)
+- averageTimePerReview (number | null): Average time spent per review in seconds (currently null)
+- cardAge (number): Number of days since the card was created
+- retentionRate (number): Overall retention rate percentage for this card
+
+### **4.9 Get Cards Statistics By Deck**
+
+Get statistics for all cards in a specific deck.
+
+- **URL**: /card/deck/:deckId/statistics
+- **Method**: GET
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-12-06T10:00:00.000Z",
+  "message": "Get Cards Statistics By Deck",
+  "data": [
+    {
+      "totalReviews": 15,
+      "correctReviews": 12,
+      "correctPercentage": 80.0,
+      "againCount": 2,
+      "hardCount": 1,
+      "goodCount": 10,
+      "easyCount": 2,
+      "currentInterval": 7,
+      "easeFactor": 2.5,
+      "nextReviewDate": "2025-12-10T00:00:00.000Z",
+      "lastReviewDate": "2025-12-03T10:30:00.000Z",
+      "status": "review",
+      "averageTimePerReview": null,
+      "cardAge": 45,
+      "retentionRate": 80.0
+    }
+  ],
+  "path": "/api/card/deck/1/statistics"
+}
+```
+
+**Notes:**
+
+- Returns an array of card statistics, one for each card in the deck
+- Useful for displaying overall deck performance and identifying problem cards
+- Can be used to generate progress reports and insights

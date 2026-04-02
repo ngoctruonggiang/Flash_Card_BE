@@ -13,6 +13,7 @@ import { CardService } from '../../services/card/card.service';
 import { CreateCardDto } from 'src/utils/types/dto/card/createCard.dto';
 import { IdParamDto } from 'src/utils/types/dto/IDParam.dto';
 import { UpdateCardDto } from 'src/utils/types/dto/card/updateCard.dto';
+import { CardStatisticsDto } from 'src/utils/types/dto/card/cardStatistics.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
 
@@ -117,5 +118,35 @@ export class CardController {
   })
   getReviewStatus(@Param() params: IdParamDto) {
     return this.cardService.getReviewStatus(params.id);
+  }
+
+  @Get(':id/statistics')
+  @ApiOperation({ summary: 'Get detailed statistics for a specific card' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns comprehensive statistics for the card',
+    type: CardStatisticsDto,
+  })
+  @RouteConfig({
+    message: 'Get Card Statistics',
+    requiresAuth: true,
+  })
+  getCardStatistics(@Param() params: IdParamDto) {
+    return this.cardService.getCardStatistics(params.id);
+  }
+
+  @Get('deck/:deckId/statistics')
+  @ApiOperation({ summary: 'Get statistics for all cards in a deck' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns statistics for all cards in the specified deck',
+    type: [CardStatisticsDto],
+  })
+  @RouteConfig({
+    message: 'Get Cards Statistics By Deck',
+    requiresAuth: true,
+  })
+  getCardsStatisticsByDeck(@Param('deckId', ParseIntPipe) deckId: number) {
+    return this.cardService.getCardsStatisticsByDeck(deckId);
   }
 }
