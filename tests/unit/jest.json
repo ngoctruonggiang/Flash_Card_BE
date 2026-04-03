@@ -10,6 +10,6 @@
     "^src/(.*)$": "<rootDir>/src/$1",
     "^@/(.*)$": "<rootDir>/src/$1"
   },
-  "roots": ["<rootDir>/tests/unit"],
+  "roots": ["<rootDir>/tests"],
   "transformIgnorePatterns": ["node_modules/(?!.*\\.mjs$)"]
 }
