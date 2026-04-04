@@ -225,8 +225,6 @@ Delete a specific deck.
 }
 ```
 
-**Note:** Delete operations may return a 500 error if there are related records (cascading delete issue).
-
 ### **3.7 Get Reviewed Cards Count**
 
 Retrieve the number of cards that have been reviewed at least once in a specific deck.
