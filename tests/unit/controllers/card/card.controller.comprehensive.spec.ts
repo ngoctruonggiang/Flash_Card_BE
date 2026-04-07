@@ -426,10 +426,10 @@ describe('CardController - Comprehensive Tests', () => {
   describe('getReviewStatus', () => {
     it('should get review status for card', async () => {
       const status = {
-        lastReviewed: new Date('2025-01-14'),
+        cardId: 1,
+        lastReviewedAt: new Date('2025-01-14'),
         nextReviewDate: new Date('2025-01-21'),
-        status: 'review',
-        interval: 7,
+        hasBeenReviewed: true,
       };
       mockCardService.getReviewStatus.mockResolvedValue(status);
 
@@ -441,17 +441,17 @@ describe('CardController - Comprehensive Tests', () => {
 
     it('should return null dates for new card', async () => {
       const status = {
-        lastReviewed: null,
+        cardId: 1,
+        lastReviewedAt: null,
         nextReviewDate: null,
-        status: 'new',
-        interval: 0,
+        hasBeenReviewed: false,
       };
       mockCardService.getReviewStatus.mockResolvedValue(status);
 
       const result = await controller.getReviewStatus({ id: 1 });
 
-      expect(result.lastReviewed).toBeNull();
-      expect(result.status).toBe('new');
+      expect(result.lastReviewedAt).toBeNull();
+      expect(result.hasBeenReviewed).toBe(false);
     });
 
     it('should propagate NotFoundException', async () => {
@@ -464,32 +464,32 @@ describe('CardController - Comprehensive Tests', () => {
       );
     });
 
-    it('should return status for learning card', async () => {
+    it('should return status for reviewed card', async () => {
       const status = {
-        lastReviewed: new Date(),
+        cardId: 1,
+        lastReviewedAt: new Date(),
         nextReviewDate: new Date(),
-        status: 'learning',
-        interval: 10, // minutes
+        hasBeenReviewed: true,
       };
       mockCardService.getReviewStatus.mockResolvedValue(status);
 
       const result = await controller.getReviewStatus({ id: 1 });
 
-      expect(result.status).toBe('learning');
+      expect(result.hasBeenReviewed).toBe(true);
     });
 
-    it('should return status for relearning card', async () => {
+    it('should return cardId in status', async () => {
       const status = {
-        lastReviewed: new Date(),
+        cardId: 1,
+        lastReviewedAt: new Date(),
         nextReviewDate: new Date(),
-        status: 'relearning',
-        interval: 10,
+        hasBeenReviewed: true,
       };
       mockCardService.getReviewStatus.mockResolvedValue(status);
 
       const result = await controller.getReviewStatus({ id: 1 });
 
-      expect(result.status).toBe('relearning');
+      expect(result.cardId).toBe(1);
     });
   });
 

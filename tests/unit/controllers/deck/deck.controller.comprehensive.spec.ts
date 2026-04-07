@@ -372,11 +372,13 @@ describe('DeckController - Comprehensive Tests', () => {
   describe('getDeckStatistics', () => {
     it('should get deck statistics', async () => {
       const stats = {
-        totalCards: 100,
-        newCards: 20,
-        learningCards: 30,
-        reviewCards: 50,
-        correctPercentage: 85.5,
+        totalReviews: 100,
+        correctReviews: 85,
+        correctPercentage: 85.0,
+        againCount: 15,
+        hardCount: 20,
+        goodCount: 50,
+        easyCount: 15,
       };
       mockDeckService.getDeckStatistics.mockResolvedValue(stats);
 
@@ -388,17 +390,19 @@ describe('DeckController - Comprehensive Tests', () => {
 
     it('should return zero stats for empty deck', async () => {
       const stats = {
-        totalCards: 0,
-        newCards: 0,
-        learningCards: 0,
-        reviewCards: 0,
+        totalReviews: 0,
+        correctReviews: 0,
         correctPercentage: 0,
+        againCount: 0,
+        hardCount: 0,
+        goodCount: 0,
+        easyCount: 0,
       };
       mockDeckService.getDeckStatistics.mockResolvedValue(stats);
 
       const result = await controller.getDeckStatistics({ id: 1 });
 
-      expect(result.totalCards).toBe(0);
+      expect(result.totalReviews).toBe(0);
     });
 
     it('should propagate NotFoundException', async () => {

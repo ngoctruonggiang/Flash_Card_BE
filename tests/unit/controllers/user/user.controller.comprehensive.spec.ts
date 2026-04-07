@@ -1,12 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from 'src/controllers/user/user.controller';
 import { UserService } from 'src/services/user/user.service';
-import {
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('UserController - Comprehensive Tests', () => {
   let controller: UserController;
@@ -24,15 +22,6 @@ describe('UserController - Comprehensive Tests', () => {
     email: 'test@example.com',
     username: 'testuser',
     role: 'USER',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  const mockAdminUser = {
-    id: 99,
-    email: 'admin@example.com',
-    username: 'admin',
-    role: 'ADMIN',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -109,9 +98,9 @@ describe('UserController - Comprehensive Tests', () => {
       const updatedUser = { ...mockUser, username: 'newusername' };
       mockUserService.update.mockResolvedValue(updatedUser);
 
-      const result = controller.update(mockUser as any, updateDto);
+      const result = await controller.update(mockUser as any, updateDto);
 
-      expect(result).resolves.toEqual(updatedUser);
+      expect(result).toEqual(updatedUser);
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
@@ -122,9 +111,9 @@ describe('UserController - Comprehensive Tests', () => {
         email: 'newemail@example.com',
       });
 
-      const result = controller.update(mockUser as any, updateDto);
+      const result = await controller.update(mockUser as any, updateDto);
 
-      expect(result).resolves.toHaveProperty('email', 'newemail@example.com');
+      expect(result).toHaveProperty('email', 'newemail@example.com');
     });
 
     it('should update username', async () => {
@@ -134,16 +123,16 @@ describe('UserController - Comprehensive Tests', () => {
         username: 'newuser',
       });
 
-      const result = controller.update(mockUser as any, updateDto);
+      const result = await controller.update(mockUser as any, updateDto);
 
-      expect(result).resolves.toHaveProperty('username', 'newuser');
+      expect(result).toHaveProperty('username', 'newuser');
     });
 
     it('should update password', async () => {
       const updateDto = { password: 'newPassword123!' };
       mockUserService.update.mockResolvedValue(mockUser);
 
-      controller.update(mockUser as any, updateDto);
+      await controller.update(mockUser as any, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
@@ -152,7 +141,7 @@ describe('UserController - Comprehensive Tests', () => {
       const updateDto = {};
       mockUserService.update.mockResolvedValue(mockUser);
 
-      controller.update(mockUser as any, updateDto);
+      await controller.update(mockUser as any, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
@@ -167,7 +156,7 @@ describe('UserController - Comprehensive Tests', () => {
         ...updateDto,
       });
 
-      controller.update(mockUser as any, updateDto);
+      await controller.update(mockUser as any, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
@@ -190,7 +179,7 @@ describe('UserController - Comprehensive Tests', () => {
         username: 'người_dùng_mới',
       });
 
-      controller.update(mockUser as any, updateDto);
+      await controller.update(mockUser as any, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
@@ -200,9 +189,9 @@ describe('UserController - Comprehensive Tests', () => {
     it('should remove user account', async () => {
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
-      const result = controller.remove(mockUser as any);
+      const result = await controller.remove(mockUser as any);
 
-      expect(result).resolves.toEqual({ deleted: true });
+      expect(result).toEqual({ deleted: true });
       expect(userService.remove).toHaveBeenCalledWith(mockUser.id);
     });
 
@@ -210,7 +199,7 @@ describe('UserController - Comprehensive Tests', () => {
       const user = { ...mockUser, id: 123 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
-      controller.remove(user as any);
+      await controller.remove(user as any);
 
       expect(userService.remove).toHaveBeenCalledWith(123);
     });
@@ -233,18 +222,18 @@ describe('UserController - Comprehensive Tests', () => {
       ];
       mockUserService.getAllUsers.mockResolvedValue(allUsers);
 
-      const result = controller.getAllUser();
+      const result = await controller.getAllUser();
 
-      expect(result).resolves.toEqual(allUsers);
+      expect(result).toEqual(allUsers);
       expect(userService.getAllUsers).toHaveBeenCalled();
     });
 
     it('should return empty array when no users exist', async () => {
       mockUserService.getAllUsers.mockResolvedValue([]);
 
-      const result = controller.getAllUser();
+      const result = await controller.getAllUser();
 
-      expect(result).resolves.toEqual([]);
+      expect(result).toEqual([]);
     });
 
     it('should return users without passwords', async () => {
@@ -275,9 +264,9 @@ describe('UserController - Comprehensive Tests', () => {
       const params = { id: 1 };
       mockUserService.getUserById.mockResolvedValue(mockUser);
 
-      const result = controller.getUserById(params);
+      const result = await controller.getUserById(params);
 
-      expect(result).resolves.toEqual(mockUser);
+      expect(result).toEqual(mockUser);
       expect(userService.getUserById).toHaveBeenCalledWith(1);
     });
 
@@ -286,9 +275,9 @@ describe('UserController - Comprehensive Tests', () => {
       const user = { ...mockUser, id: 999 };
       mockUserService.getUserById.mockResolvedValue(user);
 
-      const result = controller.getUserById(params);
+      const result = await controller.getUserById(params);
 
-      expect(result).resolves.toEqual(user);
+      expect(result).toEqual(user);
       expect(userService.getUserById).toHaveBeenCalledWith(999);
     });
 
@@ -307,7 +296,7 @@ describe('UserController - Comprehensive Tests', () => {
       const params = { id: 0 };
       mockUserService.getUserById.mockResolvedValue(null);
 
-      const result = controller.getUserById(params);
+      await controller.getUserById(params);
 
       expect(userService.getUserById).toHaveBeenCalledWith(0);
     });
@@ -320,9 +309,9 @@ describe('UserController - Comprehensive Tests', () => {
       const updatedUser = { ...mockUser, id: 2, username: 'updateduser' };
       mockUserService.update.mockResolvedValue(updatedUser);
 
-      const result = controller.updateAdmin(params, updateDto);
+      const result = await controller.updateAdmin(params, updateDto);
 
-      expect(result).resolves.toEqual(updatedUser);
+      expect(result).toEqual(updatedUser);
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
@@ -335,21 +324,21 @@ describe('UserController - Comprehensive Tests', () => {
         email: 'updated@example.com',
       });
 
-      controller.updateAdmin(params, updateDto);
+      await controller.updateAdmin(params, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
     it('should update user role', async () => {
       const params = { id: 2 };
-      const updateDto = { role: 'ADMIN' };
+      const updateDto = { role: 'ADMIN' as any };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
         id: 2,
         role: 'ADMIN',
       });
 
-      controller.updateAdmin(params, updateDto);
+      await controller.updateAdmin(params, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
@@ -371,7 +360,7 @@ describe('UserController - Comprehensive Tests', () => {
       const updateDto = {};
       mockUserService.update.mockResolvedValue(mockUser);
 
-      controller.updateAdmin(params, updateDto);
+      await controller.updateAdmin(params, updateDto);
 
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
@@ -382,9 +371,9 @@ describe('UserController - Comprehensive Tests', () => {
       const params = { id: 2 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
-      const result = controller.removeAdmin(params);
+      const result = await controller.removeAdmin(params);
 
-      expect(result).resolves.toEqual({ deleted: true });
+      expect(result).toEqual({ deleted: true });
       expect(userService.remove).toHaveBeenCalledWith(2);
     });
 
@@ -403,7 +392,7 @@ describe('UserController - Comprehensive Tests', () => {
       const params = { id: 99 }; // Admin user id
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
-      controller.removeAdmin(params);
+      await controller.removeAdmin(params);
 
       expect(userService.remove).toHaveBeenCalledWith(99);
     });
@@ -412,7 +401,7 @@ describe('UserController - Comprehensive Tests', () => {
       const params = { id: 0 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
-      controller.removeAdmin(params);
+      await controller.removeAdmin(params);
 
       expect(userService.remove).toHaveBeenCalledWith(0);
     });

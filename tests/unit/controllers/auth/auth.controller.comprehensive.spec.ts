@@ -41,14 +41,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         const expectedResponse = {
           accessToken: 'jwt-token',
-          user: {
-            id: 1,
-            email: 'test@example.com',
-            username: 'testuser',
-          },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         };
         mockAuthService.signUp.mockResolvedValue(expectedResponse);
 
@@ -64,10 +66,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         const expectedResponse = {
           accessToken: 'jwt-token-12345',
-          user: { id: 1, email: 'test@example.com', username: 'testuser' },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         };
         mockAuthService.signUp.mockResolvedValue(expectedResponse);
 
@@ -82,16 +90,22 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         const expectedResponse = {
           accessToken: 'jwt-token',
-          user: { id: 1, email: 'test@example.com', username: 'testuser' },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         };
         mockAuthService.signUp.mockResolvedValue(expectedResponse);
 
         const result = await controller.register(signUpDto);
 
-        expect(result.user).not.toHaveProperty('password');
+        expect(result).not.toHaveProperty('password');
       });
     });
 
@@ -101,10 +115,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'valid.email@example.com',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'valid.email@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.register(signUpDto);
@@ -119,6 +139,7 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'invalid-email',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockRejectedValue(
           new BadRequestException('Invalid email'),
@@ -134,6 +155,7 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'existing@example.com',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockRejectedValue(
           new ConflictException('Email already exists'),
@@ -151,10 +173,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'valid_username123',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'valid_username123',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.register(signUpDto);
@@ -169,6 +197,7 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'existinguser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockRejectedValue(
           new ConflictException('Username already exists'),
@@ -184,10 +213,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'user_name-123',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'user_name-123',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.register(signUpDto);
@@ -202,10 +237,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'testuser',
           password: 'StrongP@ssw0rd!',
+          confirmPassword: 'StrongP@ssw0rd!',
         };
         mockAuthService.signUp.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.register(signUpDto);
@@ -220,6 +261,7 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'testuser',
           password: '123',
+          confirmPassword: '123',
         };
         mockAuthService.signUp.mockRejectedValue(
           new BadRequestException('Password too weak'),
@@ -237,6 +279,7 @@ describe('AuthController - Comprehensive Tests', () => {
           email: '',
           username: '',
           password: '',
+          confirmPassword: '',
         };
         mockAuthService.signUp.mockRejectedValue(
           new BadRequestException('Invalid input'),
@@ -251,10 +294,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: longEmail,
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: longEmail,
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.register(signUpDto);
@@ -267,10 +316,16 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'tên_người_dùng',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'tên_người_dùng',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.register(signUpDto);
@@ -283,6 +338,7 @@ describe('AuthController - Comprehensive Tests', () => {
           email: 'test@example.com',
           username: 'testuser',
           password: 'Password123!',
+          confirmPassword: 'Password123!',
         };
         mockAuthService.signUp.mockRejectedValue(new Error('Database error'));
 
@@ -302,11 +358,12 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         const expectedResponse = {
           accessToken: 'jwt-token',
-          user: {
-            id: 1,
-            email: 'test@example.com',
-            username: 'testuser',
-          },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         };
         mockAuthService.signIn.mockResolvedValue(expectedResponse);
 
@@ -324,7 +381,12 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         const expectedResponse = {
           accessToken: 'valid-jwt-token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         };
         mockAuthService.signIn.mockResolvedValue(expectedResponse);
 
@@ -341,13 +403,18 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         const expectedResponse = {
           accessToken: 'token',
-          user: { id: 1, email: 'test@example.com', username: 'testuser' },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         };
         mockAuthService.signIn.mockResolvedValue(expectedResponse);
 
         const result = await controller.login(signInDto);
 
-        expect(result.user).not.toHaveProperty('password');
+        expect(result).not.toHaveProperty('password');
       });
     });
 
@@ -415,7 +482,12 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         mockAuthService.signIn.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'TEST@EXAMPLE.COM',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.login(signInDto);
@@ -430,7 +502,12 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         mockAuthService.signIn.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.login(signInDto);
@@ -445,7 +522,12 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         mockAuthService.signIn.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.login(signInDto);
@@ -460,7 +542,12 @@ describe('AuthController - Comprehensive Tests', () => {
         };
         mockAuthService.signIn.mockResolvedValue({
           accessToken: 'token',
-          user: { id: 1 },
+          id: 1,
+          email: 'test@example.com',
+          username: 'testuser',
+          role: 'USER',
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
         });
 
         await controller.login(signInDto);
