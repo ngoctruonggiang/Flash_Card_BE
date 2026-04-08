@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { CardStatisticsDto } from 'src/utils/types/dto/card/cardStatistics.dto';
 
 interface ExampleSentence {
   sentence: string;
@@ -195,5 +196,83 @@ export class CardService {
       nextReviewDate: latestReview ? latestReview.nextReviewDate : null,
       hasBeenReviewed: !!latestReview,
     };
+  }
+
+  async getCardStatistics(cardId: number): Promise<CardStatisticsDto> {
+    const card = await this.prisma.card.findUnique({
+      where: { id: cardId },
+      include: {
+        reviews: {
+          orderBy: {
+            reviewedAt: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!card) {
+      throw new Error('Card not found');
+    }
+
+    const reviews = card.reviews;
+    const totalReviews = reviews.length;
+
+    // Count reviews by quality
+    const againCount = reviews.filter((r) => r.quality === 'Again').length;
+    const hardCount = reviews.filter((r) => r.quality === 'Hard').length;
+    const goodCount = reviews.filter((r) => r.quality === 'Good').length;
+    const easyCount = reviews.filter((r) => r.quality === 'Easy').length;
+
+    // Correct reviews are Good and Easy
+    const correctReviews = goodCount + easyCount;
+    const correctPercentage =
+      totalReviews > 0 ? (correctReviews / totalReviews) * 100 : 0;
+
+    // Average time per review is not available in current schema
+    // const averageTimePerReview = null;
+
+    // Calculate card age
+    const cardAge = Math.floor(
+      (Date.now() - card.createdAt.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    // Get last review date
+    const lastReview = reviews.length > 0 ? reviews[reviews.length - 1] : null;
+
+    // Calculate retention rate (correct answers / total reviews)
+    const retentionRate = correctPercentage;
+
+    return {
+      totalReviews,
+      correctReviews,
+      correctPercentage: parseFloat(correctPercentage.toFixed(2)),
+      againCount,
+      hardCount,
+      goodCount,
+      easyCount,
+      currentInterval: card.interval,
+      easeFactor: card.easeFactor,
+      nextReviewDate: card.nextReviewDate!,
+      lastReviewDate: lastReview ? lastReview.reviewedAt : null,
+      status: card.status,
+      averageTimePerReview: null,
+      cardAge,
+      retentionRate: parseFloat(retentionRate.toFixed(2)),
+    };
+  }
+
+  async getCardsStatisticsByDeck(deckId: number): Promise<CardStatisticsDto[]> {
+    const cards = await this.prisma.card.findMany({
+      where: { deckId },
+      include: {
+        reviews: {
+          orderBy: {
+            reviewedAt: 'asc',
+          },
+        },
+      },
+    });
+
+    return Promise.all(cards.map((card) => this.getCardStatistics(card.id)));
   }
 }

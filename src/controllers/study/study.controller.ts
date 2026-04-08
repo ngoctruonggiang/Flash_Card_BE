@@ -8,6 +8,8 @@ import { IdParamDto } from 'src/utils/types/dto/IDParam.dto';
 import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
 import { ReviewPreviewDto } from 'src/utils/types/dto/review/previewReview.dto';
 import { ConsecutiveDaysDto } from 'src/utils/types/dto/review/consecutiveDays.dto';
+import { StudySessionStatisticsDto } from 'src/utils/types/dto/study/studySessionStatistics.dto';
+import { TimeRangeStatisticsDto } from 'src/utils/types/dto/study/timeRangeStatistics.dto';
 import type { User } from '@prisma/client';
 
 @ApiTags('Study')
@@ -76,6 +78,7 @@ export class StudyController {
     summary: 'Get cards for practice (Cram Mode) - Ignores schedule',
   })
   @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Returns cards for cram session' })
   @RouteConfig({
     message: 'Start Cram Session',
     requiresAuth: true,
@@ -114,5 +117,76 @@ export class StudyController {
   })
   submitCramReview(@Body() cardReview: SubmitReviewDto) {
     return this.reviewService.submitCramReviews(cardReview);
+  }
+
+  @Get('/session-statistics/:deckId')
+  @ApiOperation({ summary: 'Get study session statistics for a time range' })
+  @ApiQuery({
+    name: 'startDate',
+    required: true,
+    type: String,
+    description: 'Session start date in ISO format',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: true,
+    type: String,
+    description: 'Session end date in ISO format',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns statistics for the study session',
+    type: StudySessionStatisticsDto,
+  })
+  @RouteConfig({
+    message: 'Get Study Session Statistics',
+    requiresAuth: true,
+  })
+  async getSessionStatistics(
+    @Param('deckId') deckId: number,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return await this.studyService.calculateSessionStatistics(
+      Number(deckId),
+      new Date(startDate),
+      new Date(endDate),
+    );
+  }
+
+  @Get('/time-range-statistics/:deckId')
+  @ApiOperation({ summary: 'Get comprehensive statistics for a time range' })
+  @ApiQuery({
+    name: 'startDate',
+    required: true,
+    type: String,
+    description: 'Range start date in ISO format',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: true,
+    type: String,
+    description: 'Range end date in ISO format',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns detailed statistics including daily breakdown, streaks, and quality distribution',
+    type: TimeRangeStatisticsDto,
+  })
+  @RouteConfig({
+    message: 'Get Time Range Statistics',
+    requiresAuth: true,
+  })
+  async getTimeRangeStatistics(
+    @Param('deckId') deckId: number,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return await this.studyService.getTimeRangeStatistics(
+      Number(deckId),
+      new Date(startDate),
+      new Date(endDate),
+    );
   }
 }

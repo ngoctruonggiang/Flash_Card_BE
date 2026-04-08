@@ -453,3 +453,88 @@ Retrieve when a deck was last studied (i.e., the most recent review date for any
 - The lastStudiedAt field represents when the deck was last studied (most recent review across all cards).
 - If the deck has no reviews, lastStudiedAt will be null.
 - This is useful for displaying "last studied" information in the UI or tracking study activity.
+
+### **3.12 Get Advanced Deck Statistics**
+
+Get comprehensive deck-level statistics including card distribution, retention rates, maturity data, and more.
+
+- **URL**: /deck/:id/advanced-statistics
+- **Method**: GET
+- **Auth Required**: Yes
+
+**Success Response (200 OK):**
+
+```json
+{
+  "statusCode": 200,
+  "timestamp": "2025-12-06T10:00:00.000Z",
+  "message": "Get Advanced Deck Statistics",
+  "data": {
+    "totalCards": 150,
+    "newCards": 25,
+    "learningCards": 30,
+    "reviewCards": 85,
+    "relearningCards": 10,
+    "matureCards": 45,
+    "youngCards": 40,
+    "cardsDueToday": 15,
+    "cardsDueNextWeek": 42,
+    "retentionRate": 87.5,
+    "averageEaseFactor": 2.45,
+    "averageInterval": 18.5,
+    "totalReviews": 2450,
+    "correctPercentage": 85.2,
+    "lastStudiedDate": "2025-12-03T10:30:00.000Z",
+    "consecutiveDaysStudied": 12,
+    "cardDistribution": {
+      "new": 25,
+      "learning": 30,
+      "review": 85,
+      "relearning": 10
+    },
+    "qualityDistribution": {
+      "Again": 245,
+      "Hard": 490,
+      "Good": 1470,
+      "Easy": 245
+    },
+    "averageReviewsPerDay": 15.5,
+    "estimatedReviewTime": 25,
+    "completionPercentage": 83.3,
+    "maturityPercentage": 30.0
+  },
+  "path": "/api/deck/1/advanced-statistics"
+}
+```
+
+**Response Field Descriptions:**
+
+- totalCards (number): Total number of cards in the deck
+- newCards (number): Cards that have never been studied
+- learningCards (number): Cards currently in learning phase
+- reviewCards (number): Cards that have graduated to review status
+- relearningCards (number): Cards that are being relearned after failures
+- matureCards (number): Review cards with interval ≥ 21 days
+- youngCards (number): Review cards with interval < 21 days
+- cardsDueToday (number): Number of cards due for review today
+- cardsDueNextWeek (number): Number of cards due in the next 7 days
+- retentionRate (number): Percentage of reviews that were correct (Good/Easy)
+- averageEaseFactor (number): Average ease factor across review cards
+- averageInterval (number): Average interval in days across review cards
+- totalReviews (number): Total number of reviews performed on this deck
+- correctPercentage (number): Percentage of correct reviews
+- lastStudiedDate (string | null): ISO timestamp of most recent review
+- consecutiveDaysStudied (number): Current study streak in days
+- cardDistribution (object): Count of cards by status
+- qualityDistribution (object): Count of reviews by quality rating
+- averageReviewsPerDay (number): Average reviews per day (last 30 days)
+- estimatedReviewTime (number): Estimated time to complete due reviews (minutes)
+- completionPercentage (number): Percentage of cards reviewed at least once
+- maturityPercentage (number): Percentage of mature cards
+
+**Notes:**
+
+- Mature cards are defined as review cards with interval ≥ 21 days (Anki convention)
+- Consecutive days studied includes today if studied, or starts from yesterday if not
+- Estimated review time assumes 10 seconds per card
+- All percentages are rounded to 2 decimal places

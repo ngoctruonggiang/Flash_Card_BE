@@ -189,7 +189,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Returns all decks for the current user"
           }
         },
         "summary": "Get all decks for current user",
@@ -213,7 +213,7 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Returns all decks or decks by user ID"
           }
         },
         "summary": "Get all decks by user ID (Admin)",
@@ -237,7 +237,7 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Returns the deck with the specified ID"
           }
         },
         "summary": "Get a deck by id",
@@ -269,7 +269,7 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Deck updated successfully"
           }
         },
         "summary": "Update a deck",
@@ -291,7 +291,7 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Deck deleted successfully"
           }
         },
         "summary": "Delete a deck",
@@ -372,7 +372,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns the percentage of correct reviews and detailed statistics"
+            "description": "Returns the percentage of correct reviews and detailed statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckStatisticsDto"
+                }
+              }
+            }
           }
         },
         "summary": "Get review statistics for a deck",
@@ -400,6 +407,37 @@
           }
         },
         "summary": "Get when the deck was last studied",
+        "tags": [
+          "Deck"
+        ]
+      }
+    },
+    "/api/deck/{id}/advanced-statistics": {
+      "get": {
+        "operationId": "DeckController_getAdvancedStatistics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns comprehensive statistics including card distribution, retention rate, maturity data, and more",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvancedDeckStatisticsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get advanced statistics for a deck",
         "tags": [
           "Deck"
         ]
@@ -549,6 +587,71 @@
           }
         },
         "summary": "Get card review status",
+        "tags": [
+          "Card"
+        ]
+      }
+    },
+    "/api/card/{id}/statistics": {
+      "get": {
+        "operationId": "CardController_getCardStatistics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns comprehensive statistics for the card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardStatisticsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get detailed statistics for a specific card",
+        "tags": [
+          "Card"
+        ]
+      }
+    },
+    "/api/card/deck/{deckId}/statistics": {
+      "get": {
+        "operationId": "CardController_getCardsStatisticsByDeck",
+        "parameters": [
+          {
+            "name": "deckId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns statistics for all cards in the specified deck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardStatisticsDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get statistics for all cards in a deck",
         "tags": [
           "Card"
         ]
@@ -752,7 +855,7 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Returns cards for cram session"
           }
         },
         "summary": "Get cards for practice (Cram Mode) - Ignores schedule",
@@ -781,6 +884,104 @@
           }
         },
         "summary": "Submit cram session review (does not affect scheduling)",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
+    "/api/study/session-statistics/{deckId}": {
+      "get": {
+        "operationId": "StudyController_getSessionStatistics",
+        "parameters": [
+          {
+            "name": "deckId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "description": "Session start date in ISO format",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "description": "Session end date in ISO format",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns statistics for the study session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudySessionStatisticsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get study session statistics for a time range",
+        "tags": [
+          "Study"
+        ]
+      }
+    },
+    "/api/study/time-range-statistics/{deckId}": {
+      "get": {
+        "operationId": "StudyController_getTimeRangeStatistics",
+        "parameters": [
+          {
+            "name": "deckId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "description": "Range start date in ISO format",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "description": "Range end date in ISO format",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns detailed statistics including daily breakdown, streaks, and quality distribution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeRangeStatisticsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get comprehensive statistics for a time range",
         "tags": [
           "Study"
         ]
@@ -883,6 +1084,205 @@
           }
         }
       },
+      "DeckStatisticsDto": {
+        "type": "object",
+        "properties": {
+          "totalReviews": {
+            "type": "number",
+            "description": "Total number of reviews for all cards in the deck",
+            "example": 150
+          },
+          "correctReviews": {
+            "type": "number",
+            "description": "Number of correct reviews (quality >= 3: Hard, Good, or Easy)",
+            "example": 120
+          },
+          "correctPercentage": {
+            "type": "number",
+            "description": "Percentage of correct reviews",
+            "example": 80
+          },
+          "againCount": {
+            "type": "number",
+            "description": "Number of reviews by quality - Again (quality = 2)",
+            "example": 30
+          },
+          "hardCount": {
+            "type": "number",
+            "description": "Number of reviews by quality - Hard (quality = 3)",
+            "example": 25
+          },
+          "goodCount": {
+            "type": "number",
+            "description": "Number of reviews by quality - Good (quality = 4)",
+            "example": 70
+          },
+          "easyCount": {
+            "type": "number",
+            "description": "Number of reviews by quality - Easy (quality = 5)",
+            "example": 25
+          }
+        },
+        "required": [
+          "totalReviews",
+          "correctReviews",
+          "correctPercentage",
+          "againCount",
+          "hardCount",
+          "goodCount",
+          "easyCount"
+        ]
+      },
+      "AdvancedDeckStatisticsDto": {
+        "type": "object",
+        "properties": {
+          "totalCards": {
+            "type": "number",
+            "description": "Total number of cards in the deck",
+            "example": 150
+          },
+          "newCards": {
+            "type": "number",
+            "description": "Number of new cards (never studied)",
+            "example": 25
+          },
+          "learningCards": {
+            "type": "number",
+            "description": "Number of cards in learning state",
+            "example": 30
+          },
+          "reviewCards": {
+            "type": "number",
+            "description": "Number of cards in review state",
+            "example": 85
+          },
+          "relearningCards": {
+            "type": "number",
+            "description": "Number of cards in relearning state",
+            "example": 10
+          },
+          "matureCards": {
+            "type": "number",
+            "description": "Number of mature cards (interval >= 21 days)",
+            "example": 45
+          },
+          "youngCards": {
+            "type": "number",
+            "description": "Number of young cards (interval < 21 days)",
+            "example": 40
+          },
+          "cardsDueToday": {
+            "type": "number",
+            "description": "Cards due today",
+            "example": 15
+          },
+          "cardsDueNextWeek": {
+            "type": "number",
+            "description": "Cards due in next 7 days",
+            "example": 42
+          },
+          "retentionRate": {
+            "type": "number",
+            "description": "Overall retention rate for the deck",
+            "example": 87.5
+          },
+          "averageEaseFactor": {
+            "type": "number",
+            "description": "Average ease factor across all cards",
+            "example": 2.45
+          },
+          "averageInterval": {
+            "type": "number",
+            "description": "Average interval across review cards (in days)",
+            "example": 18.5
+          },
+          "totalReviews": {
+            "type": "number",
+            "description": "Total reviews performed on this deck",
+            "example": 2450
+          },
+          "correctPercentage": {
+            "type": "number",
+            "description": "Correct review percentage",
+            "example": 85.2
+          },
+          "lastStudiedDate": {
+            "type": "object",
+            "description": "Date of the last study session",
+            "example": "2024-12-03T10:30:00.000Z",
+            "nullable": true
+          },
+          "consecutiveDaysStudied": {
+            "type": "number",
+            "description": "Consecutive days studied",
+            "example": 12
+          },
+          "cardDistribution": {
+            "type": "object",
+            "description": "Card distribution by status",
+            "example": {
+              "new": 25,
+              "learning": 30,
+              "review": 85,
+              "relearning": 10
+            }
+          },
+          "qualityDistribution": {
+            "type": "object",
+            "description": "Quality distribution across all reviews",
+            "example": {
+              "Again": 245,
+              "Hard": 490,
+              "Good": 1470,
+              "Easy": 245
+            }
+          },
+          "averageReviewsPerDay": {
+            "type": "number",
+            "description": "Average cards reviewed per day (last 30 days)",
+            "example": 15.5
+          },
+          "estimatedReviewTime": {
+            "type": "number",
+            "description": "Estimated time to complete all due reviews (in minutes)",
+            "example": 25
+          },
+          "completionPercentage": {
+            "type": "number",
+            "description": "Deck completion percentage",
+            "example": 83.3
+          },
+          "maturityPercentage": {
+            "type": "number",
+            "description": "Maturity percentage (mature cards / total cards)",
+            "example": 30
+          }
+        },
+        "required": [
+          "totalCards",
+          "newCards",
+          "learningCards",
+          "reviewCards",
+          "relearningCards",
+          "matureCards",
+          "youngCards",
+          "cardsDueToday",
+          "cardsDueNextWeek",
+          "retentionRate",
+          "averageEaseFactor",
+          "averageInterval",
+          "totalReviews",
+          "correctPercentage",
+          "lastStudiedDate",
+          "consecutiveDaysStudied",
+          "cardDistribution",
+          "qualityDistribution",
+          "averageReviewsPerDay",
+          "estimatedReviewTime",
+          "completionPercentage",
+          "maturityPercentage"
+        ]
+      },
       "ExampleSentenceDto": {
         "type": "object",
         "properties": {
@@ -965,6 +1365,112 @@
             }
           }
         }
+      },
+      "CardStatisticsDto": {
+        "type": "object",
+        "properties": {
+          "totalReviews": {
+            "type": "number",
+            "description": "Total number of times this card has been reviewed",
+            "example": 15
+          },
+          "correctReviews": {
+            "type": "number",
+            "description": "Number of correct reviews (Good/Easy)",
+            "example": 12
+          },
+          "correctPercentage": {
+            "type": "number",
+            "description": "Percentage of correct reviews",
+            "example": 80
+          },
+          "againCount": {
+            "type": "number",
+            "description": "Number of times Again was selected",
+            "example": 2
+          },
+          "hardCount": {
+            "type": "number",
+            "description": "Number of times Hard was selected",
+            "example": 1
+          },
+          "goodCount": {
+            "type": "number",
+            "description": "Number of times Good was selected",
+            "example": 10
+          },
+          "easyCount": {
+            "type": "number",
+            "description": "Number of times Easy was selected",
+            "example": 2
+          },
+          "currentInterval": {
+            "type": "number",
+            "description": "Current interval in days until next review",
+            "example": 7
+          },
+          "easeFactor": {
+            "type": "number",
+            "description": "Current ease factor of the card",
+            "example": 2.5
+          },
+          "nextReviewDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date of the next scheduled review",
+            "example": "2024-12-10T00:00:00.000Z"
+          },
+          "lastReviewDate": {
+            "type": "object",
+            "description": "Date of the last review",
+            "example": "2024-12-03T10:30:00.000Z",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the card",
+            "example": "review",
+            "enum": [
+              "new",
+              "learning",
+              "review",
+              "relearning"
+            ]
+          },
+          "averageTimePerReview": {
+            "type": "object",
+            "description": "Average time spent on this card per review (in seconds)",
+            "example": 8.5,
+            "nullable": true
+          },
+          "cardAge": {
+            "type": "number",
+            "description": "Number of days since the card was created",
+            "example": 45
+          },
+          "retentionRate": {
+            "type": "number",
+            "description": "Retention rate for this card",
+            "example": 85.7
+          }
+        },
+        "required": [
+          "totalReviews",
+          "correctReviews",
+          "correctPercentage",
+          "againCount",
+          "hardCount",
+          "goodCount",
+          "easyCount",
+          "currentInterval",
+          "easeFactor",
+          "nextReviewDate",
+          "lastReviewDate",
+          "status",
+          "averageTimePerReview",
+          "cardAge",
+          "retentionRate"
+        ]
       },
       "SignUpDto": {
         "type": "object",
@@ -1137,6 +1643,259 @@
           "consecutiveDays",
           "streakStartDate",
           "lastStudyDate"
+        ]
+      },
+      "StudySessionStatisticsDto": {
+        "type": "object",
+        "properties": {
+          "totalCardsReviewed": {
+            "type": "number",
+            "description": "Total cards reviewed in this session",
+            "example": 25
+          },
+          "newCardsIntroduced": {
+            "type": "number",
+            "description": "Number of new cards introduced",
+            "example": 5
+          },
+          "learningCardsReviewed": {
+            "type": "number",
+            "description": "Number of learning cards reviewed",
+            "example": 8
+          },
+          "reviewCardsReviewed": {
+            "type": "number",
+            "description": "Number of review cards reviewed",
+            "example": 12
+          },
+          "correctAnswers": {
+            "type": "number",
+            "description": "Number of cards answered correctly (Good/Easy)",
+            "example": 20
+          },
+          "incorrectAnswers": {
+            "type": "number",
+            "description": "Number of cards answered incorrectly (Again)",
+            "example": 5
+          },
+          "accuracyPercentage": {
+            "type": "number",
+            "description": "Accuracy percentage for the session",
+            "example": 80
+          },
+          "totalStudyTime": {
+            "type": "number",
+            "description": "Total time spent studying (in seconds)",
+            "example": 450
+          },
+          "averageTimePerCard": {
+            "type": "number",
+            "description": "Average time per card (in seconds)",
+            "example": 18
+          },
+          "againCount": {
+            "type": "number",
+            "description": "Number of Again responses",
+            "example": 5
+          },
+          "hardCount": {
+            "type": "number",
+            "description": "Number of Hard responses",
+            "example": 3
+          },
+          "goodCount": {
+            "type": "number",
+            "description": "Number of Good responses",
+            "example": 15
+          },
+          "easyCount": {
+            "type": "number",
+            "description": "Number of Easy responses",
+            "example": 2
+          },
+          "sessionStartTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Session start time",
+            "example": "2024-12-03T10:00:00.000Z"
+          },
+          "sessionEndTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Session end time",
+            "example": "2024-12-03T10:15:00.000Z"
+          },
+          "deckId": {
+            "type": "string",
+            "description": "Deck ID for this session",
+            "example": "deck-123"
+          },
+          "deckName": {
+            "type": "string",
+            "description": "Deck name",
+            "example": "Spanish Vocabulary"
+          }
+        },
+        "required": [
+          "totalCardsReviewed",
+          "newCardsIntroduced",
+          "learningCardsReviewed",
+          "reviewCardsReviewed",
+          "correctAnswers",
+          "incorrectAnswers",
+          "accuracyPercentage",
+          "totalStudyTime",
+          "averageTimePerCard",
+          "againCount",
+          "hardCount",
+          "goodCount",
+          "easyCount",
+          "sessionStartTime",
+          "sessionEndTime",
+          "deckId",
+          "deckName"
+        ]
+      },
+      "TimeRangeStatisticsDto": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Start date of the time range",
+            "example": "2024-11-01T00:00:00.000Z"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "End date of the time range",
+            "example": "2024-11-30T23:59:59.999Z"
+          },
+          "totalCardsReviewed": {
+            "type": "number",
+            "description": "Total cards reviewed in this time range",
+            "example": 450
+          },
+          "totalSessions": {
+            "type": "number",
+            "description": "Total study sessions in this time range",
+            "example": 25
+          },
+          "totalStudyTime": {
+            "type": "number",
+            "description": "Total study time in seconds",
+            "example": 12000
+          },
+          "averageSessionTime": {
+            "type": "number",
+            "description": "Average study time per session (in seconds)",
+            "example": 480
+          },
+          "daysStudied": {
+            "type": "number",
+            "description": "Number of days studied in this range",
+            "example": 23
+          },
+          "totalDaysInRange": {
+            "type": "number",
+            "description": "Total number of days in the range",
+            "example": 30
+          },
+          "consistencyPercentage": {
+            "type": "number",
+            "description": "Study consistency percentage",
+            "example": 76.7
+          },
+          "correctReviews": {
+            "type": "number",
+            "description": "Total correct reviews",
+            "example": 380
+          },
+          "incorrectReviews": {
+            "type": "number",
+            "description": "Total incorrect reviews",
+            "example": 70
+          },
+          "accuracyPercentage": {
+            "type": "number",
+            "description": "Overall accuracy percentage",
+            "example": 84.4
+          },
+          "newCardsIntroduced": {
+            "type": "number",
+            "description": "New cards introduced in this range",
+            "example": 60
+          },
+          "cardsMatured": {
+            "type": "number",
+            "description": "Cards matured (reached review status) in this range",
+            "example": 45
+          },
+          "averageReviewsPerDay": {
+            "type": "number",
+            "description": "Average reviews per day",
+            "example": 15
+          },
+          "qualityDistribution": {
+            "type": "object",
+            "description": "Quality distribution",
+            "example": {
+              "Again": 70,
+              "Hard": 50,
+              "Good": 280,
+              "Easy": 50
+            }
+          },
+          "dailyBreakdown": {
+            "description": "Daily breakdown of reviews",
+            "example": [
+              {
+                "date": "2024-11-01",
+                "reviewCount": 15,
+                "studyTime": 400
+              },
+              {
+                "date": "2024-11-02",
+                "reviewCount": 18,
+                "studyTime": 480
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "currentStreak": {
+            "type": "number",
+            "description": "Current study streak in days",
+            "example": 12
+          },
+          "longestStreak": {
+            "type": "number",
+            "description": "Longest study streak in this time range",
+            "example": 15
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate",
+          "totalCardsReviewed",
+          "totalSessions",
+          "totalStudyTime",
+          "averageSessionTime",
+          "daysStudied",
+          "totalDaysInRange",
+          "consistencyPercentage",
+          "correctReviews",
+          "incorrectReviews",
+          "accuracyPercentage",
+          "newCardsIntroduced",
+          "cardsMatured",
+          "averageReviewsPerDay",
+          "qualityDistribution",
+          "dailyBreakdown",
+          "currentStreak",
+          "longestStreak"
         ]
       }
     }
