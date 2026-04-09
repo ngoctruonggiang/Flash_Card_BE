@@ -651,7 +651,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
 
       expect(res.body.data.id).toBe(testDeck?.id);
 
-      const deleted = await deckService.findOne(testDeck!.id);
+      const deleted = await deckService.findOneRaw(testDeck!.id);
       expect(deleted).toBeNull();
 
       testDeck = null;
@@ -670,7 +670,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
 
       await authRequest().delete(`/deck/${tempDeck.id}`).expect(HttpStatus.OK);
 
-      const deletedCard = await cardService.findOne(card.id);
+      const deletedCard = await cardService.findOneRaw(card.id);
       expect(deletedCard).toBeNull();
     });
 

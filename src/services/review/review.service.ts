@@ -56,7 +56,9 @@ export class ReviewService {
         where: { id: r.cardId },
       });
 
-      if (!card) continue;
+      if (!card) {
+        throw new NotFoundException(`Card with id ${r.cardId} not found`);
+      }
 
       // 2. Prepare scheduler input
       const schedulerInput: SchedulerCard = {
@@ -131,7 +133,9 @@ export class ReviewService {
         where: { id: r.cardId },
       });
 
-      if (!card) continue;
+      if (!card) {
+        throw new NotFoundException(`Card with id ${r.cardId} not found`);
+      }
 
       // Create review record but DO NOT update card schedule
       // This allows the review to count towards study streaks
@@ -155,6 +159,15 @@ export class ReviewService {
   }
 
   async getDueReviews(deckId: number, limit?: number): Promise<Card[]> {
+    // Check if deck exists
+    const deck = await this.prismaService.deck.findUnique({
+      where: { id: deckId },
+    });
+
+    if (!deck) {
+      throw new NotFoundException('Deck not found');
+    }
+
     const today = new Date();
 
     const cards = await this.prismaService.card.findMany({
@@ -224,6 +237,15 @@ export class ReviewService {
   }
 
   async getConsecutiveStudyDays(deckId: number): Promise<ConsecutiveDaysDto> {
+    // Check if deck exists
+    const deck = await this.prismaService.deck.findUnique({
+      where: { id: deckId },
+    });
+
+    if (!deck) {
+      throw new NotFoundException('Deck not found');
+    }
+
     // Get all cards for the deck
     const cards = await this.prismaService.card.findMany({
       where: { deckId },

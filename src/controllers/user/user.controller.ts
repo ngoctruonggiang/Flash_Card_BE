@@ -49,7 +49,7 @@ export class UserController {
   @ApiOperation({ summary: 'Update current user profile' })
   @RouteConfig({
     requiresAuth: true,
-    roles: ['USER'],
+    roles: ['USER', 'ADMIN'],
     message: 'Update User',
   })
   update(@GetUser() user: User, @Body() updateUserDto: UpdateUserDto) {
@@ -61,7 +61,7 @@ export class UserController {
   @ApiOperation({ summary: 'Delete current user account' })
   @RouteConfig({
     requiresAuth: true,
-    roles: ['USER'],
+    roles: ['USER', 'ADMIN'],
     message: 'Delete User',
   })
   remove(@GetUser() user: User) {

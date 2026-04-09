@@ -17,6 +17,7 @@ export class CreateDeckDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Matches(/\S/, { message: 'title cannot be empty or whitespace only' })
   title: string;
 
   @ApiProperty({ required: false })

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
 import { DeckStatisticsDto } from 'src/utils/types/dto/deck/deckStatistics.dto';
@@ -40,7 +44,32 @@ export class DeckService {
     }));
   }
 
-  async findOne(id: number) {
+  // Internal method that returns null if not found (for test verification)
+  async findOneRaw(id: number) {
+    const deck = await this.prisma.deck.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        cards: {
+          include: {
+            reviews: true,
+          },
+        },
+      },
+    });
+
+    if (!deck) return null;
+
+    return {
+      ...deck,
+      cards: deck.cards.map((card) => ({
+        ...card,
+        examples: card.examples ? JSON.parse(card.examples) : null,
+      })),
+    };
+  }
+
+  async findOne(id: number, userId?: number) {
     try {
       const deck = await this.prisma.deck.findUnique({
         where: { id },
@@ -54,7 +83,16 @@ export class DeckService {
         },
       });
 
-      if (!deck) return null;
+      if (!deck) {
+        throw new NotFoundException(`Deck with id ${id} not found`);
+      }
+
+      // Check ownership if userId is provided
+      if (userId !== undefined && deck.userId !== userId) {
+        throw new ForbiddenException(
+          'You do not have permission to access this deck',
+        );
+      }
 
       return {
         ...deck,
@@ -64,6 +102,12 @@ export class DeckService {
         })),
       };
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
       console.error('Error finding deck:', error);
       throw error;
     }
@@ -96,14 +140,37 @@ export class DeckService {
       colorCode?: string;
       languageMode?: LanguageMode;
     },
+    userId?: number,
   ) {
+    const deck = await this.prisma.deck.findUnique({ where: { id } });
+    if (!deck) {
+      throw new NotFoundException(`Deck with id ${id} not found`);
+    }
+    // Check ownership if userId is provided
+    if (userId !== undefined && deck.userId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to update this deck',
+      );
+    }
     return await this.prisma.deck.update({
       where: { id },
       data,
     });
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId?: number) {
+    // Check if deck exists first
+    const deck = await this.prisma.deck.findUnique({ where: { id } });
+    if (!deck) {
+      throw new NotFoundException(`Deck with id ${id} not found`);
+    }
+    // Check ownership if userId is provided
+    if (userId !== undefined && deck.userId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this deck',
+      );
+    }
+
     // First, get all cards in the deck
     const cards = await this.prisma.card.findMany({
       where: { deckId: id },
@@ -160,7 +227,7 @@ export class DeckService {
     });
 
     if (!deck) {
-      throw new Error(`Deck with id ${deckId} not found`);
+      throw new NotFoundException(`Deck with id ${deckId} not found`);
     }
 
     // Count unique cards that have at least one review in the specified day
@@ -175,6 +242,15 @@ export class DeckService {
   }
 
   async getCardsDueToday(deckId: number) {
+    // Check if deck exists
+    const deck = await this.prisma.deck.findUnique({
+      where: { id: deckId },
+    });
+
+    if (!deck) {
+      throw new NotFoundException(`Deck with id ${deckId} not found`);
+    }
+
     const now = new Date();
 
     // Get all cards in the deck with their latest review
@@ -231,6 +307,15 @@ export class DeckService {
   }
 
   async getDeckStatistics(deckId: number): Promise<DeckStatisticsDto> {
+    // Check if deck exists
+    const deck = await this.prisma.deck.findUnique({
+      where: { id: deckId },
+    });
+
+    if (!deck) {
+      throw new NotFoundException(`Deck with id ${deckId} not found`);
+    }
+
     // Get all reviews for all cards in the deck
     const reviews = await this.prisma.cardReview.findMany({
       where: {
@@ -278,6 +363,15 @@ export class DeckService {
   }
 
   async getLastStudiedDate(deckId: number) {
+    // Check if deck exists
+    const deck = await this.prisma.deck.findUnique({
+      where: { id: deckId },
+    });
+
+    if (!deck) {
+      throw new NotFoundException(`Deck with id ${deckId} not found`);
+    }
+
     // Get the most recent review for any card in the deck
     const latestReview = await this.prisma.cardReview.findFirst({
       where: {
@@ -295,7 +389,7 @@ export class DeckService {
 
     return {
       deckId,
-      lastStudiedAt: latestReview?.reviewedAt || null,
+      lastStudied: latestReview?.reviewedAt || null,
     };
   }
 

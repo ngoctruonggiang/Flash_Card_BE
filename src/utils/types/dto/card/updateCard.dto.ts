@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsArray,
+  Matches,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ExampleSentenceDto {
@@ -16,11 +23,15 @@ export class UpdateCardDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
+  @Matches(/\S/, { message: 'front cannot be empty or whitespace only' })
   front?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
+  @Matches(/\S/, { message: 'back cannot be empty or whitespace only' })
   back?: string;
 
   @ApiProperty({ required: false })

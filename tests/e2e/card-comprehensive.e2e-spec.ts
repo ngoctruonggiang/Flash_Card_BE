@@ -845,7 +845,7 @@ describe('Card Controller Comprehensive E2E Tests', () => {
 
       expect(res.body.data.id).toBe(testCard?.id);
 
-      const deleted = await cardService.findOne(testCard!.id);
+      const deleted = await cardService.findOneRaw(testCard!.id);
       expect(deleted).toBeNull();
 
       testCard = null;

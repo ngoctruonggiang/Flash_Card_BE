@@ -284,7 +284,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .send({
             CardReviews: [{ cardId: 999999, quality: ReviewQuality.Good }],
           })
-          .expect(HttpStatus.CREATED); // Returns empty array for non-existent cards
+          .expect(HttpStatus.NOT_FOUND); // Returns 404 for non-existent cards
       });
 
       it('should reject review without authentication', async () => {
@@ -304,7 +304,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .send({
             CardReviews: [{ cardId: -1, quality: ReviewQuality.Good }],
           })
-          .expect(HttpStatus.BAD_REQUEST);
+          .expect(HttpStatus.NOT_FOUND);
       });
 
       it('should reject review with extra non-whitelisted fields', async () => {
@@ -730,12 +730,10 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
       });
 
-      it('should return empty for non-existent deck', async () => {
-        const res = await authRequest()
+      it('should return 404 for non-existent deck', async () => {
+        await authRequest()
           .get('/study/start/999999')
-          .expect(HttpStatus.OK);
-
-        expect(res.body.data.length).toBe(0);
+          .expect(HttpStatus.NOT_FOUND);
       });
 
       it('should reject without authentication', async () => {
@@ -763,7 +761,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
       // Submit cram review
       const res = await authRequest()
-        .post('/study/cram')
+        .post('/study/cram/review')
         .send({
           CardReviews: [
             { cardId: testCards[0].id, quality: ReviewQuality.Good },
@@ -786,7 +784,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
     it('should record cram review in history', async () => {
       await authRequest()
-        .post('/study/cram')
+        .post('/study/cram/review')
         .send({
           CardReviews: [
             { cardId: testCards[0].id, quality: ReviewQuality.Good },
@@ -804,7 +802,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
     it('should handle cram with multiple cards', async () => {
       const res = await authRequest()
-        .post('/study/cram')
+        .post('/study/cram/review')
         .send({
           CardReviews: [
             { cardId: testCards[0].id, quality: ReviewQuality.Good },
@@ -819,7 +817,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
     it('should reject cram without authentication', async () => {
       await request(app.getHttpServer())
-        .post('/study/cram')
+        .post('/study/cram/review')
         .send({
           CardReviews: [
             { cardId: testCards[0].id, quality: ReviewQuality.Good },

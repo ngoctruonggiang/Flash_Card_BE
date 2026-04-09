@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEnum, Matches } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsEnum,
+  Matches,
+} from 'class-validator';
 
 export enum LanguageMode {
   VN_EN = 'VN_EN',
@@ -11,6 +17,8 @@ export class UpdateDeckDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
+  @Matches(/\S/, { message: 'title cannot be empty or whitespace only' })
   title?: string;
 
   @ApiProperty({ required: false })

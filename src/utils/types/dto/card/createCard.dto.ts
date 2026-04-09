@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
   Min,
   IsArray,
   ValidateNested,
@@ -32,11 +33,13 @@ export class CreateCardDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Matches(/\S/, { message: 'front cannot be empty or whitespace only' })
   front: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Matches(/\S/, { message: 'back cannot be empty or whitespace only' })
   back: string;
 
   @ApiProperty({ required: false })

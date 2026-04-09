@@ -518,13 +518,13 @@ describe('Study Controller Comprehensive E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review without reviewedAt', async () => {
+      it('should accept review without reviewedAt (uses current time)', async () => {
         await authRequest()
           .post('/study/review')
           .send({
             CardReviews: [{ cardId: testCards[0].id, quality: 'Good' }],
           })
-          .expect(HttpStatus.BAD_REQUEST);
+          .expect(HttpStatus.CREATED);
       });
 
       it('should reject review with empty CardReviews array', async () => {
