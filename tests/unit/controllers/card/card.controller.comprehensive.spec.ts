@@ -19,6 +19,12 @@ describe('CardController - Comprehensive Tests', () => {
     getReviewStatus: jest.fn(),
   };
 
+  const mockUser = {
+    id: 1,
+    email: 'test@example.com',
+    username: 'testuser',
+  };
+
   const mockCard = {
     id: 1,
     deckId: 1,
@@ -56,7 +62,7 @@ describe('CardController - Comprehensive Tests', () => {
       };
       mockCardService.create.mockResolvedValue({ id: 1, ...createDto });
 
-      const result = await controller.create(createDto as any);
+      const result = await controller.create(mockUser as any, createDto as any);
 
       expect(result).toHaveProperty('id');
       expect(cardService.create).toHaveBeenCalledWith({
@@ -67,6 +73,7 @@ describe('CardController - Comprehensive Tests', () => {
         wordType: undefined,
         pronunciation: undefined,
         examples: undefined,
+        userId: mockUser.id,
       });
     });
 
@@ -82,9 +89,12 @@ describe('CardController - Comprehensive Tests', () => {
       };
       mockCardService.create.mockResolvedValue({ id: 1, ...createDto });
 
-      await controller.create(createDto as any);
+      await controller.create(mockUser as any, createDto as any);
 
-      expect(cardService.create).toHaveBeenCalledWith(createDto);
+      expect(cardService.create).toHaveBeenCalledWith({
+        ...createDto,
+        userId: mockUser.id,
+      });
     });
 
     it('should create card with empty examples', async () => {
@@ -96,7 +106,7 @@ describe('CardController - Comprehensive Tests', () => {
       };
       mockCardService.create.mockResolvedValue({ id: 1, ...createDto });
 
-      await controller.create(createDto as any);
+      await controller.create(mockUser as any, createDto as any);
 
       expect(cardService.create).toHaveBeenCalledWith({
         deckId: 1,
@@ -106,6 +116,7 @@ describe('CardController - Comprehensive Tests', () => {
         wordType: undefined,
         pronunciation: undefined,
         examples: [],
+        userId: mockUser.id,
       });
     });
 
@@ -118,7 +129,7 @@ describe('CardController - Comprehensive Tests', () => {
       };
       mockCardService.create.mockResolvedValue({ id: 1, ...createDto });
 
-      await controller.create(createDto as any);
+      await controller.create(mockUser as any, createDto as any);
 
       expect(cardService.create).toHaveBeenCalled();
     });
@@ -132,7 +143,7 @@ describe('CardController - Comprehensive Tests', () => {
       };
       mockCardService.create.mockResolvedValue({ id: 1, ...createDto });
 
-      await controller.create(createDto as any);
+      await controller.create(mockUser as any, createDto as any);
 
       expect(cardService.create).toHaveBeenCalled();
     });
@@ -143,9 +154,9 @@ describe('CardController - Comprehensive Tests', () => {
         new NotFoundException('Deck not found'),
       );
 
-      await expect(controller.create(createDto as any)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        controller.create(mockUser as any, createDto as any),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should handle multiple tags', async () => {
@@ -157,7 +168,7 @@ describe('CardController - Comprehensive Tests', () => {
       };
       mockCardService.create.mockResolvedValue({ id: 1, ...createDto });
 
-      await controller.create(createDto as any);
+      await controller.create(mockUser as any, createDto as any);
 
       expect(cardService.create).toHaveBeenCalledWith(
         expect.objectContaining({ tags: ['tag1', 'tag2', 'tag3', 'tag4'] }),

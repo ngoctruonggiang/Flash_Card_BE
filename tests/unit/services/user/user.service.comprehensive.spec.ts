@@ -179,36 +179,36 @@ describe('UserService - Comprehensive Tests', () => {
       expect(result).toEqual(new UserDto(mockUser));
     });
 
-    it('should return null for non-existent user', async () => {
+    it('should throw NotFoundException for non-existent user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await provider.getUserById(999);
-
-      expect(result).toBeNull();
+      await expect(provider.getUserById(999)).rejects.toThrow(
+        'User with id 999 not found',
+      );
     });
 
-    it('should handle id = 0', async () => {
+    it('should throw NotFoundException for id = 0', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await provider.getUserById(0);
-
-      expect(result).toBeNull();
+      await expect(provider.getUserById(0)).rejects.toThrow(
+        'User with id 0 not found',
+      );
     });
 
-    it('should handle negative id', async () => {
+    it('should throw NotFoundException for negative id', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await provider.getUserById(-1);
-
-      expect(result).toBeNull();
+      await expect(provider.getUserById(-1)).rejects.toThrow(
+        'User with id -1 not found',
+      );
     });
 
-    it('should handle very large id', async () => {
+    it('should throw NotFoundException for very large id', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await provider.getUserById(Number.MAX_SAFE_INTEGER);
-
-      expect(result).toBeNull();
+      await expect(
+        provider.getUserById(Number.MAX_SAFE_INTEGER),
+      ).rejects.toThrow(`User with id ${Number.MAX_SAFE_INTEGER} not found`);
     });
   });
 
@@ -250,7 +250,7 @@ describe('UserService - Comprehensive Tests', () => {
     it('should handle username with special characters', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await provider.getUserByUsername('user_name_123');
+      await provider.getUserByUsername('user_name_123');
 
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { username: 'user_name_123' },
@@ -540,7 +540,7 @@ describe('UserService - Comprehensive Tests', () => {
 
       const result = await provider.findOne(1);
 
-      expect(result?.decks).toEqual([]);
+      expect((result as unknown as typeof mockUser)?.decks).toEqual([]);
     });
 
     it('should handle user with multiple decks and cards', async () => {
@@ -556,11 +556,37 @@ describe('UserService - Comprehensive Tests', () => {
 
       const result = await provider.findOne(1);
 
-      expect(result?.decks).toHaveLength(2);
+      expect((result as unknown as typeof mockUser)?.decks).toHaveLength(2);
     });
   });
 
   describe('update', () => {
+    const existingUser = {
+      id: 1,
+      username: 'testuser',
+      email: 'test@example.com',
+      role: 'USER',
+      passwordHash: 'oldhash',
+      isEmailConfirmed: true,
+      createdAt: new Date(),
+      lastLoginAt: new Date(),
+    };
+
+    beforeEach(() => {
+      // Setup default mock for findOne (find by id) - returns existing user
+      mockPrismaService.user.findUnique.mockImplementation(
+        (args: {
+          where: { id?: number; email?: string; username?: string };
+        }) => {
+          if (args.where.id === 1) {
+            return Promise.resolve(existingUser);
+          }
+          // For email/username conflict checks - return null (no conflict)
+          return Promise.resolve(null);
+        },
+      );
+    });
+
     describe('Update username', () => {
       it('should update only username', async () => {
         const updateDto = { username: 'newusername' };
@@ -646,7 +672,10 @@ describe('UserService - Comprehensive Tests', () => {
 
         await provider.update(1, updateDto);
 
-        const updateCall = mockPrismaService.user.update.mock.calls[0][0];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const updateCall = mockPrismaService.user.update.mock.calls[0][0] as {
+          data: { passwordHash?: string };
+        };
         expect(updateCall.data.passwordHash).toBeDefined();
         expect(updateCall.data.passwordHash).not.toBe('newpassword123');
       });
@@ -664,7 +693,7 @@ describe('UserService - Comprehensive Tests', () => {
           where: { id: 1 },
           data: expect.objectContaining({
             passwordHash: undefined,
-          }),
+          }) as object,
         });
       });
     });
@@ -736,23 +765,33 @@ describe('UserService - Comprehensive Tests', () => {
 
     describe('Error handling', () => {
       it('should throw error for non-existent user', async () => {
-        mockPrismaService.user.update.mockRejectedValue(
-          new Error('Record not found'),
-        );
+        mockPrismaService.user.findUnique.mockResolvedValue(null);
 
         await expect(
           provider.update(999, { username: 'test' }),
-        ).rejects.toThrow('Record not found');
+        ).rejects.toThrow('User with id 999 not found');
       });
 
-      it('should throw error for unique constraint violation', async () => {
-        mockPrismaService.user.update.mockRejectedValue(
-          new Error('Unique constraint failed'),
-        );
+      it('should throw error for email conflict', async () => {
+        // First call returns existing user, second call returns conflict user
+        mockPrismaService.user.findUnique
+          .mockResolvedValueOnce(existingUser)
+          .mockResolvedValueOnce({ id: 2, email: 'existing@example.com' });
 
         await expect(
           provider.update(1, { email: 'existing@example.com' }),
-        ).rejects.toThrow('Unique constraint failed');
+        ).rejects.toThrow('Email already in use');
+      });
+
+      it('should throw error for username conflict', async () => {
+        // First call returns existing user, second call returns conflict user for username check
+        mockPrismaService.user.findUnique
+          .mockResolvedValueOnce(existingUser)
+          .mockResolvedValueOnce({ id: 2, username: 'existinguser' });
+
+        await expect(
+          provider.update(1, { username: 'existinguser' }),
+        ).rejects.toThrow('Username already in use');
       });
     });
   });
@@ -813,11 +852,11 @@ describe('UserService - Comprehensive Tests', () => {
     });
 
     it('should throw error for non-existent user', async () => {
-      mockPrismaService.user.delete.mockRejectedValue(
-        new Error('Record not found'),
-      );
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(provider.remove(999)).rejects.toThrow('Record not found');
+      await expect(provider.remove(999)).rejects.toThrow(
+        'User with id 999 not found',
+      );
     });
 
     it('should handle cascade deletion', async () => {
@@ -826,6 +865,8 @@ describe('UserService - Comprehensive Tests', () => {
         username: 'testuser',
         decks: [{ id: 1 }, { id: 2 }],
       };
+      // Mock findOne to return user (for existence check)
+      mockPrismaService.user.findUnique.mockResolvedValue(mockDeletedUser);
       mockPrismaService.user.delete.mockResolvedValue(mockDeletedUser);
 
       const result = await provider.remove(1);

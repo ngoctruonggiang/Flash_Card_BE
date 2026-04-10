@@ -27,6 +27,9 @@ describe('ReviewService - Comprehensive Tests', () => {
       update: jest.fn(),
       findMany: jest.fn(),
     },
+    deck: {
+      findUnique: jest.fn(),
+    },
     $transaction: jest.fn((promises) => Promise.all(promises)),
   };
 
@@ -293,15 +296,15 @@ describe('ReviewService - Comprehensive Tests', () => {
         expect(prismaService.$transaction).toHaveBeenCalled();
       });
 
-      it('should skip non-existent cards', async () => {
+      it('should throw NotFoundException for non-existent cards', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 999, quality: 'Good' }],
         };
         mockPrismaService.card.findUnique.mockResolvedValue(null);
 
-        const result = await service.submitReviews(submitDto);
-
-        expect(result).toHaveLength(0);
+        await expect(service.submitReviews(submitDto)).rejects.toThrow(
+          'Card with id 999 not found',
+        );
       });
     });
 
@@ -337,7 +340,7 @@ describe('ReviewService - Comprehensive Tests', () => {
         expect(result).toHaveLength(3);
       });
 
-      it('should process each card independently', async () => {
+      it('should throw NotFoundException when processing card that does not exist', async () => {
         const submitDto: any = {
           CardReviews: [
             { cardId: 1, quality: 'Good' },
@@ -354,14 +357,7 @@ describe('ReviewService - Comprehensive Tests', () => {
             easeFactor: 2.5,
             interval: 0,
           })
-          .mockResolvedValueOnce(null) // Card 999 doesn't exist
-          .mockResolvedValueOnce({
-            id: 2,
-            status: 'review',
-            stepIndex: 0,
-            easeFactor: 2.5,
-            interval: 5,
-          });
+          .mockResolvedValueOnce(null); // Card 999 doesn't exist - will throw
 
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'review',
@@ -373,9 +369,9 @@ describe('ReviewService - Comprehensive Tests', () => {
         mockPrismaService.card.update.mockResolvedValue({});
         mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
-
-        expect(result).toHaveLength(2); // Only 2 successful
+        await expect(service.submitReviews(submitDto)).rejects.toThrow(
+          'Card with id 999 not found',
+        );
       });
     });
 
@@ -550,15 +546,15 @@ describe('ReviewService - Comprehensive Tests', () => {
       expect(prismaService.card.update).not.toHaveBeenCalled();
     });
 
-    it('should skip non-existent cards', async () => {
+    it('should throw NotFoundException for non-existent cards', async () => {
       const submitDto: any = {
         CardReviews: [{ cardId: 999, quality: 'Good' }],
       };
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
-      const result = await service.submitCramReviews(submitDto);
-
-      expect(result).toHaveLength(0);
+      await expect(service.submitCramReviews(submitDto)).rejects.toThrow(
+        'Card with id 999 not found',
+      );
     });
 
     it('should preserve card status in review', async () => {
@@ -638,6 +634,14 @@ describe('ReviewService - Comprehensive Tests', () => {
   });
 
   describe('getDueReviews', () => {
+    beforeEach(() => {
+      // Mock deck existence check
+      mockPrismaService.deck.findUnique.mockResolvedValue({
+        id: 1,
+        name: 'Test Deck',
+      });
+    });
+
     it('should return due cards', async () => {
       const mockCards = [
         { id: 1, status: 'new', nextReviewDate: null },
@@ -725,6 +729,14 @@ describe('ReviewService - Comprehensive Tests', () => {
             ]),
           }),
         }),
+      );
+    });
+
+    it('should throw NotFoundException when deck does not exist', async () => {
+      mockPrismaService.deck.findUnique.mockResolvedValue(null);
+
+      await expect(service.getDueReviews(999)).rejects.toThrow(
+        NotFoundException,
       );
     });
   });
@@ -851,6 +863,14 @@ describe('ReviewService - Comprehensive Tests', () => {
   });
 
   describe('getConsecutiveStudyDays', () => {
+    beforeEach(() => {
+      // Mock deck existence check
+      mockPrismaService.deck.findUnique.mockResolvedValue({
+        id: 1,
+        name: 'Test Deck',
+      });
+    });
+
     it('should return 0 when deck has no cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
@@ -970,6 +990,14 @@ describe('ReviewService - Comprehensive Tests', () => {
       const result = await service.getConsecutiveStudyDays(1);
 
       expect(result.streakStartDate).toBeDefined();
+    });
+
+    it('should throw NotFoundException when deck does not exist', async () => {
+      mockPrismaService.deck.findUnique.mockResolvedValue(null);
+
+      await expect(service.getConsecutiveStudyDays(999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

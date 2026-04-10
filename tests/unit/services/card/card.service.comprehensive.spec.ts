@@ -92,7 +92,7 @@ describe('CardService - Comprehensive Tests', () => {
 
         await expect(
           provider.create({ deckId: 999, front: 'Q', back: 'A' }),
-        ).rejects.toThrow('Deck not found');
+        ).rejects.toThrow('Deck with id 999 not found');
       });
 
       it('should handle empty front text', async () => {
@@ -570,28 +570,28 @@ describe('CardService - Comprehensive Tests', () => {
       });
     });
 
-    it('should return null for non-existent card', async () => {
+    it('should throw NotFoundException for non-existent card', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
-      const result = await provider.findOne(999);
-
-      expect(result).toBeNull();
+      await expect(provider.findOne(999)).rejects.toThrow(
+        'Card with id 999 not found',
+      );
     });
 
-    it('should handle id = 0', async () => {
+    it('should throw NotFoundException for id = 0', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
-      const result = await provider.findOne(0);
-
-      expect(result).toBeNull();
+      await expect(provider.findOne(0)).rejects.toThrow(
+        'Card with id 0 not found',
+      );
     });
 
-    it('should handle negative id', async () => {
+    it('should throw NotFoundException for negative id', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
-      const result = await provider.findOne(-1);
-
-      expect(result).toBeNull();
+      await expect(provider.findOne(-1)).rejects.toThrow(
+        'Card with id -1 not found',
+      );
     });
 
     it('should parse examples JSON', async () => {
@@ -899,7 +899,7 @@ describe('CardService - Comprehensive Tests', () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
       await expect(provider.getReviewStatus(999)).rejects.toThrow(
-        'Card not found',
+        'Card with id 999 not found',
       );
     });
 

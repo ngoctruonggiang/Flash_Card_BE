@@ -2,8 +2,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeckService } from 'src/services/deck/deck.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { CreateDeckDto } from 'src/utils/types/dto/deck/createDeck.dto';
-import { ReviewQuality, LanguageMode } from '@prisma/client';
+import {
+  CreateDeckDto,
+  LanguageMode,
+} from 'src/utils/types/dto/deck/createDeck.dto';
+import { ReviewQuality } from '@prisma/client';
+import { NotFoundException } from '@nestjs/common';
 
 describe('DeckService - Comprehensive Tests', () => {
   let provider: DeckService;
@@ -85,7 +89,7 @@ describe('DeckService - Comprehensive Tests', () => {
           description: 'A complete deck',
           iconName: 'book',
           colorCode: '#FF5733',
-          languageMode: 'BIDIRECTIONAL',
+          languageMode: LanguageMode.BIDIRECTIONAL,
         };
         const mockDeck = { id: 1, ...createDto, userId: 1 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -151,7 +155,7 @@ describe('DeckService - Comprehensive Tests', () => {
       it('should create deck with VN_EN language mode', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
-          languageMode: 'VN_EN',
+          languageMode: LanguageMode.VN_EN,
         };
         const mockDeck = { id: 1, ...createDto, userId: 1 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -164,7 +168,7 @@ describe('DeckService - Comprehensive Tests', () => {
       it('should create deck with EN_VN language mode', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
-          languageMode: 'EN_VN',
+          languageMode: LanguageMode.EN_VN,
         };
         const mockDeck = { id: 1, ...createDto, userId: 1 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -177,7 +181,7 @@ describe('DeckService - Comprehensive Tests', () => {
       it('should create deck with BIDIRECTIONAL language mode', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
-          languageMode: 'BIDIRECTIONAL',
+          languageMode: LanguageMode.BIDIRECTIONAL,
         };
         const mockDeck = { id: 1, ...createDto, userId: 1 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -201,7 +205,7 @@ describe('DeckService - Comprehensive Tests', () => {
         expect(prismaService.deck.create).toHaveBeenCalledWith({
           data: expect.objectContaining({
             languageMode: 'VN_EN',
-          }),
+          }) as object,
         });
       });
     });
@@ -375,28 +379,22 @@ describe('DeckService - Comprehensive Tests', () => {
       });
     });
 
-    it('should return null for non-existent deck', async () => {
+    it('should throw NotFoundException for non-existent deck', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
-      const result = await provider.findOne(999);
-
-      expect(result).toBeNull();
+      await expect(provider.findOne(999)).rejects.toThrow(NotFoundException);
     });
 
-    it('should handle id = 0', async () => {
+    it('should throw NotFoundException for id = 0', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
-      const result = await provider.findOne(0);
-
-      expect(result).toBeNull();
+      await expect(provider.findOne(0)).rejects.toThrow(NotFoundException);
     });
 
-    it('should handle negative id', async () => {
+    it('should throw NotFoundException for negative id', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
-      const result = await provider.findOne(-1);
-
-      expect(result).toBeNull();
+      await expect(provider.findOne(-1)).rejects.toThrow(NotFoundException);
     });
 
     it('should parse examples JSON for cards', async () => {
@@ -480,6 +478,11 @@ describe('DeckService - Comprehensive Tests', () => {
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      // Mock deck existence check - update now checks if deck exists first
+      mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1, userId: 1 });
+    });
+
     describe('Update individual fields', () => {
       it('should update only title', async () => {
         const mockDeck = { id: 1, title: 'Updated Title' };
@@ -571,13 +574,11 @@ describe('DeckService - Comprehensive Tests', () => {
     });
 
     describe('Error handling', () => {
-      it('should throw error for non-existent deck', async () => {
-        mockPrismaService.deck.update.mockRejectedValue(
-          new Error('Deck not found'),
-        );
+      it('should throw NotFoundException for non-existent deck', async () => {
+        mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
         await expect(provider.update(999, { title: 'Test' })).rejects.toThrow(
-          'Deck not found',
+          NotFoundException,
         );
       });
 
@@ -593,6 +594,11 @@ describe('DeckService - Comprehensive Tests', () => {
   });
 
   describe('remove', () => {
+    beforeEach(() => {
+      // Mock deck existence check - remove now checks if deck exists first
+      mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1, userId: 1 });
+    });
+
     it('should delete deck and all related data', async () => {
       const mockCards = [{ id: 1 }, { id: 2 }];
       const mockDeck = { id: 1, title: 'Deleted Deck' };
@@ -630,14 +636,10 @@ describe('DeckService - Comprehensive Tests', () => {
       expect(prismaService.cardReview.deleteMany).not.toHaveBeenCalled();
     });
 
-    it('should throw error for non-existent deck', async () => {
-      mockPrismaService.card.findMany.mockResolvedValue([]);
-      mockPrismaService.card.deleteMany.mockResolvedValue({ count: 0 });
-      mockPrismaService.deck.delete.mockRejectedValue(
-        new Error('Deck not found'),
-      );
+    it('should throw NotFoundException for non-existent deck', async () => {
+      mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
-      await expect(provider.remove(999)).rejects.toThrow('Deck not found');
+      await expect(provider.remove(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -706,7 +708,16 @@ describe('DeckService - Comprehensive Tests', () => {
 
       await provider.getReviewedCardsCountInDay(1, date);
 
-      const call = mockPrismaService.deck.findUnique.mock.calls[0][0];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const call = mockPrismaService.deck.findUnique.mock.calls[0][0] as {
+        include: {
+          cards: {
+            include: {
+              reviews: { where: { reviewedAt: { gte: Date; lte: Date } } };
+            };
+          };
+        };
+      };
       const reviewsWhere = call.include.cards.include.reviews.where;
       expect(reviewsWhere.reviewedAt.gte).toBeDefined();
       expect(reviewsWhere.reviewedAt.lte).toBeDefined();
@@ -887,6 +898,11 @@ describe('DeckService - Comprehensive Tests', () => {
   });
 
   describe('getLastStudiedDate', () => {
+    beforeEach(() => {
+      // Mock deck existence check
+      mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1 });
+    });
+
     it('should return last studied date', async () => {
       const lastStudied = new Date('2025-12-01T10:30:00.000Z');
       mockPrismaService.cardReview.findFirst.mockResolvedValue({
@@ -897,7 +913,7 @@ describe('DeckService - Comprehensive Tests', () => {
 
       expect(result).toEqual({
         deckId: 1,
-        lastStudiedAt: lastStudied,
+        lastStudied: lastStudied,
       });
     });
 
@@ -908,7 +924,7 @@ describe('DeckService - Comprehensive Tests', () => {
 
       expect(result).toEqual({
         deckId: 1,
-        lastStudiedAt: null,
+        lastStudied: null,
       });
     });
 
@@ -922,6 +938,14 @@ describe('DeckService - Comprehensive Tests', () => {
         orderBy: { reviewedAt: 'desc' },
         select: { reviewedAt: true },
       });
+    });
+
+    it('should throw NotFoundException for non-existent deck', async () => {
+      mockPrismaService.deck.findUnique.mockResolvedValue(null);
+
+      await expect(provider.getLastStudiedDate(999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
