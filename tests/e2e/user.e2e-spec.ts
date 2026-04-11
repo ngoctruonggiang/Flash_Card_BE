@@ -296,7 +296,7 @@ describe('AppController (e2e)', () => {
         .expect(HttpStatus.OK);
 
       // Verify user is gone
-      const user = await userService.getUserById(tempUserId);
+      const user = await userService.findOne(tempUserId);
       expect(user).toBeNull();
     });
   });
@@ -402,7 +402,7 @@ describe('AppController (e2e)', () => {
         .expect(HttpStatus.OK);
 
       // Verify deletion
-      const deletedUser = await userService.getUserById(targetUser.id);
+      const deletedUser = await userService.findOne(targetUser.id);
       expect(deletedUser).toBeNull();
 
       // Set targetUser to null so afterAll doesn't try to delete it again

@@ -143,7 +143,7 @@ describe('AppController (e2e)', () => {
     expect(res.body.data.id).toBe(testDeck?.id);
 
     // Verify deletion
-    const deletedDeck = await deckService.findOne(testDeck!.id);
+    const deletedDeck = await deckService.findOneRaw(testDeck!.id);
     expect(deletedDeck).toBeNull();
 
     testDeck = null;
@@ -225,7 +225,7 @@ describe('AppController (e2e)', () => {
     expect(res.body.data.id).toBe(deckWithCards.id);
 
     // Verify deck is deleted
-    const deletedDeck = await deckService.findOne(deckWithCards.id);
+    const deletedDeck = await deckService.findOneRaw(deckWithCards.id);
     expect(deletedDeck).toBeNull();
 
     // Verify cards are deleted

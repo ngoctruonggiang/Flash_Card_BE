@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CardStatisticsDto } from 'src/utils/types/dto/card/cardStatistics.dto';
 
@@ -19,6 +23,7 @@ export class CardService {
     wordType?: string;
     pronunciation?: string;
     examples?: ExampleSentence[];
+    userId?: number;
   }) {
     // Fetch the deck to check language mode
     const deck = await this.prisma.deck.findUnique({
@@ -26,7 +31,14 @@ export class CardService {
     });
 
     if (!deck) {
-      throw new Error('Deck not found');
+      throw new NotFoundException(`Deck with id ${data.deckId} not found`);
+    }
+
+    // Check ownership if userId is provided
+    if (data.userId !== undefined && deck.userId !== data.userId) {
+      throw new ForbiddenException(
+        'You do not have permission to add cards to this deck',
+      );
     }
 
     // Convert examples array to JSON string if provided
@@ -86,7 +98,8 @@ export class CardService {
     }));
   }
 
-  async findOne(id: number) {
+  // Internal method that returns null if not found (for test verification)
+  async findOneRaw(id: number) {
     const card = await this.prisma.card.findUnique({
       where: { id },
       include: {
@@ -105,6 +118,34 @@ export class CardService {
 
     if (!card) {
       return null;
+    }
+
+    // Parse examples JSON string to object
+    return {
+      ...card,
+      examples: card.examples ? JSON.parse(card.examples) : null,
+    };
+  }
+
+  async findOne(id: number) {
+    const card = await this.prisma.card.findUnique({
+      where: { id },
+      include: {
+        deck: {
+          include: {
+            user: true,
+          },
+        },
+        reviews: {
+          orderBy: {
+            reviewedAt: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!card) {
+      throw new NotFoundException(`Card with id ${id} not found`);
     }
 
     // Parse examples JSON string to object
@@ -145,6 +186,12 @@ export class CardService {
       examples?: ExampleSentence[];
     },
   ) {
+    // Check if card exists first
+    const existingCard = await this.prisma.card.findUnique({ where: { id } });
+    if (!existingCard) {
+      throw new NotFoundException(`Card with id ${id} not found`);
+    }
+
     // Convert examples array to JSON string if provided
     const examplesJson = data.examples
       ? JSON.stringify(data.examples)
@@ -166,6 +213,10 @@ export class CardService {
   }
 
   async remove(id: number) {
+    const card = await this.prisma.card.findUnique({ where: { id } });
+    if (!card) {
+      throw new NotFoundException(`Card with id ${id} not found`);
+    }
     return await this.prisma.card.delete({
       where: { id },
     });
@@ -185,7 +236,7 @@ export class CardService {
     });
 
     if (!card) {
-      throw new Error('Card not found');
+      throw new NotFoundException(`Card with id ${id} not found`);
     }
 
     const latestReview = card.reviews[0];
@@ -211,7 +262,7 @@ export class CardService {
     });
 
     if (!card) {
-      throw new Error('Card not found');
+      throw new NotFoundException(`Card with id ${cardId} not found`);
     }
 
     const reviews = card.reviews;

@@ -176,7 +176,7 @@ describe('AppController (e2e)', () => {
     expect(res.body.data.id).toBe(testCards[0].id);
 
     // Verify deletion
-    const deletedCard = await cardService.findOne(testCards[0].id);
+    const deletedCard = await cardService.findOneRaw(testCards[0].id);
     expect(deletedCard).toBeNull();
 
     testCards = testCards.filter((card) => card.id !== testCards[0].id);

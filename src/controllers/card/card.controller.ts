@@ -16,6 +16,8 @@ import { UpdateCardDto } from 'src/utils/types/dto/card/updateCard.dto';
 import { CardStatisticsDto } from 'src/utils/types/dto/card/cardStatistics.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RouteConfig } from 'src/utils/decorators/route.decorator';
+import { GetUser } from 'src/utils/decorators/user.decorator';
+import type { User } from '@prisma/client';
 
 @ApiTags('Card')
 @Controller('card')
@@ -30,6 +32,7 @@ export class CardController {
     requiresAuth: true,
   })
   create(
+    @GetUser() user: User,
     @Body()
     createCardDto: CreateCardDto,
   ) {
@@ -41,6 +44,7 @@ export class CardController {
       wordType: createCardDto.wordType,
       pronunciation: createCardDto.pronunciation,
       examples: createCardDto.examples,
+      userId: user.id,
     });
   }
 

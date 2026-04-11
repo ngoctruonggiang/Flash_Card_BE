@@ -87,8 +87,8 @@ export class DeckController {
     message: 'Get Deck By ID',
     requiresAuth: true,
   })
-  findOne(@Param() params: IdParamDto) {
-    return this.deckService.findOne(params.id);
+  findOne(@GetUser() user: client.User, @Param() params: IdParamDto) {
+    return this.deckService.findOne(params.id, user.id);
   }
 
   @Patch(':id')
@@ -99,11 +99,12 @@ export class DeckController {
     requiresAuth: true,
   })
   update(
+    @GetUser() user: client.User,
     @Param() params: IdParamDto,
     @Body()
     updateDeckDto: UpdateDeckDto,
   ) {
-    return this.deckService.update(params.id, updateDeckDto);
+    return this.deckService.update(params.id, updateDeckDto, user.id);
   }
 
   @Delete(':id')
@@ -113,8 +114,8 @@ export class DeckController {
     message: 'Delete Deck By ID',
     requiresAuth: true,
   })
-  remove(@Param() params: IdParamDto) {
-    return this.deckService.remove(params.id);
+  remove(@GetUser() user: client.User, @Param() params: IdParamDto) {
+    return this.deckService.remove(params.id, user.id);
   }
 
   @Get(':id/reviewed-count-day')
