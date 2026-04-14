@@ -62,8 +62,8 @@ describe('ReviewService - Cram Mode', () => {
 
       mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
       mockPrismaService.cardReview.create.mockResolvedValue({
-        id: 100,
         ...mockCard,
+        id: 100,
       });
 
       await service.submitCramReviews(submitDto);
