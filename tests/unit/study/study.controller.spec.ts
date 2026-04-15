@@ -46,7 +46,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('UC-20: Start Study Session', () => {
-    it('should return due reviews for a deck', async () => {
+    it('TC-103: should return due cards when deck has cards due, returns array of due cards', async () => {
       const dueCards = [
         { id: 1, front: 'Card 1', status: 'review' },
         { id: 2, front: 'Card 2', status: 'learning' },
@@ -59,7 +59,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getDueReviews).toHaveBeenCalledWith(1);
     });
 
-    it('should return empty array when no cards due', async () => {
+    it('TC-104: should return empty array when no cards are due, returns empty array', async () => {
       mockReviewService.getDueReviews.mockResolvedValue([]);
 
       const result = await controller.getDueReviews({ id: 1 });
@@ -67,7 +67,7 @@ describe('StudyController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-105: should throw NotFoundException when deck does not exist, returns 404 error', async () => {
       mockReviewService.getDueReviews.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -77,7 +77,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should handle different deck ids', async () => {
+    it('TC-106: should return due cards when deck id is 42, returns cards for deck 42', async () => {
       mockReviewService.getDueReviews.mockResolvedValue([]);
 
       await controller.getDueReviews({ id: 42 });
@@ -85,7 +85,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getDueReviews).toHaveBeenCalledWith(42);
     });
 
-    it('should return cards with all statuses', async () => {
+    it('TC-107: should return cards with all statuses when mixed cards due, returns all status types', async () => {
       const dueCards = [
         { id: 1, status: 'new' },
         { id: 2, status: 'learning' },
@@ -101,7 +101,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('getReviewPreview', () => {
-    it('should return preview for all quality options', async () => {
+    it('TC-108: should return preview when card exists, returns all quality options', async () => {
       const preview = {
         Again: '1 min',
         Hard: '1 min',
@@ -116,7 +116,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getReviewPreview).toHaveBeenCalledWith(1);
     });
 
-    it('should propagate NotFoundException for non-existent card', async () => {
+    it('TC-109: should throw NotFoundException when card does not exist, returns 404 error', async () => {
       mockReviewService.getReviewPreview.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -126,7 +126,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should handle string id conversion', async () => {
+    it('TC-110: should convert string id to number when string provided, returns preview', async () => {
       const preview = {
         Again: '1 min',
         Hard: '1 min',
@@ -140,7 +140,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getReviewPreview).toHaveBeenCalledWith(42);
     });
 
-    it('should return day intervals for review cards', async () => {
+    it('TC-111: should return day intervals when card is in review status, returns days format', async () => {
       const preview = {
         Again: '10 min',
         Hard: '12 days',
@@ -154,7 +154,7 @@ describe('StudyController  Tests', () => {
       expect(result.Good).toContain('days');
     });
 
-    it('should return minute intervals for learning cards', async () => {
+    it('TC-112: should return minute intervals when card is learning, returns minutes format', async () => {
       const preview = {
         Again: '1 min',
         Hard: '1 min',
@@ -170,7 +170,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('UC-21: Record Review Outcome', () => {
-    it('should submit single review', async () => {
+    it('TC-113: should submit review when single card reviewed, returns review result', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
       };
@@ -190,7 +190,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.submitReviews).toHaveBeenCalledWith(submitDto);
     });
 
-    it('should submit multiple reviews', async () => {
+    it('TC-114: should submit reviews when multiple cards reviewed, returns all review results', async () => {
       const submitDto = {
         CardReviews: [
           { cardId: 1, quality: 'Good' },
@@ -210,7 +210,7 @@ describe('StudyController  Tests', () => {
       expect(result).toHaveLength(3);
     });
 
-    it('should handle all quality types', async () => {
+    it('TC-115: should submit review when any quality type provided, returns result with quality', async () => {
       const qualities = ['Again', 'Hard', 'Good', 'Easy'];
 
       for (const quality of qualities) {
@@ -225,7 +225,7 @@ describe('StudyController  Tests', () => {
       }
     });
 
-    it('should handle empty CardReviews array', async () => {
+    it('TC-116: should return empty array when CardReviews is empty, returns empty array', async () => {
       const submitDto = { CardReviews: [] };
       mockReviewService.submitReviews.mockResolvedValue([]);
 
@@ -234,7 +234,7 @@ describe('StudyController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-117: should throw error when card does not exist, returns error message', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 999, quality: 'Good' }],
       };
@@ -249,7 +249,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('UC-23: View Study Session Statistics', () => {
-    it('should return consecutive study days', async () => {
+    it('TC-118: should return consecutive days when streak exists, returns streak data', async () => {
       const consecutiveData = {
         consecutiveDays: 7,
         streakStartDate: new Date('2025-01-08'),
@@ -265,7 +265,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getConsecutiveStudyDays).toHaveBeenCalledWith(1);
     });
 
-    it('should return 0 days when never studied', async () => {
+    it('TC-119: should return 0 days when deck never studied, returns zero streak', async () => {
       const consecutiveData = {
         consecutiveDays: 0,
         streakStartDate: null,
@@ -280,7 +280,7 @@ describe('StudyController  Tests', () => {
       expect(result.consecutiveDays).toBe(0);
     });
 
-    it('should return 0 days when streak broken', async () => {
+    it('TC-120: should return 0 days when streak is broken, returns broken streak', async () => {
       const consecutiveData = {
         consecutiveDays: 0,
         streakStartDate: null,
@@ -295,7 +295,7 @@ describe('StudyController  Tests', () => {
       expect(result.consecutiveDays).toBe(0);
     });
 
-    it('should handle string id conversion', async () => {
+    it('TC-121: should convert string id to number when string provided, returns streak data', async () => {
       mockReviewService.getConsecutiveStudyDays.mockResolvedValue({
         consecutiveDays: 1,
         streakStartDate: new Date(),
@@ -307,7 +307,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getConsecutiveStudyDays).toHaveBeenCalledWith(42);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-122: should throw NotFoundException when deck does not exist, returns 404 error', async () => {
       mockReviewService.getConsecutiveStudyDays.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -319,7 +319,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('startCramSession', () => {
-    it('should start cram session with default limit', async () => {
+    it('TC-123: should start cram session when no limit specified, returns default 50 cards', async () => {
       const cards = [
         { id: 1, front: 'Card 1' },
         { id: 2, front: 'Card 2' },
@@ -340,7 +340,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should start cram session with custom limit', async () => {
+    it('TC-124: should start cram session when custom limit provided, returns limited cards', async () => {
       const cards = Array.from({ length: 10 }, (_, i) => ({ id: i + 1 }));
       mockStudyService.getCramCards.mockResolvedValue(cards);
 
@@ -354,7 +354,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should return empty array when no cards', async () => {
+    it('TC-125: should return empty array when deck has no cards, returns empty data', async () => {
       mockStudyService.getCramCards.mockResolvedValue([]);
 
       const result = await controller.startCramSession(mockUser as any, 1);
@@ -363,7 +363,7 @@ describe('StudyController  Tests', () => {
       expect(result.total).toBe(0);
     });
 
-    it('should propagate NotFoundException for wrong deck', async () => {
+    it('TC-126: should throw NotFoundException when deck does not exist, returns 404 error', async () => {
       mockStudyService.getCramCards.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -373,7 +373,7 @@ describe('StudyController  Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should convert string limit to number', async () => {
+    it('TC-127: should convert string limit to number when string provided, returns cards', async () => {
       mockStudyService.getCramCards.mockResolvedValue([]);
 
       await controller.startCramSession(mockUser as any, 1, '25' as any);
@@ -385,7 +385,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should use correct user id', async () => {
+    it('TC-128: should use correct user id when user id is 99, returns cards for user 99', async () => {
       const user = { ...mockUser, id: 99 };
       mockStudyService.getCramCards.mockResolvedValue([]);
 
@@ -394,7 +394,7 @@ describe('StudyController  Tests', () => {
       expect(studyService.getCramCards).toHaveBeenCalledWith(99, 1, 50);
     });
 
-    it('should handle undefined limit', async () => {
+    it('TC-129: should use default limit when limit is undefined, returns default cards', async () => {
       mockStudyService.getCramCards.mockResolvedValue([]);
 
       await controller.startCramSession(mockUser as any, 1, undefined);
@@ -408,7 +408,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('submitCramReview', () => {
-    it('should submit cram review', async () => {
+    it('TC-130: should submit cram review when single card reviewed, returns review result', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
       };
@@ -417,7 +417,7 @@ describe('StudyController  Tests', () => {
           cardId: 1,
           quality: 'Good',
           previousStatus: 'review',
-          newStatus: 'review', // Status unchanged in cram mode
+          newStatus: 'review',
         },
       ];
       mockReviewService.submitCramReviews.mockResolvedValue(reviewResult);
@@ -428,7 +428,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.submitCramReviews).toHaveBeenCalledWith(submitDto);
     });
 
-    it('should submit multiple cram reviews', async () => {
+    it('TC-131: should submit cram reviews when multiple cards reviewed, returns all results', async () => {
       const submitDto = {
         CardReviews: [
           { cardId: 1, quality: 'Good' },
@@ -445,7 +445,7 @@ describe('StudyController  Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    it('should not affect card scheduling', async () => {
+    it('TC-132: should not affect card scheduling when cram review submitted, returns same status', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Easy' }],
       };
@@ -453,18 +453,17 @@ describe('StudyController  Tests', () => {
         {
           cardId: 1,
           previousStatus: 'review',
-          newStatus: 'review', // Same status
+          newStatus: 'review',
         },
       ];
       mockReviewService.submitCramReviews.mockResolvedValue(reviewResult);
 
       const result = await controller.submitCramReview(submitDto as any);
 
-      // In cram mode, status should remain the same
       expect(result[0].previousStatus).toBe(result[0].newStatus);
     });
 
-    it('should handle empty CardReviews', async () => {
+    it('TC-133: should return empty array when CardReviews is empty, returns empty array', async () => {
       const submitDto = { CardReviews: [] };
       mockReviewService.submitCramReviews.mockResolvedValue([]);
 
@@ -473,7 +472,7 @@ describe('StudyController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-134: should throw error when card does not exist, returns error message', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 999, quality: 'Good' }],
       };
@@ -488,15 +487,15 @@ describe('StudyController  Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('should be defined', () => {
+    it('TC-135: should be defined when module is compiled, returns defined controller', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should have reviewService injected', () => {
+    it('TC-136: should have reviewService injected when module is compiled, returns defined service', () => {
       expect(reviewService).toBeDefined();
     });
 
-    it('should have studyService injected', () => {
+    it('TC-137: should have studyService injected when module is compiled, returns defined service', () => {
       expect(studyService).toBeDefined();
     });
   });
