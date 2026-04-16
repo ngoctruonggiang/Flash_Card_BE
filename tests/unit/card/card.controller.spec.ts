@@ -35,7 +35,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-14: Add Card', () => {
-    it('TC-039: should create card when valid front and back provided, returns card with id', async () => {
+    it('should create a new card', async () => {
       const createDto = {
         deckId: 1,
         front: 'Hello',
@@ -58,7 +58,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('TC-040: should create card when all optional fields provided, returns card with all fields', async () => {
+    it('should create card with all optional fields', async () => {
       const createDto = {
         deckId: 1,
         front: 'Hello',
@@ -78,7 +78,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('TC-041: should create card when examples array is empty, returns card with empty examples', async () => {
+    it('should create card with empty examples', async () => {
       const createDto = {
         deckId: 1,
         front: 'Test',
@@ -101,7 +101,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('TC-042: should create card when content contains unicode, returns card with unicode content', async () => {
+    it('should handle unicode content', async () => {
       const createDto = {
         deckId: 1,
         front: 'Xin chào',
@@ -115,7 +115,7 @@ describe('CardController Tests', () => {
       expect(cardService.create).toHaveBeenCalled();
     });
 
-    it('TC-043: should create card when content is very long, returns card with long content', async () => {
+    it('should handle long content', async () => {
       const longText = 'A'.repeat(5000);
       const createDto = {
         deckId: 1,
@@ -129,7 +129,7 @@ describe('CardController Tests', () => {
       expect(cardService.create).toHaveBeenCalled();
     });
 
-    it('TC-044: should throw NotFoundException when deck does not exist, returns 404 error', async () => {
+    it('should propagate service errors', async () => {
       const createDto = { deckId: 999, front: 'Test', back: 'Test' };
       mockCardService.create.mockRejectedValue(
         new NotFoundException('Deck not found'),
@@ -140,7 +140,7 @@ describe('CardController Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('TC-045: should create card when multiple tags provided, returns card with all tags', async () => {
+    it('should handle multiple tags', async () => {
       const createDto = {
         deckId: 1,
         front: 'Test',
@@ -158,7 +158,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-13: Browse Deck Cards', () => {
-    it('TC-046: should return all cards when no deckId provided, returns array of all cards', async () => {
+    it('should find all cards', async () => {
       const cards = [mockCard, { ...mockCard, id: 2 }];
       mockCardService.findAll.mockResolvedValue(cards);
 
@@ -168,7 +168,7 @@ describe('CardController Tests', () => {
       expect(cardService.findAll).toHaveBeenCalled();
     });
 
-    it('TC-047: should return cards when deckId provided, returns cards for that deck', async () => {
+    it('should find cards by deckId', async () => {
       const cards = [mockCard];
       mockCardService.findByDeck.mockResolvedValue(cards);
 
@@ -178,7 +178,7 @@ describe('CardController Tests', () => {
       expect(cardService.findByDeck).toHaveBeenCalledWith(1);
     });
 
-    it('TC-048: should return empty array when no cards exist globally, returns empty array', async () => {
+    it('should return empty array when no cards exist', async () => {
       mockCardService.findAll.mockResolvedValue([]);
 
       const result = await controller.findAll();
@@ -186,7 +186,7 @@ describe('CardController Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('TC-049: should return empty array when deck has no cards, returns empty array', async () => {
+    it('should return empty array when deck has no cards', async () => {
       mockCardService.findByDeck.mockResolvedValue([]);
 
       const result = await controller.findAll(999);
@@ -194,7 +194,7 @@ describe('CardController Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('TC-050: should call findAll when deckId is undefined, returns all cards', async () => {
+    it('should call findAll when deckId is undefined', async () => {
       mockCardService.findAll.mockResolvedValue([]);
 
       await controller.findAll(undefined);
@@ -205,7 +205,7 @@ describe('CardController Tests', () => {
   });
 
   describe('findOne', () => {
-    it('TC-051: should return card when valid id provided, returns card object', async () => {
+    it('should find card by id', async () => {
       mockCardService.findOne.mockResolvedValue(mockCard);
 
       const result = await controller.findOne({ id: 1 });
@@ -214,7 +214,7 @@ describe('CardController Tests', () => {
       expect(cardService.findOne).toHaveBeenCalledWith(1);
     });
 
-    it('TC-052: should throw NotFoundException when card id does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException', async () => {
       mockCardService.findOne.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -224,7 +224,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-053: should return card when id is 100, returns card with id 100', async () => {
+    it('should handle different card ids', async () => {
       const card = { ...mockCard, id: 100 };
       mockCardService.findOne.mockResolvedValue(card);
 
@@ -234,7 +234,7 @@ describe('CardController Tests', () => {
       expect(cardService.findOne).toHaveBeenCalledWith(100);
     });
 
-    it('TC-054: should return card with all fields when valid id, returns complete card object', async () => {
+    it('should return card with all fields', async () => {
       mockCardService.findOne.mockResolvedValue(mockCard);
 
       const result = await controller.findOne({ id: 1 });
@@ -247,7 +247,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-15: Edit Card', () => {
-    it('TC-055: should update card when new front provided, returns card with updated front', async () => {
+    it('should update card front', async () => {
       const updateDto = { front: 'Updated Front' };
       const updatedCard = { ...mockCard, front: 'Updated Front' };
       mockCardService.update.mockResolvedValue(updatedCard);
@@ -265,7 +265,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('TC-056: should update card when new back provided, returns card with updated back', async () => {
+    it('should update card back', async () => {
       const updateDto = { back: 'Updated Back' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -280,7 +280,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-057: should update card when multiple fields provided, returns card with all fields updated', async () => {
+    it('should update multiple fields', async () => {
       const updateDto = {
         front: 'New Front',
         back: 'New Back',
@@ -300,7 +300,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('TC-058: should update card when pronunciation provided, returns card with updated pronunciation', async () => {
+    it('should update pronunciation', async () => {
       const updateDto = { pronunciation: '/njuː/' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -315,7 +315,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-059: should update card when examples provided, returns card with updated examples', async () => {
+    it('should update examples', async () => {
       const updateDto = { examples: ['New example 1', 'New example 2'] };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -332,7 +332,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-060: should update card when wordType provided, returns card with updated wordType', async () => {
+    it('should update wordType', async () => {
       const updateDto = { wordType: 'verb' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -347,7 +347,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-061: should update card when empty dto provided, returns unchanged card', async () => {
+    it('should handle empty update dto', async () => {
       const updateDto = {};
       mockCardService.update.mockResolvedValue(mockCard);
 
@@ -363,7 +363,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('TC-062: should throw NotFoundException when card id does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException', async () => {
       mockCardService.update.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -373,7 +373,7 @@ describe('CardController Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('TC-063: should update card when content contains unicode, returns card with unicode content', async () => {
+    it('should handle unicode update', async () => {
       const updateDto = { front: 'Tiếng Việt', back: 'Vietnamese' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -387,7 +387,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-16: Delete Card', () => {
-    it('TC-064: should delete card when valid id provided, returns deleted confirmation', async () => {
+    it('should remove card by id', async () => {
       mockCardService.remove.mockResolvedValue({ deleted: true });
 
       const result = await controller.remove({ id: 1 });
@@ -396,7 +396,7 @@ describe('CardController Tests', () => {
       expect(cardService.remove).toHaveBeenCalledWith(1);
     });
 
-    it('TC-065: should throw NotFoundException when card id does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException', async () => {
       mockCardService.remove.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -406,7 +406,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-066: should delete card when id is 42, returns deleted confirmation', async () => {
+    it('should handle different card ids', async () => {
       mockCardService.remove.mockResolvedValue({ deleted: true });
 
       await controller.remove({ id: 42 });
@@ -416,7 +416,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-17: View Card Statistics', () => {
-    it('TC-067: should return status when card has been reviewed, returns complete status object', async () => {
+    it('should get review status for card', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: new Date('2025-01-14'),
@@ -431,7 +431,7 @@ describe('CardController Tests', () => {
       expect(cardService.getReviewStatus).toHaveBeenCalledWith(1);
     });
 
-    it('TC-068: should return null dates when card is new, returns status with null dates', async () => {
+    it('should return null dates for new card', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: null,
@@ -446,7 +446,7 @@ describe('CardController Tests', () => {
       expect(result.hasBeenReviewed).toBe(false);
     });
 
-    it('TC-069: should throw NotFoundException when card id does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException', async () => {
       mockCardService.getReviewStatus.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -456,7 +456,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('TC-070: should return hasBeenReviewed true when card reviewed, returns reviewed status', async () => {
+    it('should return status for reviewed card', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: new Date(),
@@ -470,7 +470,7 @@ describe('CardController Tests', () => {
       expect(result.hasBeenReviewed).toBe(true);
     });
 
-    it('TC-071: should return cardId in status object, returns status with cardId', async () => {
+    it('should return cardId in status', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: new Date(),
@@ -486,11 +486,11 @@ describe('CardController Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('TC-072: should be defined when module is compiled, returns defined controller', () => {
+    it('should be defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('TC-073: should have cardService injected when module is compiled, returns defined service', () => {
+    it('should have cardService injected', () => {
       expect(cardService).toBeDefined();
     });
   });

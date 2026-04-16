@@ -44,7 +44,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('UC-04: View User Profile', () => {
-    it('TC-138: should return profile when current user requests, returns user profile', async () => {
+    it('should return current user profile', async () => {
       mockUserService.getUserById.mockResolvedValue(mockUser);
 
       const result = await controller.getCurrentUser(mockUser as any);
@@ -53,7 +53,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it('TC-139: should call getUserById when user id is 42, returns profile for user 42', async () => {
+    it('should call getUserById with correct user id', async () => {
       const user = { ...mockUser, id: 42 };
       mockUserService.getUserById.mockResolvedValue(user);
 
@@ -62,7 +62,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(42);
     });
 
-    it('TC-140: should return user without password when profile requested, returns safe user object', async () => {
+    it('should return user without password', async () => {
       const userWithoutPassword = { ...mockUser };
       mockUserService.getUserById.mockResolvedValue(userWithoutPassword);
 
@@ -71,7 +71,7 @@ describe('UserController  Tests', () => {
       expect(result).not.toHaveProperty('password');
     });
 
-    it('TC-141: should throw error when database fails, returns error message', async () => {
+    it('should propagate service errors', async () => {
       mockUserService.getUserById.mockRejectedValue(
         new Error('Database error'),
       );
@@ -81,7 +81,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('TC-142: should throw NotFoundException when user does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException', async () => {
       mockUserService.getUserById.mockRejectedValue(
         new NotFoundException('User not found'),
       );
@@ -93,7 +93,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('UC-05: Update User Profile', () => {
-    it('TC-143: should update profile when new username provided, returns updated user', async () => {
+    it('should update user profile', async () => {
       const updateDto = { username: 'newusername' };
       const updatedUser = { ...mockUser, username: 'newusername' };
       mockUserService.update.mockResolvedValue(updatedUser);
@@ -104,7 +104,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('TC-144: should update profile when new email provided, returns updated email', async () => {
+    it('should update email', async () => {
       const updateDto = { email: 'newemail@example.com' };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
@@ -116,7 +116,7 @@ describe('UserController  Tests', () => {
       expect(result).toHaveProperty('email', 'newemail@example.com');
     });
 
-    it('TC-145: should update profile when username changed, returns new username', async () => {
+    it('should update username', async () => {
       const updateDto = { username: 'newuser' };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
@@ -128,7 +128,7 @@ describe('UserController  Tests', () => {
       expect(result).toHaveProperty('username', 'newuser');
     });
 
-    it('TC-146: should update profile when password changed, returns success', async () => {
+    it('should update password', async () => {
       const updateDto = { password: 'newPassword123!' };
       mockUserService.update.mockResolvedValue(mockUser);
 
@@ -137,7 +137,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('TC-147: should update profile when empty dto provided, returns unchanged user', async () => {
+    it('should handle empty update dto', async () => {
       const updateDto = {};
       mockUserService.update.mockResolvedValue(mockUser);
 
@@ -146,7 +146,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('TC-148: should update profile when multiple fields provided, returns all updates', async () => {
+    it('should handle multiple fields update', async () => {
       const updateDto = {
         username: 'newuser',
         email: 'new@example.com',
@@ -161,7 +161,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('TC-149: should throw BadRequestException when email format invalid, returns 400 error', async () => {
+    it('should propagate BadRequestException for invalid data', async () => {
       const updateDto = { email: 'invalid-email' };
       mockUserService.update.mockRejectedValue(
         new BadRequestException('Invalid email'),
@@ -172,7 +172,7 @@ describe('UserController  Tests', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('TC-150: should update profile when username contains unicode, returns unicode username', async () => {
+    it('should handle unicode in username', async () => {
       const updateDto = { username: 'người_dùng_mới' };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
@@ -186,7 +186,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('UC-06: Delete User Account', () => {
-    it('TC-151: should delete account when current user requests, returns deleted confirmation', async () => {
+    it('should remove user account', async () => {
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
       const result = await controller.remove(mockUser as any);
@@ -195,7 +195,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it('TC-152: should call remove when user id is 123, returns deleted confirmation', async () => {
+    it('should call remove with correct user id', async () => {
       const user = { ...mockUser, id: 123 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -204,7 +204,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(123);
     });
 
-    it('TC-153: should throw error when deletion fails, returns error message', async () => {
+    it('should propagate service errors', async () => {
       mockUserService.remove.mockRejectedValue(new Error('Cannot delete user'));
 
       await expect(controller.remove(mockUser as any)).rejects.toThrow(
@@ -214,7 +214,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('getAllUser (Admin)', () => {
-    it('TC-154: should return all users when admin requests, returns array of users', async () => {
+    it('should return all users', async () => {
       const allUsers = [
         mockUser,
         { ...mockUser, id: 2, username: 'user2' },
@@ -228,7 +228,7 @@ describe('UserController  Tests', () => {
       expect(userService.getAllUsers).toHaveBeenCalled();
     });
 
-    it('TC-155: should return empty array when no users exist, returns empty array', async () => {
+    it('should return empty array when no users exist', async () => {
       mockUserService.getAllUsers.mockResolvedValue([]);
 
       const result = await controller.getAllUser();
@@ -236,7 +236,7 @@ describe('UserController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('TC-156: should return users without passwords when admin requests, returns safe user objects', async () => {
+    it('should return users without passwords', async () => {
       const usersWithoutPasswords = [
         { id: 1, email: 'user1@example.com', username: 'user1' },
         { id: 2, email: 'user2@example.com', username: 'user2' },
@@ -250,7 +250,7 @@ describe('UserController  Tests', () => {
       });
     });
 
-    it('TC-157: should throw error when database fails, returns error message', async () => {
+    it('should propagate service errors', async () => {
       mockUserService.getAllUsers.mockRejectedValue(
         new Error('Database error'),
       );
@@ -260,7 +260,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('getUserById (Admin)', () => {
-    it('TC-158: should return user when valid id provided, returns user object', async () => {
+    it('should return user by id', async () => {
       const params = { id: 1 };
       mockUserService.getUserById.mockResolvedValue(mockUser);
 
@@ -270,7 +270,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(1);
     });
 
-    it('TC-159: should return user when id is 999, returns user with id 999', async () => {
+    it('should handle different user ids', async () => {
       const params = { id: 999 };
       const user = { ...mockUser, id: 999 };
       mockUserService.getUserById.mockResolvedValue(user);
@@ -281,7 +281,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(999);
     });
 
-    it('TC-160: should throw NotFoundException when user does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException for non-existent user', async () => {
       const params = { id: 999 };
       mockUserService.getUserById.mockRejectedValue(
         new NotFoundException('User not found'),
@@ -292,7 +292,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('TC-161: should call getUserById when id is 0, returns result for id 0', async () => {
+    it('should handle id = 0', async () => {
       const params = { id: 0 };
       mockUserService.getUserById.mockResolvedValue(null);
 
@@ -303,7 +303,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('updateAdmin (Admin)', () => {
-    it('TC-162: should update user when admin provides new username, returns updated user', async () => {
+    it('should update any user by id', async () => {
       const params = { id: 2 };
       const updateDto = { username: 'updateduser' };
       const updatedUser = { ...mockUser, id: 2, username: 'updateduser' };
@@ -315,7 +315,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
-    it('TC-163: should update user when admin provides new email, returns updated email', async () => {
+    it('should update user email', async () => {
       const params = { id: 2 };
       const updateDto = { email: 'updated@example.com' };
       mockUserService.update.mockResolvedValue({
@@ -329,7 +329,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
-    it('TC-164: should update user when admin changes role to ADMIN, returns updated role', async () => {
+    it('should update user role', async () => {
       const params = { id: 2 };
       const updateDto = { role: 'ADMIN' as any };
       mockUserService.update.mockResolvedValue({
@@ -343,7 +343,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
-    it('TC-165: should throw NotFoundException when user does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException for non-existent user', async () => {
       const params = { id: 999 };
       const updateDto = { username: 'newname' };
       mockUserService.update.mockRejectedValue(
@@ -355,7 +355,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('TC-166: should update user when empty dto provided, returns unchanged user', async () => {
+    it('should handle empty update dto', async () => {
       const params = { id: 2 };
       const updateDto = {};
       mockUserService.update.mockResolvedValue(mockUser);
@@ -367,7 +367,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('removeAdmin (Admin)', () => {
-    it('TC-167: should delete user when admin provides valid id, returns deleted confirmation', async () => {
+    it('should remove any user by id', async () => {
       const params = { id: 2 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -377,7 +377,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(2);
     });
 
-    it('TC-168: should throw NotFoundException when user does not exist, returns 404 error', async () => {
+    it('should propagate NotFoundException for non-existent user', async () => {
       const params = { id: 999 };
       mockUserService.remove.mockRejectedValue(
         new NotFoundException('User not found'),
@@ -388,8 +388,8 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('TC-169: should delete user when removing admin user, returns deleted confirmation', async () => {
-      const params = { id: 99 };
+    it('should handle removing admin user', async () => {
+      const params = { id: 99 }; // Admin user id
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
       await controller.removeAdmin(params);
@@ -397,7 +397,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(99);
     });
 
-    it('TC-170: should delete user when id is 0, returns deleted confirmation', async () => {
+    it('should handle removing user with id 0', async () => {
       const params = { id: 0 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -408,11 +408,11 @@ describe('UserController  Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('TC-171: should be defined when module is compiled, returns defined controller', () => {
+    it('should be defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('TC-172: should have userService injected when module is compiled, returns defined service', () => {
+    it('should have userService injected', () => {
       expect(userService).toBeDefined();
     });
   });
