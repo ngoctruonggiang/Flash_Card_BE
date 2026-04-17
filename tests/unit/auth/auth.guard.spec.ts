@@ -13,7 +13,7 @@ import {
   createMockUser,
 } from '../__helpers__';
 
-describe('AuthGuard Tests', () => {
+describe('UC-02: Login - AuthGuard Tests', () => {
   let guard: AuthGuard;
   let reflector: Reflector;
   let jwtService: JwtService;

@@ -862,7 +862,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('getConsecutiveStudyDays', () => {
+  describe('UC-23: View Study Session Statistics', () => {
     beforeEach(() => {
       // Mock deck existence check
       mockPrismaService.deck.findUnique.mockResolvedValue({

@@ -879,7 +879,7 @@ describe('DeckService Tests', () => {
     });
   });
 
-  describe('getLastStudiedDate', () => {
+  describe('UC-12: View Advanced Deck Statistics', () => {
     beforeEach(() => {
       // Mock deck existence check
       mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1 });

@@ -858,7 +858,7 @@ describe('AuthService Tests', () => {
     });
   });
 
-  describe('signIn', () => {
+  describe('UC-02: Login', () => {
     describe('User Not Found', () => {
       it('should reject non-existent email', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);

@@ -839,7 +839,7 @@ describe('CardService  Tests', () => {
     });
   });
 
-  describe('remove', () => {
+  describe('UC-16: Delete Card', () => {
     it('should delete card by id', async () => {
       const mockDeleted = { id: 1, front: 'Q', back: 'A' };
       mockPrismaService.card.delete.mockResolvedValue(mockDeleted);
@@ -861,7 +861,7 @@ describe('CardService  Tests', () => {
     });
   });
 
-  describe('getReviewStatus', () => {
+  describe('UC-17: View Card Statistics', () => {
     it('should return review status for reviewed card', async () => {
       const reviewedAt = new Date('2025-12-01');
       const nextReviewDate = new Date('2025-12-05');
