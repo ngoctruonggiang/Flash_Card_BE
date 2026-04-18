@@ -33,8 +33,8 @@ describe('StudyService  Tests', () => {
   });
 
   describe('UC-20: Start Study Session', () => {
-    describe('Deck ownership validation', () => {
-      it('should throw NotFoundException when deck does not exist', async () => {
+    describe('Deck ownership validation scenarios', () => {
+      it('TC-STARTSTUDY-006: This test case aims to verify NotFoundException when deck does not exist', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
         await expect(service.getCramCards(1, 999)).rejects.toThrow(
@@ -45,7 +45,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should throw NotFoundException when deck belongs to different user', async () => {
+      it('TC-STARTSTUDY-007: This test case aims to verify NotFoundException when deck belongs to different user', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
         await expect(service.getCramCards(1, 1)).rejects.toThrow(
@@ -53,7 +53,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should verify deck ownership with correct parameters', async () => {
+      it('TC-STARTSTUDY-008: This test case aims to verify deck ownership with correct parameters', async () => {
         const userId = 5;
         const deckId = 10;
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
@@ -65,7 +65,7 @@ describe('StudyService  Tests', () => {
         });
       });
 
-      it('should proceed when deck belongs to user', async () => {
+      it('TC-STARTSTUDY-009: This test case aims to verify service proceeds when deck belongs to user', async () => {
         const mockDeck = {
           id: 1,
           userId: 1,
@@ -81,7 +81,7 @@ describe('StudyService  Tests', () => {
       });
     });
 
-    describe('Card fetching', () => {
+    describe('Card fetching scenarios', () => {
       beforeEach(() => {
         mockPrismaService.deck.findFirst.mockResolvedValue({
           id: 1,
@@ -90,7 +90,7 @@ describe('StudyService  Tests', () => {
         });
       });
 
-      it('should return cards from the deck', async () => {
+      it('TC-STARTSTUDY-010: This test case aims to verify cards are returned from the deck', async () => {
         const mockCards = [
           {
             id: 1,
@@ -115,7 +115,7 @@ describe('StudyService  Tests', () => {
         expect(result).toHaveLength(2);
       });
 
-      it('should return empty array when deck has no cards', async () => {
+      it('TC-STARTSTUDY-011: This test case aims to verify empty array is returned when deck has no cards', async () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
 
         const result = await service.getCramCards(1, 1);
@@ -124,7 +124,7 @@ describe('StudyService  Tests', () => {
         expect(result).toHaveLength(0);
       });
 
-      it('should return cards regardless of their status', async () => {
+      it('TC-STARTSTUDY-012: This test case aims to verify cards are returned regardless of their status', async () => {
         const mockCards = [
           { id: 1, status: 'new', deckId: 1 },
           { id: 2, status: 'learning', deckId: 1 },
@@ -142,7 +142,7 @@ describe('StudyService  Tests', () => {
         expect(result.map((c: any) => c.status)).toContain('relearning');
       });
 
-      it('should return cards regardless of nextReviewDate', async () => {
+      it('TC-STARTSTUDY-013: This test case aims to verify cards are returned regardless of nextReviewDate', async () => {
         const pastDate = new Date('2020-01-01');
         const futureDate = new Date('2030-01-01');
         const mockCards = [
@@ -158,7 +158,7 @@ describe('StudyService  Tests', () => {
       });
     });
 
-    describe('Limit parameter', () => {
+    describe('Limit parameter scenarios', () => {
       beforeEach(() => {
         mockPrismaService.deck.findFirst.mockResolvedValue({
           id: 1,
@@ -167,7 +167,7 @@ describe('StudyService  Tests', () => {
         });
       });
 
-      it('should use default limit of 50 when not specified', async () => {
+      it('TC-STARTSTUDY-014: This test case aims to verify default limit of 50 is used when not specified', async () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
 
         await service.getCramCards(1, 1);
@@ -176,7 +176,7 @@ describe('StudyService  Tests', () => {
         expect(prismaService.$queryRaw).toHaveBeenCalled();
       });
 
-      it('should use custom limit when specified', async () => {
+      it('TC-STARTSTUDY-015: This test case aims to verify custom limit is used when specified', async () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
 
         await service.getCramCards(1, 1, 10);
@@ -184,7 +184,7 @@ describe('StudyService  Tests', () => {
         expect(prismaService.$queryRaw).toHaveBeenCalled();
       });
 
-      it('should limit results correctly', async () => {
+      it('TC-STARTSTUDY-016: This test case aims to verify results are limited correctly', async () => {
         const mockCards = Array.from({ length: 5 }, (_, i) => ({
           id: i + 1,
           front: `Front ${i + 1}`,
@@ -197,7 +197,7 @@ describe('StudyService  Tests', () => {
         expect(result).toHaveLength(5);
       });
 
-      it('should handle limit of 0', async () => {
+      it('TC-STARTSTUDY-017: This test case aims to verify handling of limit of 0', async () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
 
         const result = await service.getCramCards(1, 1, 0);
@@ -205,7 +205,7 @@ describe('StudyService  Tests', () => {
         expect(result).toEqual([]);
       });
 
-      it('should handle limit of 1', async () => {
+      it('TC-STARTSTUDY-018: This test case aims to verify handling of limit of 1', async () => {
         const mockCards = [{ id: 1, front: 'Front 1', deckId: 1 }];
         mockPrismaService.$queryRaw.mockResolvedValue(mockCards);
 
@@ -214,7 +214,7 @@ describe('StudyService  Tests', () => {
         expect(result).toHaveLength(1);
       });
 
-      it('should handle very large limit', async () => {
+      it('TC-STARTSTUDY-019: This test case aims to verify handling of very large limit', async () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
 
         await service.getCramCards(1, 1, 10000);
@@ -222,7 +222,7 @@ describe('StudyService  Tests', () => {
         expect(prismaService.$queryRaw).toHaveBeenCalled();
       });
 
-      it('should return fewer cards than limit when deck has fewer cards', async () => {
+      it('TC-STARTSTUDY-020: This test case aims to verify fewer cards than limit are returned when deck has fewer cards', async () => {
         const mockCards = [
           { id: 1, deckId: 1 },
           { id: 2, deckId: 1 },

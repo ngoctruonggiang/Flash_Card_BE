@@ -36,8 +36,8 @@ describe('DeckService Tests', () => {
   });
 
   describe('UC-08: Create Deck', () => {
-    describe('Basic deck creation', () => {
-      it('should create deck with minimum required fields', async () => {
+    describe('Basic deck creation scenarios', () => {
+      it('TC-CREATEDECK-006: This test case aims to verify deck creation with minimum required fields', async () => {
         const createDto: CreateDeckDto = { title: 'Test Deck' };
         const mockDeck = {
           id: 1,
@@ -65,7 +65,7 @@ describe('DeckService Tests', () => {
         });
       });
 
-      it('should create deck with all optional fields', async () => {
+      it('TC-CREATEDECK-007: This test case aims to verify deck creation with all optional fields', async () => {
         const createDto: CreateDeckDto = {
           title: 'Full Deck',
           description: 'A complete deck',
@@ -85,7 +85,7 @@ describe('DeckService Tests', () => {
         expect(result.languageMode).toBe('BIDIRECTIONAL');
       });
 
-      it('should create deck with empty title', async () => {
+      it('TC-CREATEDECK-008: This test case aims to verify deck creation with empty title', async () => {
         const createDto: CreateDeckDto = { title: '' };
         const mockDeck = { id: 1, title: '', userId: 1 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -95,7 +95,7 @@ describe('DeckService Tests', () => {
         expect(result.title).toBe('');
       });
 
-      it('should create deck with very long title', async () => {
+      it('TC-CREATEDECK-009: This test case aims to verify deck creation with very long title', async () => {
         const longTitle = 'A'.repeat(1000);
         const createDto: CreateDeckDto = { title: longTitle };
         const mockDeck = { id: 1, title: longTitle, userId: 1 };
@@ -106,7 +106,7 @@ describe('DeckService Tests', () => {
         expect(result.title.length).toBe(1000);
       });
 
-      it('should create deck with special characters in title', async () => {
+      it('TC-CREATEDECK-010: This test case aims to verify deck creation with special characters in title', async () => {
         const createDto: CreateDeckDto = {
           title: '日本語 Deck <script>alert("xss")</script> 🎉',
         };
@@ -119,7 +119,7 @@ describe('DeckService Tests', () => {
         expect(result.title).toContain('<script>');
       });
 
-      it('should create deck with newlines in description', async () => {
+      it('TC-CREATEDECK-011: This test case aims to verify deck creation with newlines in description', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           description: 'Line 1\nLine 2\nLine 3',
@@ -133,8 +133,8 @@ describe('DeckService Tests', () => {
       });
     });
 
-    describe('Language mode variations', () => {
-      it('should create deck with VN_EN language mode', async () => {
+    describe('Language mode variations scenarios', () => {
+      it('TC-CREATEDECK-012: This test case aims to verify deck creation with VN_EN language mode', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           languageMode: LanguageMode.VN_EN,
@@ -147,7 +147,7 @@ describe('DeckService Tests', () => {
         expect(result.languageMode).toBe('VN_EN');
       });
 
-      it('should create deck with EN_VN language mode', async () => {
+      it('TC-CREATEDECK-013: This test case aims to verify deck creation with EN_VN language mode', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           languageMode: LanguageMode.EN_VN,
@@ -160,7 +160,7 @@ describe('DeckService Tests', () => {
         expect(result.languageMode).toBe('EN_VN');
       });
 
-      it('should create deck with BIDIRECTIONAL language mode', async () => {
+      it('TC-CREATEDECK-014: This test case aims to verify deck creation with BIDIRECTIONAL language mode', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           languageMode: LanguageMode.BIDIRECTIONAL,
@@ -173,7 +173,7 @@ describe('DeckService Tests', () => {
         expect(result.languageMode).toBe('BIDIRECTIONAL');
       });
 
-      it('should default to VN_EN when no language mode specified', async () => {
+      it('TC-CREATEDECK-015: This test case aims to verify default VN_EN language mode when not specified', async () => {
         const createDto: CreateDeckDto = { title: 'Test' };
         mockPrismaService.deck.create.mockResolvedValue({
           id: 1,
@@ -465,8 +465,8 @@ describe('DeckService Tests', () => {
       mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1, userId: 1 });
     });
 
-    describe('Update individual fields', () => {
-      it('should update only title', async () => {
+    describe('Update individual fields scenarios', () => {
+      it('TC-EDITDECK-007: This test case aims to verify updating only title', async () => {
         const mockDeck = { id: 1, title: 'Updated Title' };
         mockPrismaService.deck.update.mockResolvedValue(mockDeck);
 
@@ -479,7 +479,7 @@ describe('DeckService Tests', () => {
         });
       });
 
-      it('should update only description', async () => {
+      it('TC-EDITDECK-008: This test case aims to verify updating only description', async () => {
         const mockDeck = { id: 1, description: 'New description' };
         mockPrismaService.deck.update.mockResolvedValue(mockDeck);
 
@@ -490,7 +490,7 @@ describe('DeckService Tests', () => {
         expect(result.description).toBe('New description');
       });
 
-      it('should update only iconName', async () => {
+      it('TC-EDITDECK-009: This test case aims to verify updating only iconName', async () => {
         const mockDeck = { id: 1, iconName: 'new-icon' };
         mockPrismaService.deck.update.mockResolvedValue(mockDeck);
 
@@ -499,7 +499,7 @@ describe('DeckService Tests', () => {
         expect(result.iconName).toBe('new-icon');
       });
 
-      it('should update only colorCode', async () => {
+      it('TC-EDITDECK-010: This test case aims to verify updating only colorCode', async () => {
         const mockDeck = { id: 1, colorCode: '#000000' };
         mockPrismaService.deck.update.mockResolvedValue(mockDeck);
 
@@ -508,7 +508,7 @@ describe('DeckService Tests', () => {
         expect(result.colorCode).toBe('#000000');
       });
 
-      it('should update only languageMode', async () => {
+      it('TC-EDITDECK-011: This test case aims to verify updating only languageMode', async () => {
         const mockDeck = {
           id: 1,
           languageMode: 'BIDIRECTIONAL' as LanguageMode,
@@ -523,8 +523,8 @@ describe('DeckService Tests', () => {
       });
     });
 
-    describe('Update multiple fields', () => {
-      it('should update title and description', async () => {
+    describe('Update multiple fields scenarios', () => {
+      it('TC-EDITDECK-012: This test case aims to verify updating title and description together', async () => {
         const mockDeck = { id: 1, title: 'New Title', description: 'New Desc' };
         mockPrismaService.deck.update.mockResolvedValue(mockDeck);
 
@@ -537,7 +537,7 @@ describe('DeckService Tests', () => {
         expect(result.description).toBe('New Desc');
       });
 
-      it('should update all fields at once', async () => {
+      it('TC-EDITDECK-013: This test case aims to verify updating all fields at once', async () => {
         const updateData = {
           title: 'New Title',
           description: 'New Desc',
@@ -555,8 +555,8 @@ describe('DeckService Tests', () => {
       });
     });
 
-    describe('Error handling', () => {
-      it('should throw NotFoundException for non-existent deck', async () => {
+    describe('Error handling scenarios', () => {
+      it('TC-EDITDECK-014: This test case aims to verify NotFoundException for non-existent deck', async () => {
         mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
         await expect(provider.update(999, { title: 'Test' })).rejects.toThrow(
@@ -564,7 +564,7 @@ describe('DeckService Tests', () => {
         );
       });
 
-      it('should handle empty update data', async () => {
+      it('TC-EDITDECK-015: This test case aims to verify handling of empty update data', async () => {
         const mockDeck = { id: 1, title: 'Unchanged' };
         mockPrismaService.deck.update.mockResolvedValue(mockDeck);
 
@@ -581,7 +581,7 @@ describe('DeckService Tests', () => {
       mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1, userId: 1 });
     });
 
-    it('should delete deck and all related data', async () => {
+    it('TC-DELETEDECK-004: This test case aims to verify deck deletion and cascade of related data', async () => {
       const mockCards = [{ id: 1 }, { id: 2 }];
       const mockDeck = { id: 1, title: 'Deleted Deck' };
 
@@ -608,7 +608,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should delete deck with no cards', async () => {
+    it('TC-DELETEDECK-005: This test case aims to verify deck deletion with no cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
       mockPrismaService.card.deleteMany.mockResolvedValue({ count: 0 });
       mockPrismaService.deck.delete.mockResolvedValue({ id: 1 });
@@ -618,7 +618,7 @@ describe('DeckService Tests', () => {
       expect(prismaService.cardReview.deleteMany).not.toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException for non-existent deck', async () => {
+    it('TC-DELETEDECK-006: This test case aims to verify NotFoundException for non-existent deck', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(provider.remove(999)).rejects.toThrow(NotFoundException);
@@ -775,7 +775,7 @@ describe('DeckService Tests', () => {
   });
 
   describe('UC-11: View Deck Statistics', () => {
-    it('should return statistics with all quality types', async () => {
+    it('TC-DECKSTATS-004: This test case aims to verify statistics with all quality types', async () => {
       const mockReviews = [
         { quality: ReviewQuality.Again },
         { quality: ReviewQuality.Hard },

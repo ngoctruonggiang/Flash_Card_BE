@@ -46,8 +46,8 @@ describe('UC-02: Login - AuthGuard Tests', () => {
   });
 
   describe('canActivate', () => {
-    describe('Routes without authentication', () => {
-      it('should allow access when requiresAuth is false', async () => {
+    describe('Routes without authentication scenarios', () => {
+      it('TC-LOGIN-013: This test case aims to verify access is allowed when requiresAuth is false', async () => {
         mockReflector.get.mockReturnValue({ requiresAuth: false });
         const context = createMockExecutionContext();
 
@@ -57,7 +57,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(jwtService.verifyAsync).not.toHaveBeenCalled();
       });
 
-      it('should allow access when no route config exists', async () => {
+      it('TC-LOGIN-014: This test case aims to verify access is allowed when no route config exists', async () => {
         mockReflector.get.mockReturnValue(undefined);
         const context = createMockExecutionContext();
 
@@ -66,7 +66,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(result).toBe(true);
       });
 
-      it('should allow access when route config is null', async () => {
+      it('TC-LOGIN-015: This test case aims to verify access is allowed when route config is null', async () => {
         mockReflector.get.mockReturnValue(null);
         const context = createMockExecutionContext();
 
@@ -76,12 +76,12 @@ describe('UC-02: Login - AuthGuard Tests', () => {
       });
     });
 
-    describe('Routes with authentication', () => {
+    describe('Routes requiring authentication scenarios', () => {
       beforeEach(() => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
       });
 
-      it('should allow access with valid token and existing user', async () => {
+      it('TC-LOGIN-016: This test case aims to verify access is allowed with valid token and existing user', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer valid-token',
         });
@@ -95,7 +95,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(userService.findOne).toHaveBeenCalledWith(1);
       });
 
-      it('should set user on request object', async () => {
+      it('TC-LOGIN-017: This test case aims to verify user object is set on request', async () => {
         const mockRequest: any = {
           headers: { authorization: 'Bearer valid-token' },
         };
@@ -114,7 +114,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(mockRequest['user']).toEqual(mockUser);
       });
 
-      it('should throw HttpException when no token provided', async () => {
+      it('TC-LOGIN-018: This test case aims to verify HttpException is thrown when no token provided', async () => {
         const context = createMockExecutionContext({});
 
         await expect(guard.canActivate(context)).rejects.toThrow(HttpException);
@@ -123,7 +123,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         );
       });
 
-      it('should throw HttpException with UNAUTHORIZED status when no token', async () => {
+      it('TC-LOGIN-019: This test case aims to verify UNAUTHORIZED status code when no token', async () => {
         const context = createMockExecutionContext({});
 
         try {
@@ -137,7 +137,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         }
       });
 
-      it('should throw HttpException when user not found', async () => {
+      it('TC-LOGIN-020: This test case aims to verify HttpException is thrown when user not found', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer valid-token',
         });
@@ -150,7 +150,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         );
       });
 
-      it('should throw HttpException when token is invalid', async () => {
+      it('TC-LOGIN-021: This test case aims to verify HttpException is thrown for invalid token', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer invalid-token',
         });
@@ -164,7 +164,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         );
       });
 
-      it('should throw HttpException when token is expired', async () => {
+      it('TC-LOGIN-022: This test case aims to verify HttpException is thrown for expired token', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer expired-token',
         });
@@ -173,7 +173,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         await expect(guard.canActivate(context)).rejects.toThrow(HttpException);
       });
 
-      it('should throw HttpException when token is malformed', async () => {
+      it('TC-LOGIN-023: This test case aims to verify HttpException is thrown for malformed token', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer malformed.token',
         });
@@ -185,12 +185,12 @@ describe('UC-02: Login - AuthGuard Tests', () => {
       });
     });
 
-    describe('Token extraction', () => {
+    describe('Token extraction scenarios', () => {
       beforeEach(() => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
       });
 
-      it('should extract token from Bearer authorization header', async () => {
+      it('TC-LOGIN-024: This test case aims to verify token extraction from Bearer authorization header', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer my-jwt-token',
         });
@@ -202,7 +202,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(jwtService.verifyAsync).toHaveBeenCalledWith('my-jwt-token');
       });
 
-      it('should not extract token with wrong authorization type', async () => {
+      it('TC-LOGIN-025: This test case aims to verify token is not extracted with wrong authorization type', async () => {
         const context = createMockExecutionContext({
           authorization: 'Basic some-credentials',
         });
@@ -212,7 +212,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         );
       });
 
-      it('should handle missing authorization header', async () => {
+      it('TC-LOGIN-026: This test case aims to verify handling of missing authorization header', async () => {
         const context = createMockExecutionContext({});
 
         await expect(guard.canActivate(context)).rejects.toThrow(
@@ -220,7 +220,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         );
       });
 
-      it('should handle empty authorization header', async () => {
+      it('TC-LOGIN-027: This test case aims to verify handling of empty authorization header', async () => {
         const context = createMockExecutionContext({
           authorization: '',
         });
@@ -230,7 +230,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         );
       });
 
-      it('should handle Bearer without token', async () => {
+      it('TC-LOGIN-028: This test case aims to verify handling of Bearer without token', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer ',
         });
@@ -241,7 +241,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         await expect(guard.canActivate(context)).rejects.toThrow(HttpException);
       });
 
-      it('should handle authorization with extra spaces (fails due to implementation)', async () => {
+      it('TC-LOGIN-029: This test case aims to verify handling of authorization with extra spaces', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer   token-with-spaces',
         });
@@ -255,12 +255,12 @@ describe('UC-02: Login - AuthGuard Tests', () => {
       });
     });
 
-    describe('JWT payload handling', () => {
+    describe('JWT payload handling scenarios', () => {
       beforeEach(() => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
       });
 
-      it('should use id from JWT payload to find user', async () => {
+      it('TC-LOGIN-030: This test case aims to verify user id from JWT payload is used to find user', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer valid-token',
         });
@@ -272,7 +272,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(userService.findOne).toHaveBeenCalledWith(42);
       });
 
-      it('should handle payload with additional fields', async () => {
+      it('TC-LOGIN-031: This test case aims to verify handling of JWT payload with additional fields', async () => {
         const context = createMockExecutionContext({
           authorization: 'Bearer valid-token',
         });
@@ -291,8 +291,8 @@ describe('UC-02: Login - AuthGuard Tests', () => {
       });
     });
 
-    describe('Edge cases', () => {
-      it('should handle concurrent requests', async () => {
+    describe('Edge cases and concurrent requests', () => {
+      it('TC-LOGIN-032: This test case aims to verify handling of concurrent requests', async () => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
         mockJwtService.verifyAsync.mockResolvedValue({ id: 1 });
         mockUserService.findOne.mockResolvedValue(mockUser);
@@ -309,7 +309,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         expect(jwtService.verifyAsync).toHaveBeenCalledTimes(5);
       });
 
-      it('should handle user service throwing error', async () => {
+      it('TC-LOGIN-033: This test case aims to verify handling of user service throwing error', async () => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
         const context = createMockExecutionContext({
           authorization: 'Bearer valid-token',
@@ -320,7 +320,7 @@ describe('UC-02: Login - AuthGuard Tests', () => {
         await expect(guard.canActivate(context)).rejects.toThrow(HttpException);
       });
 
-      it('should handle different user roles', async () => {
+      it('TC-LOGIN-034: This test case aims to verify handling of different user roles', async () => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
         const context = createMockExecutionContext({
           authorization: 'Bearer admin-token',

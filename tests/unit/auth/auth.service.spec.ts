@@ -36,8 +36,8 @@ describe('AuthService Tests', () => {
   });
 
   describe('UC-01: Register', () => {
-    describe('Email Validation', () => {
-      it('should reject empty email', async () => {
+    describe('Email validation scenarios', () => {
+      it('TC-REGISTER-016: This test case aims to verify rejection of empty email', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -49,7 +49,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should reject email without @ symbol', async () => {
+      it('TC-REGISTER-017: This test case aims to verify rejection of email without @ symbol', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -59,7 +59,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should reject email without domain', async () => {
+      it('TC-REGISTER-018: This test case aims to verify rejection of email without domain', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -69,7 +69,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should reject email without TLD', async () => {
+      it('TC-REGISTER-019: This test case aims to verify rejection of email without TLD', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -79,7 +79,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should reject email with spaces', async () => {
+      it('TC-REGISTER-020: This test case aims to verify rejection of email with spaces', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -89,7 +89,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should reject email with multiple @ symbols', async () => {
+      it('TC-REGISTER-021: This test case aims to verify rejection of email with multiple @ symbols', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -99,7 +99,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should reject email starting with @', async () => {
+      it('TC-REGISTER-022: This test case aims to verify rejection of email starting with @', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -109,7 +109,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should accept valid email with subdomain', async () => {
+      it('TC-REGISTER-023: This test case aims to verify acceptance of valid email with subdomain', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -132,7 +132,7 @@ describe('AuthService Tests', () => {
         expect(result.accessToken).toBe('token');
       });
 
-      it('should accept valid email with numbers', async () => {
+      it('TC-REGISTER-024: This test case aims to verify acceptance of valid email with numbers', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -154,7 +154,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept valid email with dots in local part', async () => {
+      it('TC-REGISTER-025: This test case aims to verify acceptance of valid email with dots in local part', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -176,7 +176,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept valid email with hyphens in local part', async () => {
+      it('TC-REGISTER-026: This test case aims to verify acceptance of valid email with hyphens in local part', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -198,7 +198,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept valid email with underscores', async () => {
+      it('TC-REGISTER-027: This test case aims to verify acceptance of valid email with underscores', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -220,7 +220,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should reject email with TLD shorter than 2 chars', async () => {
+      it('TC-REGISTER-028: This test case aims to verify rejection of email with TLD shorter than 2 chars', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -230,7 +230,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid email format');
       });
 
-      it('should accept email with 4-char TLD', async () => {
+      it('TC-REGISTER-029: This test case aims to verify acceptance of email with 4-char TLD', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -253,8 +253,8 @@ describe('AuthService Tests', () => {
       });
     });
 
-    describe('Username Validation', () => {
-      it('should reject empty username', async () => {
+    describe('Username validation scenarios', () => {
+      it('TC-REGISTER-030: This test case aims to verify rejection of empty username', async () => {
         await expect(
           provider.signUp({
             username: '',
@@ -264,7 +264,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should reject username shorter than 3 characters', async () => {
+      it('TC-REGISTER-031: This test case aims to verify rejection of username shorter than 3 characters', async () => {
         await expect(
           provider.signUp({
             username: 'ab',
@@ -274,7 +274,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should reject username with exactly 2 characters', async () => {
+      it('TC-REGISTER-032: This test case aims to verify rejection of username with exactly 2 characters', async () => {
         await expect(
           provider.signUp({
             username: 'ab',
@@ -284,7 +284,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should accept username with exactly 3 characters', async () => {
+      it('TC-REGISTER-033: This test case aims to verify acceptance of username with exactly 3 characters', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -306,7 +306,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should reject username longer than 20 characters', async () => {
+      it('TC-REGISTER-034: This test case aims to verify rejection of username longer than 20 characters', async () => {
         await expect(
           provider.signUp({
             username: 'abcdefghijklmnopqrstuvwxyz',
@@ -316,7 +316,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should accept username with exactly 20 characters', async () => {
+      it('TC-REGISTER-035: This test case aims to verify acceptance of username with exactly 20 characters', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -338,7 +338,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should reject username with special characters', async () => {
+      it('TC-REGISTER-036: This test case aims to verify rejection of username with special characters', async () => {
         await expect(
           provider.signUp({
             username: 'user@name',
@@ -348,7 +348,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should reject username with spaces', async () => {
+      it('TC-REGISTER-037: This test case aims to verify rejection of username with spaces', async () => {
         await expect(
           provider.signUp({
             username: 'user name',
@@ -358,7 +358,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should reject username with hyphens', async () => {
+      it('TC-REGISTER-038: This test case aims to verify rejection of username with hyphens', async () => {
         await expect(
           provider.signUp({
             username: 'user-name',
@@ -368,7 +368,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should accept username with underscores', async () => {
+      it('TC-REGISTER-039: This test case aims to verify acceptance of username with underscores', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -390,7 +390,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept username with numbers', async () => {
+      it('TC-REGISTER-040: This test case aims to verify acceptance of username with numbers', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -412,7 +412,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept username starting with number', async () => {
+      it('TC-REGISTER-041: This test case aims to verify acceptance of username starting with number', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -434,7 +434,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept username with all uppercase', async () => {
+      it('TC-REGISTER-042: This test case aims to verify acceptance of username with all uppercase', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -456,7 +456,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept username with mixed case', async () => {
+      it('TC-REGISTER-043: This test case aims to verify acceptance of username with mixed case', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -478,7 +478,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should reject username with dots', async () => {
+      it('TC-REGISTER-044: This test case aims to verify rejection of username with dots', async () => {
         await expect(
           provider.signUp({
             username: 'user.name',
@@ -488,7 +488,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Invalid username format');
       });
 
-      it('should accept numeric-only username', async () => {
+      it('TC-REGISTER-045: This test case aims to verify acceptance of numeric-only username', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -511,8 +511,8 @@ describe('AuthService Tests', () => {
       });
     });
 
-    describe('Password Validation', () => {
-      it('should reject empty password', async () => {
+    describe('Password validation scenarios', () => {
+      it('TC-REGISTER-046: This test case aims to verify rejection of empty password', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -522,7 +522,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Password must be at least 8 characters long');
       });
 
-      it('should reject password shorter than 8 characters', async () => {
+      it('TC-REGISTER-047: This test case aims to verify rejection of password shorter than 8 characters', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -532,7 +532,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Password must be at least 8 characters long');
       });
 
-      it('should reject password with exactly 7 characters', async () => {
+      it('TC-REGISTER-048: This test case aims to verify rejection of password with exactly 7 characters', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -542,7 +542,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Password must be at least 8 characters long');
       });
 
-      it('should reject password without numbers', async () => {
+      it('TC-REGISTER-049: This test case aims to verify rejection of password without numbers', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -552,7 +552,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Password must be at least 8 characters long');
       });
 
-      it('should reject password without letters', async () => {
+      it('TC-REGISTER-050: This test case aims to verify rejection of password without letters', async () => {
         await expect(
           provider.signUp({
             username: 'validUser',
@@ -562,7 +562,7 @@ describe('AuthService Tests', () => {
         ).rejects.toThrow('Password must be at least 8 characters long');
       });
 
-      it('should accept password with exactly 8 characters', async () => {
+      it('TC-REGISTER-051: This test case aims to verify acceptance of password with exactly 8 characters', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -584,7 +584,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept password with special characters', async () => {
+      it('TC-REGISTER-052: This test case aims to verify acceptance of password with special characters', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -606,7 +606,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept very long password', async () => {
+      it('TC-REGISTER-053: This test case aims to verify acceptance of very long password', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -628,7 +628,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept password starting with number', async () => {
+      it('TC-REGISTER-054: This test case aims to verify acceptance of password starting with number', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -650,7 +650,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept password ending with number', async () => {
+      it('TC-REGISTER-055: This test case aims to verify acceptance of password ending with number', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -672,7 +672,7 @@ describe('AuthService Tests', () => {
         expect(result).toBeDefined();
       });
 
-      it('should accept password with spaces', async () => {
+      it('TC-REGISTER-056: This test case aims to verify acceptance of password with spaces', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -695,8 +695,8 @@ describe('AuthService Tests', () => {
       });
     });
 
-    describe('Duplicate Checking', () => {
-      it('should reject duplicate email', async () => {
+    describe('Duplicate checking scenarios', () => {
+      it('TC-REGISTER-057: This test case aims to verify rejection of duplicate email', async () => {
         mockUserService.findByEmail.mockResolvedValue({
           id: 1,
           email: 'existing@example.com',
@@ -713,7 +713,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should reject duplicate username', async () => {
+      it('TC-REGISTER-058: This test case aims to verify rejection of duplicate username', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue({
           id: 1,
@@ -731,7 +731,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should validate email format before checking duplicates', async () => {
+      it('TC-REGISTER-059: This test case aims to verify email format validation before checking duplicates', async () => {
         // Should throw email format error, not duplicate error
         await expect(
           provider.signUp({
@@ -745,8 +745,8 @@ describe('AuthService Tests', () => {
       });
     });
 
-    describe('Successful SignUp', () => {
-      it('should hash password before storing', async () => {
+    describe('Successful signup scenarios', () => {
+      it('TC-REGISTER-060: This test case aims to verify password hashing before storing', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -780,7 +780,7 @@ describe('AuthService Tests', () => {
         expect(createCall.passwordHash.length).toBeGreaterThan(10);
       });
 
-      it('should return JWT token', async () => {
+      it('TC-REGISTER-061: This test case aims to verify return of JWT token', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -802,7 +802,7 @@ describe('AuthService Tests', () => {
         expect(result.accessToken).toBe('jwt-token-123');
       });
 
-      it('should return user details', async () => {
+      it('TC-REGISTER-062: This test case aims to verify return of user details', async () => {
         const createdAt = new Date();
         const lastLoginAt = new Date();
         mockUserService.findByEmail.mockResolvedValue(null);
@@ -831,7 +831,7 @@ describe('AuthService Tests', () => {
         expect(result.lastLoginAt).toBe(lastLoginAt);
       });
 
-      it('should sign JWT with correct payload', async () => {
+      it('TC-REGISTER-063: This test case aims to verify JWT signing with correct payload', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
         mockUserService.findByUsername.mockResolvedValue(null);
         mockUserService.create.mockResolvedValue({
@@ -859,8 +859,8 @@ describe('AuthService Tests', () => {
   });
 
   describe('UC-02: Login', () => {
-    describe('User Not Found', () => {
-      it('should reject non-existent email', async () => {
+    describe('User not found scenarios', () => {
+      it('TC-LOGIN-035: This test case aims to verify rejection of non-existent email', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
 
         await expect(
@@ -876,7 +876,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should call findByEmail with correct email', async () => {
+      it('TC-LOGIN-036: This test case aims to verify findByEmail called with correct email', async () => {
         mockUserService.findByEmail.mockResolvedValue(null);
 
         await expect(
@@ -892,8 +892,8 @@ describe('AuthService Tests', () => {
       });
     });
 
-    describe('Password Validation', () => {
-      it('should reject incorrect password', async () => {
+    describe('Password validation scenarios', () => {
+      it('TC-LOGIN-037: This test case aims to verify rejection of incorrect password', async () => {
         const hashedPassword = await bcrypt.hash(
           'CorrectPassword123',
           bcryptConstants.saltOrRounds,
@@ -918,7 +918,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should reject empty password', async () => {
+      it('TC-LOGIN-038: This test case aims to verify rejection of empty password', async () => {
         const hashedPassword = await bcrypt.hash(
           'Password123',
           bcryptConstants.saltOrRounds,
@@ -943,7 +943,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should reject password with extra spaces', async () => {
+      it('TC-LOGIN-039: This test case aims to verify rejection of password with extra spaces', async () => {
         const hashedPassword = await bcrypt.hash(
           'Password123',
           bcryptConstants.saltOrRounds,
@@ -968,7 +968,7 @@ describe('AuthService Tests', () => {
         );
       });
 
-      it('should reject password with different case', async () => {
+      it('TC-LOGIN-040: This test case aims to verify rejection of password with different case', async () => {
         const hashedPassword = await bcrypt.hash(
           'Password123',
           bcryptConstants.saltOrRounds,
@@ -994,8 +994,8 @@ describe('AuthService Tests', () => {
       });
     });
 
-    describe('Successful SignIn', () => {
-      it('should return JWT token on successful login', async () => {
+    describe('Successful sign-in scenarios', () => {
+      it('TC-LOGIN-041: This test case aims to verify return of JWT token on successful login', async () => {
         const hashedPassword = await bcrypt.hash(
           'Password123',
           bcryptConstants.saltOrRounds,
@@ -1019,7 +1019,7 @@ describe('AuthService Tests', () => {
         expect(result.accessToken).toBe('jwt-token');
       });
 
-      it('should return user details', async () => {
+      it('TC-LOGIN-042: This test case aims to verify return of user details', async () => {
         const createdAt = new Date();
         const lastLoginAt = new Date();
         const hashedPassword = await bcrypt.hash(
@@ -1050,7 +1050,7 @@ describe('AuthService Tests', () => {
         expect(result.lastLoginAt).toBe(lastLoginAt);
       });
 
-      it('should sign JWT with correct payload', async () => {
+      it('TC-LOGIN-043: This test case aims to verify JWT signing with correct payload', async () => {
         const hashedPassword = await bcrypt.hash(
           'Password123',
           bcryptConstants.saltOrRounds,
@@ -1077,7 +1077,7 @@ describe('AuthService Tests', () => {
         });
       });
 
-      it('should authenticate user with special characters in password', async () => {
+      it('TC-LOGIN-044: This test case aims to verify authentication with special characters in password', async () => {
         const specialPassword = 'P@ss!w0rd#$%^&*()';
         const hashedPassword = await bcrypt.hash(
           specialPassword,
@@ -1102,7 +1102,7 @@ describe('AuthService Tests', () => {
         expect(result.accessToken).toBe('token');
       });
 
-      it('should authenticate user with very long password', async () => {
+      it('TC-LOGIN-045: This test case aims to verify authentication with very long password', async () => {
         const longPassword =
           'ThisIsAVeryLongPasswordThatShouldStillWorkCorrectly123456789';
         const hashedPassword = await bcrypt.hash(

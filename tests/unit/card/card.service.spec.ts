@@ -42,8 +42,8 @@ describe('CardService  Tests', () => {
   });
 
   describe('UC-14: Add Card', () => {
-    describe('Basic card creation', () => {
-      it('should create card with minimum required fields', async () => {
+    describe('Basic card creation scenarios', () => {
+      it('TC-ADDCARD-001: This test case aims to verify card creation with minimum required fields', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -60,7 +60,7 @@ describe('CardService  Tests', () => {
         expect(result).toEqual(mockCard);
       });
 
-      it('should create card with all optional fields', async () => {
+      it('TC-ADDCARD-002: This test case aims to verify card creation with all optional fields', async () => {
         const createDto = {
           deckId: 1,
           front: 'Hello',
@@ -87,7 +87,7 @@ describe('CardService  Tests', () => {
         expect(result.examples).toEqual(createDto.examples);
       });
 
-      it('should throw error if deck not found', async () => {
+      it('TC-ADDCARD-003: This test case aims to verify error is thrown when deck is not found', async () => {
         mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
         await expect(
@@ -95,7 +95,7 @@ describe('CardService  Tests', () => {
         ).rejects.toThrow('Deck with id 999 not found');
       });
 
-      it('should handle empty front text', async () => {
+      it('TC-ADDCARD-004: This test case aims to verify card creation with empty front text', async () => {
         const createDto = { deckId: 1, front: '', back: 'Answer' };
         const mockDeck = { id: 1, languageMode: 'VN_EN' };
         const mockCard = { id: 1, ...createDto, examples: null };
@@ -108,7 +108,7 @@ describe('CardService  Tests', () => {
         expect(result.front).toBe('');
       });
 
-      it('should handle empty back text', async () => {
+      it('TC-ADDCARD-005: This test case aims to verify card creation with empty back text', async () => {
         const createDto = { deckId: 1, front: 'Question', back: '' };
         const mockDeck = { id: 1, languageMode: 'VN_EN' };
         const mockCard = { id: 1, ...createDto, examples: null };
@@ -121,7 +121,7 @@ describe('CardService  Tests', () => {
         expect(result.back).toBe('');
       });
 
-      it('should handle very long front text', async () => {
+      it('TC-ADDCARD-006: This test case aims to verify card creation with very long front text', async () => {
         const longFront = 'A'.repeat(10000);
         const createDto = { deckId: 1, front: longFront, back: 'A' };
         const mockDeck = { id: 1, languageMode: 'VN_EN' };
@@ -135,7 +135,7 @@ describe('CardService  Tests', () => {
         expect(result.front).toBe(longFront);
       });
 
-      it('should handle very long back text', async () => {
+      it('TC-ADDCARD-007: This test case aims to verify card creation with very long back text', async () => {
         const longBack = 'B'.repeat(10000);
         const createDto = { deckId: 1, front: 'Q', back: longBack };
         const mockDeck = { id: 1, languageMode: 'VN_EN' };
@@ -149,7 +149,7 @@ describe('CardService  Tests', () => {
         expect(result.back).toBe(longBack);
       });
 
-      it('should handle special characters in front and back', async () => {
+      it('TC-ADDCARD-008: This test case aims to verify card creation with special characters and unicode in content', async () => {
         const createDto = {
           deckId: 1,
           front: 'Hello <script>alert("xss")</script>',
@@ -167,7 +167,7 @@ describe('CardService  Tests', () => {
         expect(result.back).toBe('日本語 🎉 €£¥');
       });
 
-      it('should handle HTML in card content', async () => {
+      it('TC-ADDCARD-009: This test case aims to verify card creation with HTML content', async () => {
         const createDto = {
           deckId: 1,
           front: '<b>Bold Question</b>',
@@ -184,7 +184,7 @@ describe('CardService  Tests', () => {
         expect(result.front).toContain('<b>');
       });
 
-      it('should handle newlines in card content', async () => {
+      it('TC-ADDCARD-010: This test case aims to verify card creation with newlines in content', async () => {
         const createDto = {
           deckId: 1,
           front: 'Line 1\nLine 2\nLine 3',
@@ -703,8 +703,8 @@ describe('CardService  Tests', () => {
   });
 
   describe('UC-15: Edit Card', () => {
-    describe('Update individual fields', () => {
-      it('should update only front', async () => {
+    describe('Update individual fields scenarios', () => {
+      it('TC-EDITCARD-001: This test case aims to verify updating only front text', async () => {
         const updateDto = { front: 'New Question' };
         const mockUpdated = { id: 1, front: 'New Question', examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -714,7 +714,7 @@ describe('CardService  Tests', () => {
         expect(result.front).toBe('New Question');
       });
 
-      it('should update only back', async () => {
+      it('TC-EDITCARD-002: This test case aims to verify updating only back text', async () => {
         const updateDto = { back: 'New Answer' };
         const mockUpdated = { id: 1, back: 'New Answer', examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -724,7 +724,7 @@ describe('CardService  Tests', () => {
         expect(result.back).toBe('New Answer');
       });
 
-      it('should update only tags', async () => {
+      it('TC-EDITCARD-003: This test case aims to verify updating only tags', async () => {
         const updateDto = { tags: 'new,tags' };
         const mockUpdated = { id: 1, tags: 'new,tags', examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -734,7 +734,7 @@ describe('CardService  Tests', () => {
         expect(result.tags).toBe('new,tags');
       });
 
-      it('should update only wordType', async () => {
+      it('TC-EDITCARD-004: This test case aims to verify updating only wordType', async () => {
         const updateDto = { wordType: 'verb' };
         const mockUpdated = { id: 1, wordType: 'verb', examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -744,7 +744,7 @@ describe('CardService  Tests', () => {
         expect(result.wordType).toBe('verb');
       });
 
-      it('should update only pronunciation', async () => {
+      it('TC-EDITCARD-005: This test case aims to verify updating only pronunciation', async () => {
         const updateDto = { pronunciation: '/test/' };
         const mockUpdated = { id: 1, pronunciation: '/test/', examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -754,7 +754,7 @@ describe('CardService  Tests', () => {
         expect(result.pronunciation).toBe('/test/');
       });
 
-      it('should update only examples', async () => {
+      it('TC-EDITCARD-006: This test case aims to verify updating only examples', async () => {
         const updateDto = {
           examples: [{ sentence: 'New', translation: 'Moi' }],
         };
@@ -770,8 +770,8 @@ describe('CardService  Tests', () => {
       });
     });
 
-    describe('Update multiple fields', () => {
-      it('should update front and back together', async () => {
+    describe('Update multiple fields scenarios', () => {
+      it('TC-EDITCARD-007: This test case aims to verify updating front and back together', async () => {
         const updateDto = { front: 'New Q', back: 'New A' };
         const mockUpdated = { id: 1, ...updateDto, examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -782,7 +782,7 @@ describe('CardService  Tests', () => {
         expect(result.back).toBe('New A');
       });
 
-      it('should update all fields at once', async () => {
+      it('TC-EDITCARD-008: This test case aims to verify updating all fields at once', async () => {
         const updateDto = {
           front: 'New Q',
           back: 'New A',
@@ -805,8 +805,8 @@ describe('CardService  Tests', () => {
       });
     });
 
-    describe('Edge cases', () => {
-      it('should handle empty string updates', async () => {
+    describe('Edge cases and error handling', () => {
+      it('TC-EDITCARD-009: This test case aims to verify updating with empty string values', async () => {
         const updateDto = { front: '', back: '' };
         const mockUpdated = { id: 1, front: '', back: '', examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -817,7 +817,7 @@ describe('CardService  Tests', () => {
         expect(result.back).toBe('');
       });
 
-      it('should throw error for non-existent card', async () => {
+      it('TC-EDITCARD-010: This test case aims to verify error is thrown for non-existent card', async () => {
         mockPrismaService.card.update.mockRejectedValue(
           new Error('Record not found'),
         );
@@ -827,7 +827,7 @@ describe('CardService  Tests', () => {
         );
       });
 
-      it('should handle very long content updates', async () => {
+      it('TC-EDITCARD-011: This test case aims to verify updating with very long content', async () => {
         const updateDto = { front: 'A'.repeat(10000) };
         const mockUpdated = { id: 1, front: 'A'.repeat(10000), examples: null };
         mockPrismaService.card.update.mockResolvedValue(mockUpdated);
@@ -840,7 +840,7 @@ describe('CardService  Tests', () => {
   });
 
   describe('UC-16: Delete Card', () => {
-    it('should delete card by id', async () => {
+    it('TC-DELETECARD-001: This test case aims to verify card deletion by id', async () => {
       const mockDeleted = { id: 1, front: 'Q', back: 'A' };
       mockPrismaService.card.delete.mockResolvedValue(mockDeleted);
 
@@ -852,7 +852,7 @@ describe('CardService  Tests', () => {
       });
     });
 
-    it('should throw error for non-existent card', async () => {
+    it('TC-DELETECARD-002: This test case aims to verify error is thrown for non-existent card', async () => {
       mockPrismaService.card.delete.mockRejectedValue(
         new Error('Record not found'),
       );
@@ -862,7 +862,7 @@ describe('CardService  Tests', () => {
   });
 
   describe('UC-17: View Card Statistics', () => {
-    it('should return review status for reviewed card', async () => {
+    it('TC-CARDSTATS-001: This test case aims to verify review status for reviewed card', async () => {
       const reviewedAt = new Date('2025-12-01');
       const nextReviewDate = new Date('2025-12-05');
       const mockCard = {
@@ -881,7 +881,7 @@ describe('CardService  Tests', () => {
       });
     });
 
-    it('should return status for never-reviewed card', async () => {
+    it('TC-CARDSTATS-002: This test case aims to verify status for never-reviewed card', async () => {
       const mockCard = { id: 1, reviews: [] };
       mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
 
@@ -895,7 +895,7 @@ describe('CardService  Tests', () => {
       });
     });
 
-    it('should throw error for non-existent card', async () => {
+    it('TC-CARDSTATS-003: This test case aims to verify error is thrown for non-existent card', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
       await expect(provider.getReviewStatus(999)).rejects.toThrow(
@@ -903,7 +903,7 @@ describe('CardService  Tests', () => {
       );
     });
 
-    it('should return latest review only', async () => {
+    it('TC-CARDSTATS-004: This test case aims to verify only latest review is returned', async () => {
       const latestReview = {
         reviewedAt: new Date('2025-12-02'),
         nextReviewDate: new Date('2025-12-10'),
@@ -920,7 +920,7 @@ describe('CardService  Tests', () => {
       expect(result.nextReviewDate).toEqual(latestReview.nextReviewDate);
     });
 
-    it('should call findUnique with correct query', async () => {
+    it('TC-CARDSTATS-005: This test case aims to verify findUnique is called with correct query', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue({
         id: 1,
         reviews: [],

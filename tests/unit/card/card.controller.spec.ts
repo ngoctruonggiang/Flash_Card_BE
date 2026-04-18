@@ -35,7 +35,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-14: Add Card', () => {
-    it('should create a new card', async () => {
+    it('TC-ADDCARD-001: This test case aims to verify successful card creation with minimum required fields', async () => {
       const createDto = {
         deckId: 1,
         front: 'Hello',
@@ -58,7 +58,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('should create card with all optional fields', async () => {
+    it('TC-ADDCARD-002: This test case aims to verify card creation with all optional fields', async () => {
       const createDto = {
         deckId: 1,
         front: 'Hello',
@@ -78,7 +78,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('should create card with empty examples', async () => {
+    it('TC-ADDCARD-003: This test case aims to verify card creation with empty examples array', async () => {
       const createDto = {
         deckId: 1,
         front: 'Test',
@@ -101,7 +101,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('should handle unicode content', async () => {
+    it('TC-ADDCARD-004: This test case aims to verify card creation with unicode content', async () => {
       const createDto = {
         deckId: 1,
         front: 'Xin chào',
@@ -115,7 +115,7 @@ describe('CardController Tests', () => {
       expect(cardService.create).toHaveBeenCalled();
     });
 
-    it('should handle long content', async () => {
+    it('TC-ADDCARD-005: This test case aims to verify card creation with very long content', async () => {
       const longText = 'A'.repeat(5000);
       const createDto = {
         deckId: 1,
@@ -129,7 +129,7 @@ describe('CardController Tests', () => {
       expect(cardService.create).toHaveBeenCalled();
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-ADDCARD-006: This test case aims to verify service error propagation during card creation', async () => {
       const createDto = { deckId: 999, front: 'Test', back: 'Test' };
       mockCardService.create.mockRejectedValue(
         new NotFoundException('Deck not found'),
@@ -140,7 +140,7 @@ describe('CardController Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should handle multiple tags', async () => {
+    it('TC-ADDCARD-007: This test case aims to verify card creation with multiple tags', async () => {
       const createDto = {
         deckId: 1,
         front: 'Test',
@@ -158,7 +158,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-13: Browse Deck Cards', () => {
-    it('should find all cards', async () => {
+    it('TC-BROWSECARDS-001: This test case aims to verify retrieval of all cards', async () => {
       const cards = [mockCard, { ...mockCard, id: 2 }];
       mockCardService.findAll.mockResolvedValue(cards);
 
@@ -168,7 +168,7 @@ describe('CardController Tests', () => {
       expect(cardService.findAll).toHaveBeenCalled();
     });
 
-    it('should find cards by deckId', async () => {
+    it('TC-BROWSECARDS-002: This test case aims to verify retrieval of cards filtered by deck id', async () => {
       const cards = [mockCard];
       mockCardService.findByDeck.mockResolvedValue(cards);
 
@@ -178,7 +178,7 @@ describe('CardController Tests', () => {
       expect(cardService.findByDeck).toHaveBeenCalledWith(1);
     });
 
-    it('should return empty array when no cards exist', async () => {
+    it('TC-BROWSECARDS-003: This test case aims to verify empty array is returned when no cards exist', async () => {
       mockCardService.findAll.mockResolvedValue([]);
 
       const result = await controller.findAll();
@@ -186,7 +186,7 @@ describe('CardController Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should return empty array when deck has no cards', async () => {
+    it('TC-BROWSECARDS-004: This test case aims to verify empty array is returned when deck has no cards', async () => {
       mockCardService.findByDeck.mockResolvedValue([]);
 
       const result = await controller.findAll(999);
@@ -194,7 +194,7 @@ describe('CardController Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should call findAll when deckId is undefined', async () => {
+    it('TC-BROWSECARDS-005: This test case aims to verify findAll is called when deckId is undefined', async () => {
       mockCardService.findAll.mockResolvedValue([]);
 
       await controller.findAll(undefined);
@@ -247,7 +247,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-15: Edit Card', () => {
-    it('should update card front', async () => {
+    it('TC-EDITCARD-001: This test case aims to verify successful card front text update', async () => {
       const updateDto = { front: 'Updated Front' };
       const updatedCard = { ...mockCard, front: 'Updated Front' };
       mockCardService.update.mockResolvedValue(updatedCard);
@@ -265,7 +265,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('should update card back', async () => {
+    it('TC-EDITCARD-002: This test case aims to verify successful card back text update', async () => {
       const updateDto = { back: 'Updated Back' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -280,7 +280,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should update multiple fields', async () => {
+    it('TC-EDITCARD-003: This test case aims to verify updating multiple card fields simultaneously', async () => {
       const updateDto = {
         front: 'New Front',
         back: 'New Back',
@@ -300,7 +300,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('should update pronunciation', async () => {
+    it('TC-EDITCARD-004: This test case aims to verify successful card pronunciation update', async () => {
       const updateDto = { pronunciation: '/njuː/' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -315,7 +315,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should update examples', async () => {
+    it('TC-EDITCARD-005: This test case aims to verify successful card examples update', async () => {
       const updateDto = { examples: ['New example 1', 'New example 2'] };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -332,7 +332,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should update wordType', async () => {
+    it('TC-EDITCARD-006: This test case aims to verify successful card wordType update', async () => {
       const updateDto = { wordType: 'verb' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -347,7 +347,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should handle empty update dto', async () => {
+    it('TC-EDITCARD-007: This test case aims to verify handling of empty update data object', async () => {
       const updateDto = {};
       mockCardService.update.mockResolvedValue(mockCard);
 
@@ -363,7 +363,7 @@ describe('CardController Tests', () => {
       });
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-EDITCARD-008: This test case aims to verify NotFoundException for non-existent card', async () => {
       mockCardService.update.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -373,7 +373,7 @@ describe('CardController Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should handle unicode update', async () => {
+    it('TC-EDITCARD-009: This test case aims to verify card update with unicode content', async () => {
       const updateDto = { front: 'Tiếng Việt', back: 'Vietnamese' };
       mockCardService.update.mockResolvedValue({
         ...mockCard,
@@ -387,7 +387,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-16: Delete Card', () => {
-    it('should remove card by id', async () => {
+    it('TC-DELETECARD-001: This test case aims to verify successful card deletion by id', async () => {
       mockCardService.remove.mockResolvedValue({ deleted: true });
 
       const result = await controller.remove({ id: 1 });
@@ -396,7 +396,7 @@ describe('CardController Tests', () => {
       expect(cardService.remove).toHaveBeenCalledWith(1);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-DELETECARD-002: This test case aims to verify NotFoundException when deleting non-existent card', async () => {
       mockCardService.remove.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -406,7 +406,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should handle different card ids', async () => {
+    it('TC-DELETECARD-003: This test case aims to verify card deletion with various card ids', async () => {
       mockCardService.remove.mockResolvedValue({ deleted: true });
 
       await controller.remove({ id: 42 });
@@ -416,7 +416,7 @@ describe('CardController Tests', () => {
   });
 
   describe('UC-17: View Card Statistics', () => {
-    it('should get review status for card', async () => {
+    it('TC-CARDSTATS-001: This test case aims to verify retrieval of review status for card', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: new Date('2025-01-14'),
@@ -431,7 +431,7 @@ describe('CardController Tests', () => {
       expect(cardService.getReviewStatus).toHaveBeenCalledWith(1);
     });
 
-    it('should return null dates for new card', async () => {
+    it('TC-CARDSTATS-002: This test case aims to verify null dates are returned for new unreviewed card', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: null,
@@ -446,7 +446,7 @@ describe('CardController Tests', () => {
       expect(result.hasBeenReviewed).toBe(false);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-CARDSTATS-003: This test case aims to verify NotFoundException for statistics of non-existent card', async () => {
       mockCardService.getReviewStatus.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -456,7 +456,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should return status for reviewed card', async () => {
+    it('TC-CARDSTATS-004: This test case aims to verify hasBeenReviewed flag for reviewed card', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: new Date(),
@@ -470,7 +470,7 @@ describe('CardController Tests', () => {
       expect(result.hasBeenReviewed).toBe(true);
     });
 
-    it('should return cardId in status', async () => {
+    it('TC-CARDSTATS-005: This test case aims to verify cardId is included in status response', async () => {
       const status = {
         cardId: 1,
         lastReviewedAt: new Date(),

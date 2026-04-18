@@ -59,7 +59,7 @@ describe('DeckController Tests', () => {
   });
 
   describe('UC-08: Create Deck', () => {
-    it('should create a new deck', async () => {
+    it('TC-CREATEDECK-001: This test case aims to verify successful deck creation with valid input data', async () => {
       const createDto = { name: 'New Deck', description: 'Description' };
       mockDeckService.create.mockResolvedValue({ id: 1, ...createDto });
 
@@ -69,7 +69,7 @@ describe('DeckController Tests', () => {
       expect(deckService.create).toHaveBeenCalledWith(mockUser.id, createDto);
     });
 
-    it('should create deck with languageMode', async () => {
+    it('TC-CREATEDECK-002: This test case aims to verify deck creation with languageMode option', async () => {
       const createDto = {
         name: 'Language Deck',
         description: 'For learning',
@@ -82,7 +82,7 @@ describe('DeckController Tests', () => {
       expect(deckService.create).toHaveBeenCalledWith(mockUser.id, createDto);
     });
 
-    it('should create deck without description', async () => {
+    it('TC-CREATEDECK-003: This test case aims to verify deck creation without optional description field', async () => {
       const createDto = { name: 'Simple Deck' };
       mockDeckService.create.mockResolvedValue({ id: 1, ...createDto });
 
@@ -91,7 +91,7 @@ describe('DeckController Tests', () => {
       expect(deckService.create).toHaveBeenCalledWith(mockUser.id, createDto);
     });
 
-    it('should handle unicode in deck name', async () => {
+    it('TC-CREATEDECK-004: This test case aims to verify deck creation with unicode characters in name', async () => {
       const createDto = { name: 'Bộ thẻ Tiếng Việt', description: 'Mô tả' };
       mockDeckService.create.mockResolvedValue({ id: 1, ...createDto });
 
@@ -100,7 +100,7 @@ describe('DeckController Tests', () => {
       expect(deckService.create).toHaveBeenCalledWith(mockUser.id, createDto);
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-CREATEDECK-005: This test case aims to verify service error propagation during deck creation', async () => {
       const createDto = { name: 'Error Deck' };
       mockDeckService.create.mockRejectedValue(new Error('Creation failed'));
 
@@ -141,7 +141,7 @@ describe('DeckController Tests', () => {
   });
 
   describe('UC-07: View Deck Library', () => {
-    it('should find all decks for current user', async () => {
+    it('TC-VIEWLIBRARY-001: This test case aims to verify retrieval of all decks for current authenticated user', async () => {
       const decks = [mockDeck];
       mockDeckService.findByUser.mockResolvedValue(decks);
 
@@ -151,7 +151,7 @@ describe('DeckController Tests', () => {
       expect(deckService.findByUser).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it('should return empty array when user has no decks', async () => {
+    it('TC-VIEWLIBRARY-002: This test case aims to verify empty array is returned when user has no decks', async () => {
       mockDeckService.findByUser.mockResolvedValue([]);
 
       const result = await controller.findAllCurrentUser(mockUser as any);
@@ -159,7 +159,7 @@ describe('DeckController Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should call findByUser with correct user id', async () => {
+    it('TC-VIEWLIBRARY-003: This test case aims to verify findByUser is called with correct user id', async () => {
       const user = { ...mockUser, id: 42 };
       mockDeckService.findByUser.mockResolvedValue([]);
 
@@ -201,7 +201,7 @@ describe('DeckController Tests', () => {
   });
 
   describe('UC-09: Edit Deck', () => {
-    it('should update deck name', async () => {
+    it('TC-EDITDECK-001: This test case aims to verify successful deck name update', async () => {
       const updateDto = { name: 'Updated Name' };
       const updatedDeck = { ...mockDeck, name: 'Updated Name' };
       mockDeckService.update.mockResolvedValue(updatedDeck);
@@ -220,7 +220,7 @@ describe('DeckController Tests', () => {
       );
     });
 
-    it('should update deck description', async () => {
+    it('TC-EDITDECK-002: This test case aims to verify successful deck description update', async () => {
       const updateDto = { description: 'New description' };
       mockDeckService.update.mockResolvedValue({
         ...mockDeck,
@@ -236,7 +236,7 @@ describe('DeckController Tests', () => {
       );
     });
 
-    it('should update languageMode', async () => {
+    it('TC-EDITDECK-003: This test case aims to verify successful deck languageMode update', async () => {
       const updateDto = { languageMode: 'EN_VN' };
       mockDeckService.update.mockResolvedValue({
         ...mockDeck,
@@ -252,7 +252,7 @@ describe('DeckController Tests', () => {
       );
     });
 
-    it('should update multiple fields', async () => {
+    it('TC-EDITDECK-004: This test case aims to verify updating multiple deck fields simultaneously', async () => {
       const updateDto = {
         name: 'New Name',
         description: 'New Desc',
@@ -269,7 +269,7 @@ describe('DeckController Tests', () => {
       );
     });
 
-    it('should handle empty update dto', async () => {
+    it('TC-EDITDECK-005: This test case aims to verify handling of empty update data object', async () => {
       const updateDto = {};
       mockDeckService.update.mockResolvedValue(mockDeck);
 
@@ -282,7 +282,7 @@ describe('DeckController Tests', () => {
       );
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-EDITDECK-006: This test case aims to verify NotFoundException is thrown for non-existent deck', async () => {
       mockDeckService.update.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -296,7 +296,7 @@ describe('DeckController Tests', () => {
   });
 
   describe('UC-10: Delete Deck', () => {
-    it('should remove deck by id', async () => {
+    it('TC-DELETEDECK-001: This test case aims to verify successful deck deletion by id', async () => {
       mockDeckService.remove.mockResolvedValue({ deleted: true });
 
       const result = await controller.remove(mockUser as any, { id: 1 });
@@ -305,7 +305,7 @@ describe('DeckController Tests', () => {
       expect(deckService.remove).toHaveBeenCalledWith(1, mockUser.id);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-DELETEDECK-002: This test case aims to verify NotFoundException is thrown when deleting non-existent deck', async () => {
       mockDeckService.remove.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -315,7 +315,7 @@ describe('DeckController Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should handle different deck ids', async () => {
+    it('TC-DELETEDECK-003: This test case aims to verify deck deletion with various deck ids', async () => {
       mockDeckService.remove.mockResolvedValue({ deleted: true });
 
       await controller.remove(mockUser as any, { id: 42 });
@@ -396,7 +396,7 @@ describe('DeckController Tests', () => {
   });
 
   describe('UC-11: View Deck Statistics', () => {
-    it('should get deck statistics', async () => {
+    it('TC-DECKSTATS-001: This test case aims to verify retrieval of deck review statistics', async () => {
       const stats = {
         totalReviews: 100,
         correctReviews: 85,
@@ -414,7 +414,7 @@ describe('DeckController Tests', () => {
       expect(deckService.getDeckStatistics).toHaveBeenCalledWith(1);
     });
 
-    it('should return zero stats for empty deck', async () => {
+    it('TC-DECKSTATS-002: This test case aims to verify zero statistics for empty deck with no reviews', async () => {
       const stats = {
         totalReviews: 0,
         correctReviews: 0,
@@ -431,7 +431,7 @@ describe('DeckController Tests', () => {
       expect(result.totalReviews).toBe(0);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-DECKSTATS-003: This test case aims to verify NotFoundException for statistics of non-existent deck', async () => {
       mockDeckService.getDeckStatistics.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );

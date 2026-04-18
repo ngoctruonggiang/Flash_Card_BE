@@ -587,8 +587,8 @@ describe('UserService  Tests', () => {
       );
     });
 
-    describe('Update username', () => {
-      it('should update only username', async () => {
+    describe('Update username scenarios', () => {
+      it('TC-UPDATEPROFILE-009: This test case aims to verify updating only username', async () => {
         const updateDto = { username: 'newusername' };
         const mockUpdated = {
           id: 1,
@@ -611,7 +611,7 @@ describe('UserService  Tests', () => {
         });
       });
 
-      it('should update to very short username', async () => {
+      it('TC-UPDATEPROFILE-010: This test case aims to verify updating to very short username', async () => {
         const updateDto = { username: 'abc' };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -623,7 +623,7 @@ describe('UserService  Tests', () => {
         expect(result.username).toBe('abc');
       });
 
-      it('should update to very long username', async () => {
+      it('TC-UPDATEPROFILE-011: This test case aims to verify updating to very long username', async () => {
         const updateDto = { username: 'a'.repeat(100) };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -636,8 +636,8 @@ describe('UserService  Tests', () => {
       });
     });
 
-    describe('Update email', () => {
-      it('should update only email', async () => {
+    describe('Update email scenarios', () => {
+      it('TC-UPDATEPROFILE-012: This test case aims to verify updating only email', async () => {
         const updateDto = { email: 'newemail@example.com' };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -649,7 +649,7 @@ describe('UserService  Tests', () => {
         expect(result.email).toBe('newemail@example.com');
       });
 
-      it('should update to email with subdomain', async () => {
+      it('TC-UPDATEPROFILE-013: This test case aims to verify updating to email with subdomain', async () => {
         const updateDto = { email: 'test@mail.example.com' };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -662,8 +662,8 @@ describe('UserService  Tests', () => {
       });
     });
 
-    describe('Update password', () => {
-      it('should hash password when updating', async () => {
+    describe('Update password scenarios', () => {
+      it('TC-UPDATEPROFILE-014: This test case aims to verify password hashing when updating', async () => {
         const updateDto = { password: 'newpassword123' };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -680,7 +680,7 @@ describe('UserService  Tests', () => {
         expect(updateCall.data.passwordHash).not.toBe('newpassword123');
       });
 
-      it('should not set passwordHash when password not provided', async () => {
+      it('TC-UPDATEPROFILE-015: This test case aims to verify passwordHash is not set when password not provided', async () => {
         const updateDto = { username: 'newname' };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -698,8 +698,8 @@ describe('UserService  Tests', () => {
       });
     });
 
-    describe('Update role', () => {
-      it('should update role to ADMIN', async () => {
+    describe('Update role scenarios', () => {
+      it('TC-UPDATEPROFILE-016: This test case aims to verify updating role to ADMIN', async () => {
         const updateDto = { role: 'ADMIN' as const };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -711,7 +711,7 @@ describe('UserService  Tests', () => {
         expect(result.role).toBe('ADMIN');
       });
 
-      it('should update role to USER', async () => {
+      it('TC-UPDATEPROFILE-017: This test case aims to verify updating role to USER', async () => {
         const updateDto = { role: 'USER' as const };
         mockPrismaService.user.update.mockResolvedValue({
           id: 1,
@@ -724,8 +724,8 @@ describe('UserService  Tests', () => {
       });
     });
 
-    describe('Update multiple fields', () => {
-      it('should update username and email together', async () => {
+    describe('Update multiple fields scenarios', () => {
+      it('TC-UPDATEPROFILE-018: This test case aims to verify updating username and email together', async () => {
         const updateDto = {
           username: 'newname',
           email: 'newemail@example.com',
@@ -741,7 +741,7 @@ describe('UserService  Tests', () => {
         expect(result.email).toBe('newemail@example.com');
       });
 
-      it('should update all fields at once', async () => {
+      it('TC-UPDATEPROFILE-019: This test case aims to verify updating all fields at once', async () => {
         const updateDto = {
           username: 'newname',
           email: 'newemail@example.com',
@@ -763,8 +763,8 @@ describe('UserService  Tests', () => {
       });
     });
 
-    describe('Error handling', () => {
-      it('should throw error for non-existent user', async () => {
+    describe('Error handling scenarios', () => {
+      it('TC-UPDATEPROFILE-020: This test case aims to verify error for non-existent user', async () => {
         mockPrismaService.user.findUnique.mockResolvedValue(null);
 
         await expect(
@@ -772,7 +772,7 @@ describe('UserService  Tests', () => {
         ).rejects.toThrow('User with id 999 not found');
       });
 
-      it('should throw error for email conflict', async () => {
+      it('TC-UPDATEPROFILE-021: This test case aims to verify error for email conflict', async () => {
         // First call returns existing user, second call returns conflict user
         mockPrismaService.user.findUnique
           .mockResolvedValueOnce(existingUser)
@@ -783,7 +783,7 @@ describe('UserService  Tests', () => {
         ).rejects.toThrow('Email already in use');
       });
 
-      it('should throw error for username conflict', async () => {
+      it('TC-UPDATEPROFILE-022: This test case aims to verify error for username conflict', async () => {
         // First call returns existing user, second call returns conflict user for username check
         mockPrismaService.user.findUnique
           .mockResolvedValueOnce(existingUser)
@@ -835,7 +835,7 @@ describe('UserService  Tests', () => {
   });
 
   describe('UC-06: Delete User Account', () => {
-    it('should delete user by id', async () => {
+    it('TC-DELETEACCOUNT-004: This test case aims to verify user deletion by id', async () => {
       const mockDeletedUser = {
         id: 1,
         username: 'testuser',
@@ -851,7 +851,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should throw error for non-existent user', async () => {
+    it('TC-DELETEACCOUNT-005: This test case aims to verify error for non-existent user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(provider.remove(999)).rejects.toThrow(
@@ -859,7 +859,7 @@ describe('UserService  Tests', () => {
       );
     });
 
-    it('should handle cascade deletion', async () => {
+    it('TC-DELETEACCOUNT-006: This test case aims to verify cascade deletion', async () => {
       const mockDeletedUser = {
         id: 1,
         username: 'testuser',

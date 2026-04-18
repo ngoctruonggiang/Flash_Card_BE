@@ -46,7 +46,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('UC-20: Start Study Session', () => {
-    it('should return due reviews for a deck', async () => {
+    it('TC-STARTSTUDY-001: This test case aims to verify retrieval of due reviews for a deck', async () => {
       const dueCards = [
         { id: 1, front: 'Card 1', status: 'review' },
         { id: 2, front: 'Card 2', status: 'learning' },
@@ -59,7 +59,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getDueReviews).toHaveBeenCalledWith(1);
     });
 
-    it('should return empty array when no cards due', async () => {
+    it('TC-STARTSTUDY-002: This test case aims to verify empty array is returned when no cards are due', async () => {
       mockReviewService.getDueReviews.mockResolvedValue([]);
 
       const result = await controller.getDueReviews({ id: 1 });
@@ -67,7 +67,7 @@ describe('StudyController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-STARTSTUDY-003: This test case aims to verify NotFoundException is thrown for non-existent deck', async () => {
       mockReviewService.getDueReviews.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -77,7 +77,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should handle different deck ids', async () => {
+    it('TC-STARTSTUDY-004: This test case aims to verify getDueReviews with various deck ids', async () => {
       mockReviewService.getDueReviews.mockResolvedValue([]);
 
       await controller.getDueReviews({ id: 42 });
@@ -85,7 +85,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getDueReviews).toHaveBeenCalledWith(42);
     });
 
-    it('should return cards with all statuses', async () => {
+    it('TC-STARTSTUDY-005: This test case aims to verify retrieval of cards with all status types', async () => {
       const dueCards = [
         { id: 1, status: 'new' },
         { id: 2, status: 'learning' },
@@ -170,7 +170,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('UC-21: Record Review Outcome', () => {
-    it('should submit single review', async () => {
+    it('TC-RECORDREVIEW-001: This test case aims to verify submission of single review outcome', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
       };
@@ -190,7 +190,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.submitReviews).toHaveBeenCalledWith(submitDto);
     });
 
-    it('should submit multiple reviews', async () => {
+    it('TC-RECORDREVIEW-002: This test case aims to verify submission of multiple review outcomes', async () => {
       const submitDto = {
         CardReviews: [
           { cardId: 1, quality: 'Good' },
@@ -210,7 +210,7 @@ describe('StudyController  Tests', () => {
       expect(result).toHaveLength(3);
     });
 
-    it('should handle all quality types', async () => {
+    it('TC-RECORDREVIEW-003: This test case aims to verify handling of all quality types (Again, Hard, Good, Easy)', async () => {
       const qualities = ['Again', 'Hard', 'Good', 'Easy'];
 
       for (const quality of qualities) {
@@ -225,7 +225,7 @@ describe('StudyController  Tests', () => {
       }
     });
 
-    it('should handle empty CardReviews array', async () => {
+    it('TC-RECORDREVIEW-004: This test case aims to verify handling of empty CardReviews array', async () => {
       const submitDto = { CardReviews: [] };
       mockReviewService.submitReviews.mockResolvedValue([]);
 
@@ -234,7 +234,7 @@ describe('StudyController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-RECORDREVIEW-005: This test case aims to verify service error propagation during review submission', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 999, quality: 'Good' }],
       };
@@ -249,7 +249,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('UC-23: View Study Session Statistics', () => {
-    it('should return consecutive study days', async () => {
+    it('TC-STUDYSTATS-001: This test case aims to verify retrieval of consecutive study days statistic', async () => {
       const consecutiveData = {
         consecutiveDays: 7,
         streakStartDate: new Date('2025-01-08'),
@@ -265,7 +265,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getConsecutiveStudyDays).toHaveBeenCalledWith(1);
     });
 
-    it('should return 0 days when never studied', async () => {
+    it('TC-STUDYSTATS-002: This test case aims to verify zero days is returned when deck was never studied', async () => {
       const consecutiveData = {
         consecutiveDays: 0,
         streakStartDate: null,
@@ -280,7 +280,7 @@ describe('StudyController  Tests', () => {
       expect(result.consecutiveDays).toBe(0);
     });
 
-    it('should return 0 days when streak broken', async () => {
+    it('TC-STUDYSTATS-003: This test case aims to verify zero days is returned when study streak is broken', async () => {
       const consecutiveData = {
         consecutiveDays: 0,
         streakStartDate: null,
@@ -295,7 +295,7 @@ describe('StudyController  Tests', () => {
       expect(result.consecutiveDays).toBe(0);
     });
 
-    it('should handle string id conversion', async () => {
+    it('TC-STUDYSTATS-004: This test case aims to verify string id is converted to number', async () => {
       mockReviewService.getConsecutiveStudyDays.mockResolvedValue({
         consecutiveDays: 1,
         streakStartDate: new Date(),
@@ -307,7 +307,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getConsecutiveStudyDays).toHaveBeenCalledWith(42);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-STUDYSTATS-005: This test case aims to verify NotFoundException for statistics of non-existent deck', async () => {
       mockReviewService.getConsecutiveStudyDays.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );

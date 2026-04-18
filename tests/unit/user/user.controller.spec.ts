@@ -44,7 +44,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('UC-04: View User Profile', () => {
-    it('should return current user profile', async () => {
+    it('TC-VIEWPROFILE-001: This test case aims to verify retrieval of current logged-in user profile', async () => {
       mockUserService.getUserById.mockResolvedValue(mockUser);
 
       const result = await controller.getCurrentUser(mockUser as any);
@@ -53,7 +53,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it('should call getUserById with correct user id', async () => {
+    it('TC-VIEWPROFILE-002: This test case aims to verify getUserById is called with correct user id', async () => {
       const user = { ...mockUser, id: 42 };
       mockUserService.getUserById.mockResolvedValue(user);
 
@@ -62,7 +62,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(42);
     });
 
-    it('should return user without password', async () => {
+    it('TC-VIEWPROFILE-003: This test case aims to verify user profile is returned without password field', async () => {
       const userWithoutPassword = { ...mockUser };
       mockUserService.getUserById.mockResolvedValue(userWithoutPassword);
 
@@ -71,7 +71,7 @@ describe('UserController  Tests', () => {
       expect(result).not.toHaveProperty('password');
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-VIEWPROFILE-004: This test case aims to verify service errors are propagated correctly', async () => {
       mockUserService.getUserById.mockRejectedValue(
         new Error('Database error'),
       );
@@ -81,7 +81,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-VIEWPROFILE-005: This test case aims to verify NotFoundException is thrown when user not found', async () => {
       mockUserService.getUserById.mockRejectedValue(
         new NotFoundException('User not found'),
       );
@@ -93,7 +93,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('UC-05: Update User Profile', () => {
-    it('should update user profile', async () => {
+    it('TC-UPDATEPROFILE-001: This test case aims to verify successful user profile update', async () => {
       const updateDto = { username: 'newusername' };
       const updatedUser = { ...mockUser, username: 'newusername' };
       mockUserService.update.mockResolvedValue(updatedUser);
@@ -104,7 +104,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('should update email', async () => {
+    it('TC-UPDATEPROFILE-002: This test case aims to verify successful email update', async () => {
       const updateDto = { email: 'newemail@example.com' };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
@@ -116,7 +116,7 @@ describe('UserController  Tests', () => {
       expect(result).toHaveProperty('email', 'newemail@example.com');
     });
 
-    it('should update username', async () => {
+    it('TC-UPDATEPROFILE-003: This test case aims to verify successful username update', async () => {
       const updateDto = { username: 'newuser' };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
@@ -128,7 +128,7 @@ describe('UserController  Tests', () => {
       expect(result).toHaveProperty('username', 'newuser');
     });
 
-    it('should update password', async () => {
+    it('TC-UPDATEPROFILE-004: This test case aims to verify successful password update', async () => {
       const updateDto = { password: 'newPassword123!' };
       mockUserService.update.mockResolvedValue(mockUser);
 
@@ -137,7 +137,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('should handle empty update dto', async () => {
+    it('TC-UPDATEPROFILE-005: This test case aims to verify handling of empty update data object', async () => {
       const updateDto = {};
       mockUserService.update.mockResolvedValue(mockUser);
 
@@ -146,7 +146,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('should handle multiple fields update', async () => {
+    it('TC-UPDATEPROFILE-006: This test case aims to verify updating multiple fields simultaneously', async () => {
       const updateDto = {
         username: 'newuser',
         email: 'new@example.com',
@@ -161,7 +161,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateDto);
     });
 
-    it('should propagate BadRequestException for invalid data', async () => {
+    it('TC-UPDATEPROFILE-007: This test case aims to verify BadRequestException for invalid data', async () => {
       const updateDto = { email: 'invalid-email' };
       mockUserService.update.mockRejectedValue(
         new BadRequestException('Invalid email'),
@@ -172,7 +172,7 @@ describe('UserController  Tests', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('should handle unicode in username', async () => {
+    it('TC-UPDATEPROFILE-008: This test case aims to verify unicode characters handling in username', async () => {
       const updateDto = { username: 'người_dùng_mới' };
       mockUserService.update.mockResolvedValue({
         ...mockUser,
@@ -186,7 +186,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('UC-06: Delete User Account', () => {
-    it('should remove user account', async () => {
+    it('TC-DELETEACCOUNT-001: This test case aims to verify successful user account deletion', async () => {
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
       const result = await controller.remove(mockUser as any);
@@ -195,7 +195,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it('should call remove with correct user id', async () => {
+    it('TC-DELETEACCOUNT-002: This test case aims to verify remove is called with correct user id', async () => {
       const user = { ...mockUser, id: 123 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -204,7 +204,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(123);
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-DELETEACCOUNT-003: This test case aims to verify service errors are propagated during deletion', async () => {
       mockUserService.remove.mockRejectedValue(new Error('Cannot delete user'));
 
       await expect(controller.remove(mockUser as any)).rejects.toThrow(

@@ -46,7 +46,7 @@ describe('ReviewService - Preview Functionality', () => {
   });
 
   describe('UC-21: Record Review Outcome - Preview', () => {
-    it('should return preview intervals for a new card (no previous review)', async () => {
+    it('TC-RECORDREVIEW-016: This test case aims to verify return of preview intervals for a new card', async () => {
       mockPrismaService.cardReview.findFirst.mockResolvedValue(null);
 
       const result = await service.getReviewPreview(1);
@@ -59,7 +59,7 @@ describe('ReviewService - Preview Functionality', () => {
       });
     });
 
-    it('should return preview intervals for a card with one previous review', async () => {
+    it('TC-RECORDREVIEW-017: This test case aims to verify return of preview intervals for a card with one previous review', async () => {
       const previousReview: CardReview = {
         id: 1,
         cardId: 1,
@@ -92,7 +92,7 @@ describe('ReviewService - Preview Functionality', () => {
       });
     });
 
-    it('should return preview intervals for a card with two previous reviews', async () => {
+    it('TC-RECORDREVIEW-018: This test case aims to verify return of preview intervals for a card with two previous reviews', async () => {
       const previousReview: CardReview = {
         id: 2,
         cardId: 1,
@@ -128,7 +128,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(result.Easy).toBe('19 days');
     });
 
-    it('should show "Again" always resets to 1 day regardless of previous progress', async () => {
+    it('TC-RECORDREVIEW-019: This test case aims to verify Again always resets to relearning regardless of previous progress', async () => {
       const previousReview: CardReview = {
         id: 5,
         cardId: 1,
@@ -163,7 +163,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(parseInt(result.Easy)).toBe(364);
     });
 
-    it('should show increasing intervals from Hard -> Good -> Easy', async () => {
+    it('TC-RECORDREVIEW-020: This test case aims to verify increasing intervals from Hard to Good to Easy', async () => {
       const previousReview: CardReview = {
         id: 3,
         cardId: 1,
@@ -209,7 +209,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(goodInterval).toBeLessThan(easyInterval);
     });
 
-    it('should format singular and plural days correctly for new cards', async () => {
+    it('TC-RECORDREVIEW-021: This test case aims to verify singular and plural day formatting for new cards', async () => {
       mockPrismaService.cardReview.findFirst.mockResolvedValue(null);
 
       const result = await service.getReviewPreview(1);
@@ -221,7 +221,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(result.Easy).toBe('4 days'); // plural
     });
 
-    it('should format plural days correctly', async () => {
+    it('TC-RECORDREVIEW-022: This test case aims to verify plural day formatting', async () => {
       const previousReview: CardReview = {
         id: 1,
         cardId: 1,
@@ -252,7 +252,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(result.Easy).toBe('19 days');
     });
 
-    it('should handle card with decreased eFactor from multiple "Hard" reviews', async () => {
+    it('TC-RECORDREVIEW-023: This test case aims to verify handling of decreased eFactor from multiple Hard reviews', async () => {
       const previousReview: CardReview = {
         id: 4,
         cardId: 1,
@@ -289,7 +289,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(goodInterval).toBeLessThanOrEqual(easyInterval);
     });
 
-    it('should handle card at minimum eFactor (1.3)', async () => {
+    it('TC-RECORDREVIEW-024: This test case aims to verify handling of card at minimum eFactor (1.3)', async () => {
       const previousReview: CardReview = {
         id: 4,
         cardId: 1,
@@ -326,7 +326,7 @@ describe('ReviewService - Preview Functionality', () => {
       expect(easyInterval).toBeGreaterThan(0);
     });
 
-    it('should not mutate the database when generating previews', async () => {
+    it('TC-RECORDREVIEW-025: This test case aims to verify no database mutation when generating previews', async () => {
       const previousReview: CardReview = {
         id: 1,
         cardId: 1,

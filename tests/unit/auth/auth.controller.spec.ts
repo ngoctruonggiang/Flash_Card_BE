@@ -33,8 +33,8 @@ describe('AuthController Tests', () => {
   });
 
   describe('UC-01: Register', () => {
-    describe('Successful registration', () => {
-      it('should register a new user successfully', async () => {
+    describe('Successful registration scenarios', () => {
+      it('TC-REGISTER-001: This test case aims to verify successful user registration with valid input data', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'testuser',
@@ -59,7 +59,7 @@ describe('AuthController Tests', () => {
         expect(authService.signUp).toHaveBeenCalledTimes(1);
       });
 
-      it('should return access token in response', async () => {
+      it('TC-REGISTER-002: This test case aims to verify that access token is returned in registration response', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'testuser',
@@ -83,7 +83,7 @@ describe('AuthController Tests', () => {
         expect(result.accessToken).toBe('jwt-token-12345');
       });
 
-      it('should return user info without password', async () => {
+      it('TC-REGISTER-003: This test case aims to verify that user info is returned without password field', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'testuser',
@@ -107,8 +107,8 @@ describe('AuthController Tests', () => {
       });
     });
 
-    describe('Email validation', () => {
-      it('should pass valid email to service', async () => {
+    describe('Email validation scenarios', () => {
+      it('TC-REGISTER-004: This test case aims to verify that valid email is passed to service correctly', async () => {
         const signUpDto = {
           email: 'valid.email@example.com',
           username: 'testuser',
@@ -132,7 +132,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should propagate BadRequestException for invalid email', async () => {
+      it('TC-REGISTER-005: This test case aims to verify BadRequestException is thrown for invalid email format', async () => {
         const signUpDto = {
           email: 'invalid-email',
           username: 'testuser',
@@ -148,7 +148,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should propagate ConflictException for duplicate email', async () => {
+      it('TC-REGISTER-006: This test case aims to verify ConflictException is thrown for duplicate email', async () => {
         const signUpDto = {
           email: 'existing@example.com',
           username: 'testuser',
@@ -165,8 +165,8 @@ describe('AuthController Tests', () => {
       });
     });
 
-    describe('Username validation', () => {
-      it('should pass valid username to service', async () => {
+    describe('Username validation scenarios', () => {
+      it('TC-REGISTER-007: This test case aims to verify that valid username is passed to service correctly', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'valid_username123',
@@ -190,7 +190,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should propagate ConflictException for duplicate username', async () => {
+      it('TC-REGISTER-008: This test case aims to verify ConflictException is thrown for duplicate username', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'existinguser',
@@ -206,7 +206,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should handle username with special characters', async () => {
+      it('TC-REGISTER-009: This test case aims to verify registration with username containing special characters', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'user_name-123',
@@ -229,8 +229,8 @@ describe('AuthController Tests', () => {
       });
     });
 
-    describe('Password validation', () => {
-      it('should pass valid password to service', async () => {
+    describe('Password validation scenarios', () => {
+      it('TC-REGISTER-010: This test case aims to verify that valid password is passed to service correctly', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'testuser',
@@ -254,7 +254,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should propagate BadRequestException for weak password', async () => {
+      it('TC-REGISTER-011: This test case aims to verify BadRequestException is thrown for weak password', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'testuser',
@@ -271,8 +271,8 @@ describe('AuthController Tests', () => {
       });
     });
 
-    describe('Edge cases', () => {
-      it('should handle empty strings', async () => {
+    describe('Edge cases and boundary conditions', () => {
+      it('TC-REGISTER-012: This test case aims to verify handling of empty string inputs', async () => {
         const signUpDto = {
           email: '',
           username: '',
@@ -286,7 +286,7 @@ describe('AuthController Tests', () => {
         await expect(controller.register(signUpDto)).rejects.toThrow();
       });
 
-      it('should handle very long email', async () => {
+      it('TC-REGISTER-013: This test case aims to verify handling of very long email address', async () => {
         const longEmail = 'a'.repeat(250) + '@example.com';
         const signUpDto = {
           email: longEmail,
@@ -309,7 +309,7 @@ describe('AuthController Tests', () => {
         expect(authService.signUp).toHaveBeenCalledWith(signUpDto);
       });
 
-      it('should handle unicode in username', async () => {
+      it('TC-REGISTER-014: This test case aims to verify handling of unicode characters in username', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'tên_người_dùng',
@@ -331,7 +331,7 @@ describe('AuthController Tests', () => {
         expect(authService.signUp).toHaveBeenCalledWith(signUpDto);
       });
 
-      it('should handle service throwing unexpected error', async () => {
+      it('TC-REGISTER-015: This test case aims to verify handling of unexpected service errors', async () => {
         const signUpDto = {
           email: 'test@example.com',
           username: 'testuser',
@@ -348,8 +348,8 @@ describe('AuthController Tests', () => {
   });
 
   describe('UC-02: Login', () => {
-    describe('Successful login', () => {
-      it('should login user successfully', async () => {
+    describe('Successful login scenarios', () => {
+      it('TC-LOGIN-001: This test case aims to verify successful user login with valid credentials', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'Password123!',
@@ -372,7 +372,7 @@ describe('AuthController Tests', () => {
         expect(authService.signIn).toHaveBeenCalledTimes(1);
       });
 
-      it('should return access token in response', async () => {
+      it('TC-LOGIN-002: This test case aims to verify that access token is returned in login response', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'Password123!',
@@ -394,7 +394,7 @@ describe('AuthController Tests', () => {
         expect(typeof result.accessToken).toBe('string');
       });
 
-      it('should return user info without password', async () => {
+      it('TC-LOGIN-003: This test case aims to verify that user info is returned without password field after login', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'Password123!',
@@ -416,8 +416,8 @@ describe('AuthController Tests', () => {
       });
     });
 
-    describe('Failed login', () => {
-      it('should propagate UnauthorizedException for wrong password', async () => {
+    describe('Failed login scenarios', () => {
+      it('TC-LOGIN-004: This test case aims to verify UnauthorizedException is thrown for wrong password', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'wrongpassword',
@@ -431,7 +431,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should propagate UnauthorizedException for non-existent user', async () => {
+      it('TC-LOGIN-005: This test case aims to verify UnauthorizedException is thrown for non-existent user', async () => {
         const signInDto = {
           email: 'nonexistent@example.com',
           password: 'Password123!',
@@ -445,7 +445,7 @@ describe('AuthController Tests', () => {
         );
       });
 
-      it('should propagate BadRequestException for invalid email format', async () => {
+      it('TC-LOGIN-006: This test case aims to verify BadRequestException is thrown for invalid email format', async () => {
         const signInDto = {
           email: 'invalid-email',
           password: 'Password123!',
@@ -460,8 +460,8 @@ describe('AuthController Tests', () => {
       });
     });
 
-    describe('Edge cases', () => {
-      it('should handle empty credentials', async () => {
+    describe('Edge cases and boundary conditions', () => {
+      it('TC-LOGIN-007: This test case aims to verify handling of empty credentials', async () => {
         const signInDto = {
           email: '',
           password: '',
@@ -473,7 +473,7 @@ describe('AuthController Tests', () => {
         await expect(controller.login(signInDto)).rejects.toThrow();
       });
 
-      it('should handle email with different cases', async () => {
+      it('TC-LOGIN-008: This test case aims to verify login with email containing different letter cases', async () => {
         const signInDto = {
           email: 'TEST@EXAMPLE.COM',
           password: 'Password123!',
@@ -493,7 +493,7 @@ describe('AuthController Tests', () => {
         expect(authService.signIn).toHaveBeenCalledWith(signInDto);
       });
 
-      it('should handle password with special characters', async () => {
+      it('TC-LOGIN-009: This test case aims to verify login with password containing special characters', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'P@$$w0rd!#$%^&*()',
@@ -513,7 +513,7 @@ describe('AuthController Tests', () => {
         expect(authService.signIn).toHaveBeenCalledWith(signInDto);
       });
 
-      it('should handle very long password', async () => {
+      it('TC-LOGIN-010: This test case aims to verify login with very long password', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'A'.repeat(1000),
@@ -533,7 +533,7 @@ describe('AuthController Tests', () => {
         expect(authService.signIn).toHaveBeenCalledWith(signInDto);
       });
 
-      it('should handle unicode in password', async () => {
+      it('TC-LOGIN-011: This test case aims to verify login with password containing unicode characters', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'Mật_khẩu_123!',
@@ -553,7 +553,7 @@ describe('AuthController Tests', () => {
         expect(authService.signIn).toHaveBeenCalledWith(signInDto);
       });
 
-      it('should handle service throwing unexpected error', async () => {
+      it('TC-LOGIN-012: This test case aims to verify handling of unexpected service errors during login', async () => {
         const signInDto = {
           email: 'test@example.com',
           password: 'Password123!',

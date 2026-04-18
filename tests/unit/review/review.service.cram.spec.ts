@@ -45,7 +45,7 @@ describe('ReviewService - Cram Mode', () => {
   });
 
   describe('UC-20: Start Study Session - Cram Mode', () => {
-    it('should create review logs but NOT update card schedule', async () => {
+    it('TC-STARTSTUDY-021: This test case aims to verify review logs created but NOT update card schedule', async () => {
       const submitDto: any = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
         reviewedAt: new Date(),

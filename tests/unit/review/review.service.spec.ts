@@ -265,8 +265,8 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('UC-21: Record Review Outcome', () => {
-    describe('Single review submission', () => {
-      it('should process single review successfully', async () => {
+    describe('Single review submission scenarios', () => {
+      it('TC-RECORDREVIEW-006: This test case aims to verify processing of single review successfully', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Good' }],
         };
@@ -296,7 +296,7 @@ describe('ReviewService  Tests', () => {
         expect(prismaService.$transaction).toHaveBeenCalled();
       });
 
-      it('should throw NotFoundException for non-existent cards', async () => {
+      it('TC-RECORDREVIEW-007: This test case aims to verify NotFoundException for non-existent cards', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 999, quality: 'Good' }],
         };
@@ -308,8 +308,8 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    describe('Multiple review submission', () => {
-      it('should process multiple reviews', async () => {
+    describe('Multiple review submission scenarios', () => {
+      it('TC-RECORDREVIEW-008: This test case aims to verify processing of multiple reviews', async () => {
         const submitDto: any = {
           CardReviews: [
             { cardId: 1, quality: 'Good' },
@@ -340,7 +340,7 @@ describe('ReviewService  Tests', () => {
         expect(result).toHaveLength(3);
       });
 
-      it('should throw NotFoundException when processing card that does not exist', async () => {
+      it('TC-RECORDREVIEW-009: This test case aims to verify NotFoundException when processing card that does not exist', async () => {
         const submitDto: any = {
           CardReviews: [
             { cardId: 1, quality: 'Good' },
@@ -375,8 +375,8 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    describe('Quality handling', () => {
-      it('should handle Again quality', async () => {
+    describe('Quality handling scenarios', () => {
+      it('TC-RECORDREVIEW-010: This test case aims to verify handling of Again quality', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Again' }],
         };
@@ -402,7 +402,7 @@ describe('ReviewService  Tests', () => {
         expect(result[0].quality).toBe('Again');
       });
 
-      it('should handle Hard quality', async () => {
+      it('TC-RECORDREVIEW-011: This test case aims to verify handling of Hard quality', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Hard' }],
         };
@@ -428,7 +428,7 @@ describe('ReviewService  Tests', () => {
         expect(result[0].quality).toBe('Hard');
       });
 
-      it('should handle Good quality', async () => {
+      it('TC-RECORDREVIEW-012: This test case aims to verify handling of Good quality', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Good' }],
         };
@@ -454,7 +454,7 @@ describe('ReviewService  Tests', () => {
         expect(result[0].quality).toBe('Good');
       });
 
-      it('should handle Easy quality', async () => {
+      it('TC-RECORDREVIEW-013: This test case aims to verify handling of Easy quality', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Easy' }],
         };
@@ -481,8 +481,8 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    describe('Status transitions', () => {
-      it('should track previousStatus and newStatus', async () => {
+    describe('Status transition scenarios', () => {
+      it('TC-RECORDREVIEW-014: This test case aims to verify tracking of previousStatus and newStatus', async () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Good' }],
         };
@@ -510,8 +510,8 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    describe('Empty submission', () => {
-      it('should handle empty CardReviews array', async () => {
+    describe('Empty submission scenarios', () => {
+      it('TC-RECORDREVIEW-015: This test case aims to verify handling of empty CardReviews array', async () => {
         const submitDto: any = { CardReviews: [] };
 
         const result = await service.submitReviews(submitDto);
@@ -871,7 +871,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should return 0 when deck has no cards', async () => {
+    it('TC-STUDYSTATS-006: This test case aims to verify return of 0 when deck has no cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       const result = await service.getConsecutiveStudyDays(1);
@@ -883,7 +883,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should return 0 when no reviews exist', async () => {
+    it('TC-STUDYSTATS-007: This test case aims to verify return of 0 when no reviews exist', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([{ id: 1 }]);
       mockPrismaService.cardReview.findMany.mockResolvedValue([]);
 
@@ -896,7 +896,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should return streak of 1 for study today only', async () => {
+    it('TC-STUDYSTATS-008: This test case aims to verify return of streak of 1 for study today only', async () => {
       const today = new Date();
       today.setUTCHours(10, 0, 0, 0);
 
@@ -910,7 +910,7 @@ describe('ReviewService  Tests', () => {
       expect(result.consecutiveDays).toBe(1);
     });
 
-    it('should return 0 when streak is broken', async () => {
+    it('TC-STUDYSTATS-009: This test case aims to verify return of 0 when streak is broken', async () => {
       const twoDaysAgo = new Date();
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 3);
 
@@ -924,7 +924,7 @@ describe('ReviewService  Tests', () => {
       expect(result.consecutiveDays).toBe(0);
     });
 
-    it('should count consecutive days correctly', async () => {
+    it('TC-STUDYSTATS-010: This test case aims to verify counting of consecutive days correctly', async () => {
       const today = new Date();
       today.setUTCHours(10, 0, 0, 0);
       const yesterday = new Date(today);
@@ -944,7 +944,7 @@ describe('ReviewService  Tests', () => {
       expect(result.consecutiveDays).toBe(3);
     });
 
-    it('should not count duplicate days multiple times', async () => {
+    it('TC-STUDYSTATS-011: This test case aims to verify no duplicate day counting', async () => {
       const today = new Date();
       today.setHours(10, 0, 0, 0);
       const todayMorning = new Date(today);
@@ -964,7 +964,7 @@ describe('ReviewService  Tests', () => {
       expect(result.consecutiveDays).toBeGreaterThanOrEqual(1);
     });
 
-    it('should include lastStudyDate in result', async () => {
+    it('TC-STUDYSTATS-012: This test case aims to verify inclusion of lastStudyDate in result', async () => {
       const today = new Date();
       today.setUTCHours(10, 0, 0, 0);
 
@@ -978,7 +978,7 @@ describe('ReviewService  Tests', () => {
       expect(result.lastStudyDate).toBeDefined();
     });
 
-    it('should include streakStartDate in result', async () => {
+    it('TC-STUDYSTATS-013: This test case aims to verify inclusion of streakStartDate in result', async () => {
       const today = new Date();
       today.setUTCHours(10, 0, 0, 0);
 
@@ -992,7 +992,7 @@ describe('ReviewService  Tests', () => {
       expect(result.streakStartDate).toBeDefined();
     });
 
-    it('should throw NotFoundException when deck does not exist', async () => {
+    it('TC-STUDYSTATS-014: This test case aims to verify NotFoundException when deck does not exist', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(service.getConsecutiveStudyDays(999)).rejects.toThrow(
