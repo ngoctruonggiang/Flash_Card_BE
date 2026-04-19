@@ -15,7 +15,7 @@ import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
 
-describe('Deck Controller Comprehensive E2E Tests', () => {
+describe('UC-07: View Deck Library & UC-08: Create Deck & UC-09: Edit Deck & UC-10: Delete Deck & UC-11: View Deck Statistics & UC-12: View Advanced Deck Statistics - Deck E2E Tests', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let deckService: DeckService;
@@ -263,7 +263,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       });
 
       it('should create multiple decks for same user', async () => {
-        const decks = [];
+        const decks: Deck[] = [];
         for (let i = 0; i < 5; i++) {
           const res = await authRequest()
             .post('/deck')

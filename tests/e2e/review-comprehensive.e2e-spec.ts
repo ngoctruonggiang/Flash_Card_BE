@@ -16,7 +16,7 @@ import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
 
-describe('Review & Algorithm Comprehensive E2E Tests', () => {
+describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View Study Session Statistics - Review & Algorithm E2E Tests', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let deckService: DeckService;

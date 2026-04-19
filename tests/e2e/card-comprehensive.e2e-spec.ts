@@ -14,8 +14,9 @@ import { Card, Deck, CardStatus } from '@prisma/client';
 import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
+import { LanguageMode } from 'src/utils/types/dto/deck/createDeck.dto';
 
-describe('Card Controller Comprehensive E2E Tests', () => {
+describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16: Delete Card & UC-17: View Card Statistics - Card E2E Tests', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let cardService: CardService;
@@ -289,7 +290,7 @@ describe('Card Controller Comprehensive E2E Tests', () => {
       });
 
       it('should create multiple cards in same deck', async () => {
-        const cards = [];
+        const cards: Card[] = [];
         for (let i = 0; i < 10; i++) {
           const res = await authRequest()
             .post('/card')
@@ -524,7 +525,7 @@ describe('Card Controller Comprehensive E2E Tests', () => {
       beforeAll(async () => {
         bidirectionalDeck = await deckService.create(testUser.id, {
           title: 'Bidirectional Test Deck',
-          languageMode: 'BIDIRECTIONAL',
+          languageMode: LanguageMode.BIDIRECTIONAL,
         });
       });
 
@@ -981,7 +982,7 @@ describe('Card Controller Comprehensive E2E Tests', () => {
 
   describe('Card Edge Cases', () => {
     it('should handle concurrent card creation', async () => {
-      const promises = [];
+      const promises: Promise<request.Response>[] = [];
       for (let i = 0; i < 5; i++) {
         promises.push(
           authRequest()

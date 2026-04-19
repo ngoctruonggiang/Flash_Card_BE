@@ -6,7 +6,7 @@ import { PrismaService } from 'src/services/prisma.service';
 import { ReviewService } from 'src/services/review/review.service';
 import { createTestUser } from './create-test-user';
 
-describe('Anki Algorithm E2E Sequence', () => {
+describe('SM2 Algorithm E2E Sequence', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
   let reviewService: ReviewService;
