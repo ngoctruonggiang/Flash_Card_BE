@@ -61,7 +61,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
 
   describe('/auth/register (POST) - Registration Tests', () => {
     describe('Valid Registration Cases', () => {
-      it('should register user with minimum required fields', async () => {
+      it('TC-AUTH-001 should register user with minimum required fields', async () => {
         await cleanupUser('minfields@example.com');
         const dto = {
           username: 'minfields',
@@ -86,7 +86,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         await cleanupUser(dto.email);
       });
 
-      it('should register user with alphanumeric username', async () => {
+      it('TC-AUTH-002 should register user with alphanumeric username', async () => {
         await cleanupUser('alpha123@example.com');
         const dto = {
           username: 'alpha123',
@@ -104,7 +104,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         await cleanupUser(dto.email);
       });
 
-      it('should register user with underscore in username', async () => {
+      it('TC-AUTH-003 should register user with underscore in username', async () => {
         await cleanupUser('user_test@example.com');
         const dto = {
           username: 'user_test',
@@ -122,7 +122,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         await cleanupUser(dto.email);
       });
 
-      it('should register user with 3-character username (minimum)', async () => {
+      it('TC-AUTH-004 should register user with 3-character username (minimum)', async () => {
         await cleanupUser('usr@example.com');
         const dto = {
           username: 'usr',
@@ -140,7 +140,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         await cleanupUser(dto.email);
       });
 
-      it('should register user with 20-character username (maximum)', async () => {
+      it('TC-AUTH-005 should register user with 20-character username (maximum)', async () => {
         await cleanupUser('twentycharsusername@example.com');
         const dto = {
           username: 'twentycharsusername1',
@@ -158,7 +158,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         await cleanupUser(dto.email);
       });
 
-      it('should register user with complex valid password', async () => {
+      it('TC-AUTH-006 should register user with complex valid password', async () => {
         await cleanupUser('complexpass@example.com');
         const dto = {
           username: 'complexpass',
@@ -176,7 +176,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         await cleanupUser(dto.email);
       });
 
-      it('should register user with subdomain email', async () => {
+      it('TC-AUTH-007 should register user with subdomain email', async () => {
         await cleanupUser('user@mail.example.com');
         const dto = {
           username: 'subdomainuser',
@@ -196,7 +196,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Invalid Username Cases', () => {
-      it('should reject registration with empty username', async () => {
+      it('TC-AUTH-008 should reject registration with empty username', async () => {
         const dto = {
           username: '',
           email: 'emptyusername@example.com',
@@ -210,7 +210,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with username less than 3 characters', async () => {
+      it('TC-AUTH-009 should reject registration with username less than 3 characters', async () => {
         const dto = {
           username: 'ab',
           email: 'shortuser@example.com',
@@ -224,7 +224,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with username more than 20 characters', async () => {
+      it('TC-AUTH-010 should reject registration with username more than 20 characters', async () => {
         const dto = {
           username: 'verylongusernamethatexceedstwentycharacters',
           email: 'longuser@example.com',
@@ -238,7 +238,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with special characters in username', async () => {
+      it('TC-AUTH-011 should reject registration with special characters in username', async () => {
         const dto = {
           username: 'user@name',
           email: 'specialuser@example.com',
@@ -252,7 +252,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with spaces in username', async () => {
+      it('TC-AUTH-012 should reject registration with spaces in username', async () => {
         const dto = {
           username: 'user name',
           email: 'spaceuser@example.com',
@@ -266,7 +266,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with hyphen in username', async () => {
+      it('TC-AUTH-013 should reject registration with hyphen in username', async () => {
         const dto = {
           username: 'user-name',
           email: 'hyphenuser@example.com',
@@ -280,7 +280,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration without username field', async () => {
+      it('TC-AUTH-014 should reject registration without username field', async () => {
         const dto = {
           email: 'nousername@example.com',
           password: 'Password123',
@@ -295,7 +295,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Invalid Email Cases', () => {
-      it('should reject registration with empty email', async () => {
+      it('TC-AUTH-015 should reject registration with empty email', async () => {
         const dto = {
           username: 'emptyemail',
           email: '',
@@ -309,7 +309,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with invalid email format (no @)', async () => {
+      it('TC-AUTH-016 should reject registration with invalid email format (no @)', async () => {
         const dto = {
           username: 'invalidemail1',
           email: 'invalidemail.com',
@@ -323,7 +323,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with invalid email format (no domain)', async () => {
+      it('TC-AUTH-017 should reject registration with invalid email format (no domain)', async () => {
         const dto = {
           username: 'invalidemail2',
           email: 'user@',
@@ -337,7 +337,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with invalid email format (no username)', async () => {
+      it('TC-AUTH-018 should reject registration with invalid email format (no username)', async () => {
         const dto = {
           username: 'invalidemail3',
           email: '@example.com',
@@ -351,7 +351,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with invalid email format (double @)', async () => {
+      it('TC-AUTH-019 should reject registration with invalid email format (double @)', async () => {
         const dto = {
           username: 'invalidemail4',
           email: 'user@@example.com',
@@ -365,7 +365,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration without email field', async () => {
+      it('TC-AUTH-020 should reject registration without email field', async () => {
         const dto = {
           username: 'noemail',
           password: 'Password123',
@@ -380,7 +380,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Invalid Password Cases', () => {
-      it('should reject registration with empty password', async () => {
+      it('TC-AUTH-021 should reject registration with empty password', async () => {
         const dto = {
           username: 'emptypass',
           email: 'emptypass@example.com',
@@ -394,7 +394,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with password less than 8 characters', async () => {
+      it('TC-AUTH-022 should reject registration with password less than 8 characters', async () => {
         const dto = {
           username: 'shortpass',
           email: 'shortpass@example.com',
@@ -408,7 +408,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with password without numbers', async () => {
+      it('TC-AUTH-023 should reject registration with password without numbers', async () => {
         const dto = {
           username: 'nonumpass',
           email: 'nonumpass@example.com',
@@ -422,7 +422,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with password without letters', async () => {
+      it('TC-AUTH-024 should reject registration with password without letters', async () => {
         const dto = {
           username: 'noletterpass',
           email: 'noletterpass@example.com',
@@ -436,7 +436,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with mismatched passwords', async () => {
+      it('TC-AUTH-025 should reject registration with mismatched passwords', async () => {
         const dto = {
           username: 'mismatchpass',
           email: 'mismatchpass@example.com',
@@ -450,7 +450,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration without password field', async () => {
+      it('TC-AUTH-026 should reject registration without password field', async () => {
         const dto = {
           username: 'nopassword',
           email: 'nopassword@example.com',
@@ -463,7 +463,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration without confirmPassword field', async () => {
+      it('TC-AUTH-027 should reject registration without confirmPassword field', async () => {
         const dto = {
           username: 'noconfirm',
           email: 'noconfirm@example.com',
@@ -478,7 +478,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Conflict Cases', () => {
-      it('should reject registration with existing email', async () => {
+      it('TC-AUTH-028 should reject registration with existing email', async () => {
         const dto = {
           username: 'newusername',
           email: baseTestUser.email,
@@ -492,7 +492,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.CONFLICT);
       });
 
-      it('should reject registration with existing username', async () => {
+      it('TC-AUTH-029 should reject registration with existing username', async () => {
         const dto = {
           username: baseTestUser.username,
           email: 'newemail@example.com',
@@ -506,7 +506,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.CONFLICT);
       });
 
-      it('should reject registration with both existing email and username', async () => {
+      it('TC-AUTH-030 should reject registration with both existing email and username', async () => {
         const dto = {
           username: baseTestUser.username,
           email: baseTestUser.email,
@@ -522,7 +522,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Edge Cases', () => {
-      it('should reject registration with null values', async () => {
+      it('TC-AUTH-031 should reject registration with null values', async () => {
         const dto = {
           username: null,
           email: null,
@@ -536,14 +536,14 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with empty body', async () => {
+      it('TC-AUTH-032 should reject registration with empty body', async () => {
         await request(app.getHttpServer())
           .post('/auth/register')
           .send({})
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject registration with extra fields (forbidNonWhitelisted)', async () => {
+      it('TC-AUTH-033 should reject registration with extra fields (forbidNonWhitelisted)', async () => {
         const dto = {
           username: 'extrafields',
           email: 'extrafields@example.com',
@@ -558,7 +558,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should register user with case-sensitive email handling', async () => {
+      it('TC-AUTH-034 should register user with case-sensitive email handling', async () => {
         await cleanupUser('uppercase@example.com');
         const dto = {
           username: 'uppercase',
@@ -578,7 +578,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         }
       });
 
-      it('should handle whitespace in email', async () => {
+      it('TC-AUTH-035 should handle whitespace in email', async () => {
         const dto = {
           username: 'whitespace',
           email: ' whitespace@example.com ',
@@ -594,7 +594,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
 
   describe('/auth/login (POST) - Login Tests', () => {
     describe('Valid Login Cases', () => {
-      it('should login with correct credentials', async () => {
+      it('TC-AUTH-036 should login with correct credentials', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: baseTestUser.password,
@@ -611,7 +611,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         expect(res.body.data.id).toBeDefined();
       });
 
-      it('should return JWT token on successful login', async () => {
+      it('TC-AUTH-037 should return JWT token on successful login', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: baseTestUser.password,
@@ -628,7 +628,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         expect(token.split('.').length).toBe(3); // JWT format
       });
 
-      it('should update lastLoginAt on successful login', async () => {
+      it('TC-AUTH-038 should update lastLoginAt on successful login', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: baseTestUser.password,
@@ -644,7 +644,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Invalid Login Cases', () => {
-      it('should reject login with wrong password', async () => {
+      it('TC-AUTH-039 should reject login with wrong password', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: 'WrongPassword123',
@@ -658,7 +658,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         expect(res.body.message).toContain('Invalid email or password');
       });
 
-      it('should reject login with non-existent email', async () => {
+      it('TC-AUTH-040 should reject login with non-existent email', async () => {
         const loginDto = {
           email: 'nonexistent@example.com',
           password: 'Password123',
@@ -672,7 +672,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         expect(res.body.message).toContain('Invalid email or password');
       });
 
-      it('should reject login with empty email', async () => {
+      it('TC-AUTH-041 should reject login with empty email', async () => {
         const loginDto = {
           email: '',
           password: 'Password123',
@@ -684,7 +684,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject login with empty password', async () => {
+      it('TC-AUTH-042 should reject login with empty password', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: '',
@@ -696,7 +696,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject login without email field', async () => {
+      it('TC-AUTH-043 should reject login without email field', async () => {
         const loginDto = {
           password: 'Password123',
         };
@@ -707,7 +707,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject login without password field', async () => {
+      it('TC-AUTH-044 should reject login without password field', async () => {
         const loginDto = {
           email: baseTestUser.email,
         };
@@ -718,14 +718,14 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject login with empty body', async () => {
+      it('TC-AUTH-045 should reject login with empty body', async () => {
         await request(app.getHttpServer())
           .post('/auth/login')
           .send({})
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject login with null values', async () => {
+      it('TC-AUTH-046 should reject login with null values', async () => {
         const loginDto = {
           email: null,
           password: null,
@@ -737,7 +737,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject login with invalid email format', async () => {
+      it('TC-AUTH-047 should reject login with invalid email format', async () => {
         const loginDto = {
           email: 'notanemail',
           password: 'Password123',
@@ -751,7 +751,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Security Tests', () => {
-      it('should not reveal whether email exists on wrong password', async () => {
+      it('TC-AUTH-048 should not reveal whether email exists on wrong password', async () => {
         const wrongPasswordRes = await request(app.getHttpServer())
           .post('/auth/login')
           .send({
@@ -772,7 +772,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         expect(wrongPasswordRes.body.message).toBe(nonExistentRes.body.message);
       });
 
-      it('should handle SQL injection attempt in email', async () => {
+      it('TC-AUTH-049 should handle SQL injection attempt in email', async () => {
         const loginDto = {
           email: "'; DROP TABLE users; --",
           password: 'Password123',
@@ -784,7 +784,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should handle SQL injection attempt in password', async () => {
+      it('TC-AUTH-050 should handle SQL injection attempt in password', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: "'; DROP TABLE users; --",
@@ -796,7 +796,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should handle XSS attempt in email', async () => {
+      it('TC-AUTH-051 should handle XSS attempt in email', async () => {
         const loginDto = {
           email: '<script>alert("xss")</script>@example.com',
           password: 'Password123',
@@ -810,7 +810,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
     });
 
     describe('Rate Limiting / Brute Force Tests', () => {
-      it('should handle multiple failed login attempts', async () => {
+      it('TC-AUTH-052 should handle multiple failed login attempts', async () => {
         const loginDto = {
           email: baseTestUser.email,
           password: 'WrongPassword',
@@ -839,7 +839,7 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
   });
 
   describe('JWT Token Tests', () => {
-    it('should use token for authenticated requests', async () => {
+    it('TC-AUTH-053 should use token for authenticated requests', async () => {
       const loginRes = await request(app.getHttpServer())
         .post('/auth/login')
         .send({
@@ -859,14 +859,14 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
       expect(userRes.body.data.email).toBe(baseTestUser.email);
     });
 
-    it('should reject invalid token', async () => {
+    it('TC-AUTH-054 should reject invalid token', async () => {
       await request(app.getHttpServer())
         .get('/user')
         .set('Authorization', 'Bearer invalid.token.here')
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should reject expired token format', async () => {
+    it('TC-AUTH-055 should reject expired token format', async () => {
       const expiredToken =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ0ZXN0IiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE2MDAwMDAwMDF9.invalid';
 
@@ -876,20 +876,20 @@ describe('UC-01: Register & UC-02: Login - Auth E2E Tests', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should reject request without token', async () => {
+    it('TC-AUTH-056 should reject request without token', async () => {
       await request(app.getHttpServer())
         .get('/user')
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should reject request with empty authorization header', async () => {
+    it('TC-AUTH-057 should reject request with empty authorization header', async () => {
       await request(app.getHttpServer())
         .get('/user')
         .set('Authorization', '')
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should reject request with malformed authorization header', async () => {
+    it('TC-AUTH-058 should reject request with malformed authorization header', async () => {
       await request(app.getHttpServer())
         .get('/user')
         .set('Authorization', 'NotBearer token')

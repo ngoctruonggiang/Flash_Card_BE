@@ -87,7 +87,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
 
   describe('/user (GET) - Get Current User Tests', () => {
     describe('Valid Cases', () => {
-      it('should return current user profile', async () => {
+      it('TC-USER-001 should return current user profile', async () => {
         const res = await authRequest().get('/user').expect(HttpStatus.OK);
 
         expect(res.body.data).toBeDefined();
@@ -95,7 +95,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         expect(res.body.data.email).toBe(baseTestUser.email);
       });
 
-      it('should return user with correct structure', async () => {
+      it('TC-USER-002 should return user with correct structure', async () => {
         const res = await authRequest().get('/user').expect(HttpStatus.OK);
 
         expect(res.body.data).toHaveProperty('id');
@@ -105,14 +105,14 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         expect(res.body.data).toHaveProperty('createdAt');
       });
 
-      it('should not return password hash', async () => {
+      it('TC-USER-003 should not return password hash', async () => {
         const res = await authRequest().get('/user').expect(HttpStatus.OK);
 
         expect(res.body.data.passwordHash).toBeUndefined();
         expect(res.body.data.password).toBeUndefined();
       });
 
-      it('should return correct role', async () => {
+      it('TC-USER-004 should return correct role', async () => {
         const res = await authRequest().get('/user').expect(HttpStatus.OK);
 
         expect(['USER', 'ADMIN']).toContain(res.body.data.role);
@@ -120,27 +120,27 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('Invalid Cases', () => {
-      it('should reject without authentication', async () => {
+      it('TC-USER-005 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get('/user')
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject with invalid token', async () => {
+      it('TC-USER-006 should reject with invalid token', async () => {
         await request(app.getHttpServer())
           .get('/user')
           .set('Authorization', 'Bearer invalid.token.here')
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject with malformed authorization header', async () => {
+      it('TC-USER-007 should reject with malformed authorization header', async () => {
         await request(app.getHttpServer())
           .get('/user')
           .set('Authorization', 'NotBearer token')
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject with empty authorization header', async () => {
+      it('TC-USER-008 should reject with empty authorization header', async () => {
         await request(app.getHttpServer())
           .get('/user')
           .set('Authorization', '')
@@ -151,7 +151,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
 
   describe('/user (PATCH) - Update Current User Tests', () => {
     describe('Valid Updates', () => {
-      it('should update username', async () => {
+      it('TC-USER-009 should update username', async () => {
         const newUsername = 'updatedusername1';
 
         const res = await authRequest()
@@ -167,7 +167,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
           .send({ username: baseTestUser.username });
       });
 
-      it('should update email', async () => {
+      it('TC-USER-010 should update email', async () => {
         const newEmail = 'updatedemail1@example.com';
 
         const res = await authRequest()
@@ -181,7 +181,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         await authRequest().patch('/user').send({ email: baseTestUser.email });
       });
 
-      it('should update password', async () => {
+      it('TC-USER-011 should update password', async () => {
         const newPassword = 'NewPassword123';
 
         await authRequest()
@@ -213,7 +213,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         testUser.accessToken = resetLogin.body.data.accessToken;
       });
 
-      it('should update role to ADMIN', async () => {
+      it('TC-USER-012 should update role to ADMIN', async () => {
         const res = await authRequest()
           .patch('/user')
           .send({ role: 'ADMIN' })
@@ -225,7 +225,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         await authRequest().patch('/user').send({ role: 'USER' });
       });
 
-      it('should update role to USER', async () => {
+      it('TC-USER-013 should update role to USER', async () => {
         // First set to ADMIN
         await authRequest().patch('/user').send({ role: 'ADMIN' });
 
@@ -237,7 +237,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         expect(res.body.data.role).toBe('USER');
       });
 
-      it('should update multiple fields at once', async () => {
+      it('TC-USER-014 should update multiple fields at once', async () => {
         const res = await authRequest()
           .patch('/user')
           .send({
@@ -257,63 +257,63 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('Invalid Updates', () => {
-      it('should reject update with invalid email format', async () => {
+      it('TC-USER-015 should reject update with invalid email format', async () => {
         await authRequest()
           .patch('/user')
           .send({ email: 'notanemail' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject update with invalid role', async () => {
+      it('TC-USER-016 should reject update with invalid role', async () => {
         await authRequest()
           .patch('/user')
           .send({ role: 'INVALID_ROLE' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject update with extra non-whitelisted fields', async () => {
+      it('TC-USER-017 should reject update with extra non-whitelisted fields', async () => {
         await authRequest()
           .patch('/user')
           .send({ username: 'valid', extraField: 'invalid' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-USER-018 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .patch('/user')
           .send({ username: 'unauthorized' })
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject empty username', async () => {
+      it('TC-USER-019 should reject empty username', async () => {
         await authRequest()
           .patch('/user')
           .send({ username: '' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject empty email', async () => {
+      it('TC-USER-020 should reject empty email', async () => {
         await authRequest()
           .patch('/user')
           .send({ email: '' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject username with special characters', async () => {
+      it('TC-USER-021 should reject username with special characters', async () => {
         await authRequest()
           .patch('/user')
           .send({ username: 'user@name' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject short username', async () => {
+      it('TC-USER-022 should reject short username', async () => {
         await authRequest()
           .patch('/user')
           .send({ username: 'ab' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject long username', async () => {
+      it('TC-USER-023 should reject long username', async () => {
         await authRequest()
           .patch('/user')
           .send({ username: 'a'.repeat(25) })
@@ -322,7 +322,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('Conflict Cases', () => {
-      it('should reject update with existing email', async () => {
+      it('TC-USER-024 should reject update with existing email', async () => {
         // Create another user
         await cleanupUser('conflictuser@example.com');
         const otherUser = await request(app.getHttpServer())
@@ -344,7 +344,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         await userService.remove(Number(otherUser.body.data.id));
       });
 
-      it('should reject update with existing username', async () => {
+      it('TC-USER-025 should reject update with existing username', async () => {
         // Create another user
         await cleanupUser('conflictuser2@example.com');
         const otherUser = await request(app.getHttpServer())
@@ -369,7 +369,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
   });
 
   describe('/user (DELETE) - Delete Current User Tests', () => {
-    it('should delete current user', async () => {
+    it('TC-USER-026 should delete current user', async () => {
       // Create a temp user for deletion
       await cleanupUser('deleteuser@example.com');
       const tempUser = await request(app.getHttpServer())
@@ -396,7 +396,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
       expect(deletedUser).toBeNull();
     });
 
-    it('should cascade delete user decks', async () => {
+    it('TC-USER-027 should cascade delete user decks', async () => {
       // Create temp user
       await cleanupUser('cascadeuser@example.com');
       const tempUser = await request(app.getHttpServer())
@@ -428,13 +428,13 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
       expect(deletedDeck).toBeNull();
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-USER-028 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .delete('/user')
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should invalidate token after deletion', async () => {
+    it('TC-USER-029 should invalidate token after deletion', async () => {
       // Create temp user
       await cleanupUser('invalidateuser@example.com');
       const tempUser = await request(app.getHttpServer())
@@ -521,7 +521,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('/user/all (GET) - Admin Get All Users', () => {
-      it('should return all users for admin', async () => {
+      it('TC-USER-030 should return all users for admin', async () => {
         const res = await request(app.getHttpServer())
           .get('/user/all')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -531,7 +531,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         expect(res.body.data.length).toBeGreaterThan(0);
       });
 
-      it('should return users with correct structure', async () => {
+      it('TC-USER-031 should return users with correct structure', async () => {
         const res = await request(app.getHttpServer())
           .get('/user/all')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -546,7 +546,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         }
       });
 
-      it('should not return password hash', async () => {
+      it('TC-USER-032 should not return password hash', async () => {
         const res = await request(app.getHttpServer())
           .get('/user/all')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -557,14 +557,14 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         }
       });
 
-      it('should reject non-admin user', async () => {
+      it('TC-USER-033 should reject non-admin user', async () => {
         await request(app.getHttpServer())
           .get('/user/all')
           .set('Authorization', `Bearer ${targetUser.accessToken}`)
           .expect(HttpStatus.FORBIDDEN);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-USER-034 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get('/user/all')
           .expect(HttpStatus.UNAUTHORIZED);
@@ -572,7 +572,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('/user/:id (GET) - Admin Get User By ID', () => {
-      it('should return user by id for admin', async () => {
+      it('TC-USER-035 should return user by id for admin', async () => {
         const res = await request(app.getHttpServer())
           .get(`/user/${targetUser.id}`)
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -582,28 +582,28 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         expect(res.body.data.username).toBe(targetUser.username);
       });
 
-      it('should return 404 for non-existent user', async () => {
+      it('TC-USER-036 should return 404 for non-existent user', async () => {
         await request(app.getHttpServer())
           .get('/user/999999')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should return 400 for invalid user id', async () => {
+      it('TC-USER-037 should return 400 for invalid user id', async () => {
         await request(app.getHttpServer())
           .get('/user/invalid')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject non-admin user', async () => {
+      it('TC-USER-038 should reject non-admin user', async () => {
         await request(app.getHttpServer())
           .get(`/user/${targetUser.id}`)
           .set('Authorization', `Bearer ${targetUser.accessToken}`)
           .expect(HttpStatus.FORBIDDEN);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-USER-039 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/user/${targetUser.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -611,7 +611,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('/user/:id (PATCH) - Admin Update User', () => {
-      it('should update user by id for admin', async () => {
+      it('TC-USER-040 should update user by id for admin', async () => {
         const res = await request(app.getHttpServer())
           .patch(`/user/${targetUser.id}`)
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -627,7 +627,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
           .send({ username: 'targetcompr' });
       });
 
-      it('should update user role for admin', async () => {
+      it('TC-USER-041 should update user role for admin', async () => {
         const res = await request(app.getHttpServer())
           .patch(`/user/${targetUser.id}`)
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -643,7 +643,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
           .send({ role: 'USER' });
       });
 
-      it('should return 404 for non-existent user', async () => {
+      it('TC-USER-042 should return 404 for non-existent user', async () => {
         await request(app.getHttpServer())
           .patch('/user/999999')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -651,7 +651,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject non-admin user', async () => {
+      it('TC-USER-043 should reject non-admin user', async () => {
         await request(app.getHttpServer())
           .patch(`/user/${adminUser.id}`)
           .set('Authorization', `Bearer ${targetUser.accessToken}`)
@@ -659,7 +659,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
           .expect(HttpStatus.FORBIDDEN);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-USER-044 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .patch(`/user/${targetUser.id}`)
           .send({ username: 'unauthorized' })
@@ -668,7 +668,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
     });
 
     describe('/user/:id (DELETE) - Admin Delete User', () => {
-      it('should delete user by id for admin', async () => {
+      it('TC-USER-045 should delete user by id for admin', async () => {
         // Create user to delete
         await cleanupUser('admindelete@example.com');
         const tempUser = await request(app.getHttpServer())
@@ -693,27 +693,27 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         expect(deleted).toBeNull();
       });
 
-      it('should return 404 for non-existent user', async () => {
+      it('TC-USER-046 should return 404 for non-existent user', async () => {
         await request(app.getHttpServer())
           .delete('/user/999999')
           .set('Authorization', `Bearer ${adminUser.accessToken}`)
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject non-admin user', async () => {
+      it('TC-USER-047 should reject non-admin user', async () => {
         await request(app.getHttpServer())
           .delete(`/user/${adminUser.id}`)
           .set('Authorization', `Bearer ${targetUser.accessToken}`)
           .expect(HttpStatus.FORBIDDEN);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-USER-048 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .delete(`/user/${targetUser.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should cascade delete user data', async () => {
+      it('TC-USER-049 should cascade delete user data', async () => {
         // Create user with data
         await cleanupUser('cascadeadmin@example.com');
         const tempUser = await request(app.getHttpServer())
@@ -745,7 +745,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
   });
 
   describe('User Edge Cases', () => {
-    it('should handle user with unicode characters in username', async () => {
+    it('TC-USER-050 should handle user with unicode characters in username', async () => {
       // Unicode not allowed in username, should reject
       await authRequest()
         .patch('/user')
@@ -753,7 +753,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should handle rapid profile updates', async () => {
+    it('TC-USER-051 should handle rapid profile updates', async () => {
       for (let i = 0; i < 5; i++) {
         await authRequest()
           .patch('/user')
@@ -767,7 +767,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
         .send({ username: baseTestUser.username });
     });
 
-    it('should handle updating own email to current email', async () => {
+    it('TC-USER-052 should handle updating own email to current email', async () => {
       const res = await authRequest()
         .patch('/user')
         .send({ email: baseTestUser.email })
@@ -776,7 +776,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
       expect(res.body.data.email).toBe(baseTestUser.email);
     });
 
-    it('should handle updating own username to current username', async () => {
+    it('TC-USER-053 should handle updating own username to current username', async () => {
       const res = await authRequest()
         .patch('/user')
         .send({ username: baseTestUser.username })
@@ -787,7 +787,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
   });
 
   describe('Security Tests', () => {
-    it('should not expose sensitive information in error responses', async () => {
+    it('TC-USER-054 should not expose sensitive information in error responses', async () => {
       const res = await request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: 'nonexistent@example.com', password: 'wrong' })
@@ -800,14 +800,14 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
       expect(res.body.message).toBe('Invalid email or password');
     });
 
-    it('should handle SQL injection in username', async () => {
+    it('TC-USER-055 should handle SQL injection in username', async () => {
       await authRequest()
         .patch('/user')
         .send({ username: "'; DROP TABLE users; --" })
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should handle SQL injection in email', async () => {
+    it('TC-USER-056 should handle SQL injection in email', async () => {
       // Email with SQL injection syntax - should fail validation or be safely handled
       const res = await authRequest()
         .patch('/user')
@@ -818,7 +818,7 @@ describe('UC-04: View User Profile & UC-05: Update User Profile & UC-06: Delete 
       expect([200, 400, 409]).toContain(res.status);
     });
 
-    it('should handle XSS in username', async () => {
+    it('TC-USER-057 should handle XSS in username', async () => {
       await authRequest()
         .patch('/user')
         .send({ username: '<script>alert(1)</script>' })

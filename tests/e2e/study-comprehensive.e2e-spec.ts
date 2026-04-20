@@ -132,7 +132,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
 
   describe('/study/start/:id (GET) - Start Study Session Tests', () => {
     describe('Valid Cases', () => {
-      it('should return all new cards as due', async () => {
+      it('TC-STUDY-001 should return all new cards as due', async () => {
         const res = await authRequest()
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -141,7 +141,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.length).toBe(5);
       });
 
-      it('should return cards with correct structure', async () => {
+      it('TC-STUDY-002 should return cards with correct structure', async () => {
         const res = await authRequest()
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -155,7 +155,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         }
       });
 
-      it('should not return card that was just reviewed', async () => {
+      it('TC-STUDY-003 should not return card that was just reviewed', async () => {
         // Review one card
         await authRequest()
           .post('/study/review')
@@ -174,7 +174,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.length).toBe(4);
       });
 
-      it('should return empty array for deck with no due cards', async () => {
+      it('TC-STUDY-004 should return empty array for deck with no due cards', async () => {
         // Review all cards as Easy (long interval)
         for (const card of testCards) {
           await authRequest()
@@ -192,7 +192,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.length).toBe(0);
       });
 
-      it('should return empty array for deck with no cards', async () => {
+      it('TC-STUDY-005 should return empty array for deck with no cards', async () => {
         const emptyDeck = await deckService.create(testUser.id, {
           title: 'Empty Study Deck',
         });
@@ -208,19 +208,19 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
     });
 
     describe('Invalid Cases', () => {
-      it('should return 404 for non-existent deck', async () => {
+      it('TC-STUDY-006 should return 404 for non-existent deck', async () => {
         await authRequest()
           .get('/study/start/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should return 400 for invalid deck id', async () => {
+      it('TC-STUDY-007 should return 400 for invalid deck id', async () => {
         await authRequest()
           .get('/study/start/invalid')
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-STUDY-008 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -230,7 +230,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
 
   describe('/study/preview/:id (GET) - Review Preview Tests', () => {
     describe('Valid Cases', () => {
-      it('should return preview for new card', async () => {
+      it('TC-STUDY-009 should return preview for new card', async () => {
         const res = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.OK);
@@ -241,7 +241,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data).toHaveProperty('Easy');
       });
 
-      it('should return different intervals for each quality option', async () => {
+      it('TC-STUDY-010 should return different intervals for each quality option', async () => {
         const res = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.OK);
@@ -253,7 +253,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(typeof res.body.data.Easy).toBe('string');
       });
 
-      it('should return updated intervals after review', async () => {
+      it('TC-STUDY-011 should return updated intervals after review', async () => {
         // Get initial preview
         const initialRes = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
@@ -276,7 +276,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(updatedRes.body.data.Good).not.toBe(initialRes.body.data.Good);
       });
 
-      it('should return increasing intervals with more reviews', async () => {
+      it('TC-STUDY-012 should return increasing intervals with more reviews', async () => {
         // Review card multiple times
         for (let i = 0; i < 3; i++) {
           await authRequest()
@@ -297,19 +297,19 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
     });
 
     describe('Invalid Cases', () => {
-      it('should return 404 for non-existent card', async () => {
+      it('TC-STUDY-013 should return 404 for non-existent card', async () => {
         await authRequest()
           .get('/study/preview/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should return 400 for invalid card id', async () => {
+      it('TC-STUDY-014 should return 400 for invalid card id', async () => {
         await authRequest()
           .get('/study/preview/invalid')
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-STUDY-015 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -319,7 +319,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
 
   describe('/study/review (POST) - Submit Review Tests', () => {
     describe('Valid Cases', () => {
-      it('should submit review with Again quality', async () => {
+      it('TC-STUDY-016 should submit review with Again quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -331,7 +331,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data).toBeDefined();
       });
 
-      it('should submit review with Hard quality', async () => {
+      it('TC-STUDY-017 should submit review with Hard quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -343,7 +343,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data).toBeDefined();
       });
 
-      it('should submit review with Good quality', async () => {
+      it('TC-STUDY-018 should submit review with Good quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -355,7 +355,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data).toBeDefined();
       });
 
-      it('should submit review with Easy quality', async () => {
+      it('TC-STUDY-019 should submit review with Easy quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -367,7 +367,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data).toBeDefined();
       });
 
-      it('should submit multiple reviews at once', async () => {
+      it('TC-STUDY-020 should submit multiple reviews at once', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -383,7 +383,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.length).toBe(3);
       });
 
-      it('should update card status after review', async () => {
+      it('TC-STUDY-021 should update card status after review', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -396,7 +396,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(card?.status).not.toBe('new');
       });
 
-      it('should update card nextReviewDate after review', async () => {
+      it('TC-STUDY-022 should update card nextReviewDate after review', async () => {
         const before = testCards[0].nextReviewDate;
 
         await authRequest()
@@ -411,7 +411,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(card?.nextReviewDate).not.toBe(before);
       });
 
-      it('should create review history record', async () => {
+      it('TC-STUDY-023 should create review history record', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -426,7 +426,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(reviews.length).toBeGreaterThan(0);
       });
 
-      it('should accept reviewedAt in the past', async () => {
+      it('TC-STUDY-024 should accept reviewedAt in the past', async () => {
         const pastDate = new Date();
         pastDate.setDate(pastDate.getDate() - 1);
 
@@ -439,7 +439,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.CREATED);
       });
 
-      it('should handle review of same card multiple times', async () => {
+      it('TC-STUDY-025 should handle review of same card multiple times', async () => {
         for (let i = 0; i < 5; i++) {
           await authRequest()
             .post('/study/review')
@@ -456,7 +456,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(reviews.length).toBe(5);
       });
 
-      it('should decrease ease factor on Again review', async () => {
+      it('TC-STUDY-026 should decrease ease factor on Again review', async () => {
         // First review to establish baseline
         await authRequest()
           .post('/study/review')
@@ -480,7 +480,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(after?.easeFactor).toBeLessThanOrEqual(beforeEase || 2.5);
       });
 
-      it('should increase ease factor on Easy review', async () => {
+      it('TC-STUDY-027 should increase ease factor on Easy review', async () => {
         // First do a few reviews
         for (let i = 0; i < 3; i++) {
           await authRequest()
@@ -509,7 +509,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
     });
 
     describe('Invalid Cases', () => {
-      it('should reject review without CardReviews', async () => {
+      it('TC-STUDY-028 should reject review without CardReviews', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -518,7 +518,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should accept review without reviewedAt (uses current time)', async () => {
+      it('TC-STUDY-029 should accept review without reviewedAt (uses current time)', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -527,7 +527,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.CREATED);
       });
 
-      it('should reject review with empty CardReviews array', async () => {
+      it('TC-STUDY-030 should reject review with empty CardReviews array', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -537,7 +537,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review with invalid quality', async () => {
+      it('TC-STUDY-031 should reject review with invalid quality', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -547,7 +547,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review with non-existent card', async () => {
+      it('TC-STUDY-032 should reject review with non-existent card', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -557,7 +557,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject review without cardId', async () => {
+      it('TC-STUDY-033 should reject review without cardId', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -567,7 +567,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review without quality', async () => {
+      it('TC-STUDY-034 should reject review without quality', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -577,7 +577,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review with invalid reviewedAt format', async () => {
+      it('TC-STUDY-035 should reject review with invalid reviewedAt format', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -587,7 +587,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-STUDY-036 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .post('/study/review')
           .send({
@@ -601,7 +601,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
 
   describe('/study/consecutive-days/:id (GET) - Consecutive Days Tests', () => {
     describe('Valid Cases', () => {
-      it('should return 0 consecutive days for deck with no reviews', async () => {
+      it('TC-STUDY-037 should return 0 consecutive days for deck with no reviews', async () => {
         const res = await authRequest()
           .get(`/study/consecutive-days/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -611,7 +611,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.lastStudyDate).toBeNull();
       });
 
-      it('should return 1 consecutive day after studying today', async () => {
+      it('TC-STUDY-038 should return 1 consecutive day after studying today', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -628,7 +628,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.streakStartDate).toBeDefined();
       });
 
-      it('should return correct structure', async () => {
+      it('TC-STUDY-039 should return correct structure', async () => {
         const res = await authRequest()
           .get(`/study/consecutive-days/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -640,19 +640,19 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
     });
 
     describe('Invalid Cases', () => {
-      it('should return 404 for non-existent deck', async () => {
+      it('TC-STUDY-040 should return 404 for non-existent deck', async () => {
         await authRequest()
           .get('/study/consecutive-days/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should return 400 for invalid deck id', async () => {
+      it('TC-STUDY-041 should return 400 for invalid deck id', async () => {
         await authRequest()
           .get('/study/consecutive-days/invalid')
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-STUDY-042 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/consecutive-days/${testDeck.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -662,7 +662,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
 
   describe('/study/cram/:deckId (GET) - Cram Mode Tests', () => {
     describe('Valid Cases', () => {
-      it('should start cram session and return all cards', async () => {
+      it('TC-STUDY-043 should start cram session and return all cards', async () => {
         const res = await authRequest()
           .get(`/study/cram/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -672,7 +672,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.total).toBe(5);
       });
 
-      it('should accept limit parameter', async () => {
+      it('TC-STUDY-044 should accept limit parameter', async () => {
         const res = await authRequest()
           .get(`/study/cram/${testDeck.id}?limit=2`)
           .expect(HttpStatus.OK);
@@ -680,7 +680,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.data.length).toBe(2);
       });
 
-      it('should return cards even if already reviewed', async () => {
+      it('TC-STUDY-045 should return cards even if already reviewed', async () => {
         // Review all cards
         for (const card of testCards) {
           await authRequest()
@@ -699,7 +699,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data.data.length).toBeGreaterThan(0);
       });
 
-      it('should return empty for empty deck', async () => {
+      it('TC-STUDY-046 should return empty for empty deck', async () => {
         const emptyDeck = await deckService.create(testUser.id, {
           title: 'Empty Cram Deck',
         });
@@ -714,7 +714,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         await deckService.remove(emptyDeck.id);
       });
 
-      it('should have correct message', async () => {
+      it('TC-STUDY-047 should have correct message', async () => {
         const res = await authRequest()
           .get(`/study/cram/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -724,13 +724,13 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
     });
 
     describe('Invalid Cases', () => {
-      it('should return 404 for non-existent deck', async () => {
+      it('TC-STUDY-048 should return 404 for non-existent deck', async () => {
         await authRequest()
           .get('/study/cram/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-STUDY-049 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/cram/${testDeck.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -740,7 +740,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
 
   describe('/study/cram/review (POST) - Cram Review Tests', () => {
     describe('Valid Cases', () => {
-      it('should submit cram review', async () => {
+      it('TC-STUDY-050 should submit cram review', async () => {
         const res = await authRequest()
           .post('/study/cram/review')
           .send({
@@ -752,7 +752,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(res.body.data).toBeDefined();
       });
 
-      it('should not affect card scheduling', async () => {
+      it('TC-STUDY-051 should not affect card scheduling', async () => {
         const before = await cardService.findOne(testCards[0].id);
         const beforeStatus = before?.status;
 
@@ -768,7 +768,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
         expect(after?.status).toBe(beforeStatus);
       });
 
-      it('should accept all quality options', async () => {
+      it('TC-STUDY-052 should accept all quality options', async () => {
         const qualities = ['Again', 'Hard', 'Good', 'Easy'];
         for (let i = 0; i < qualities.length; i++) {
           await authRequest()
@@ -783,7 +783,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
     });
 
     describe('Invalid Cases', () => {
-      it('should reject cram review with invalid quality', async () => {
+      it('TC-STUDY-053 should reject cram review with invalid quality', async () => {
         await authRequest()
           .post('/study/cram/review')
           .send({
@@ -793,7 +793,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-STUDY-054 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .post('/study/cram/review')
           .send({
@@ -806,7 +806,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
   });
 
   describe('Study Flow Integration Tests', () => {
-    it('should complete full study flow: start -> preview -> review -> verify', async () => {
+    it('TC-STUDY-055 should complete full study flow: start -> preview -> review -> verify', async () => {
       // 1. Start study session
       const startRes = await authRequest()
         .get(`/study/start/${testDeck.id}`)
@@ -840,7 +840,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
       expect(remainingIds).not.toContain(cardToReview.id);
     });
 
-    it('should handle review session with all qualities', async () => {
+    it('TC-STUDY-056 should handle review session with all qualities', async () => {
       const qualities: ReviewQuality[] = ['Again', 'Hard', 'Good', 'Easy'];
 
       for (let i = 0; i < 4; i++) {
@@ -863,7 +863,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
       expect(reviews.length).toBe(4);
     });
 
-    it('should correctly calculate consecutive days after multiple reviews', async () => {
+    it('TC-STUDY-057 should correctly calculate consecutive days after multiple reviews', async () => {
       // Review cards today
       for (const card of testCards) {
         await authRequest()
@@ -883,7 +883,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
   });
 
   describe('Edge Cases and Error Handling', () => {
-    it('should handle concurrent review submissions', async () => {
+    it('TC-STUDY-058 should handle concurrent review submissions', async () => {
       const promises = testCards.map((card) =>
         authRequest()
           .post('/study/review')
@@ -899,7 +899,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
       expect(successCount).toBe(5);
     });
 
-    it('should handle rapid consecutive reviews of same card', async () => {
+    it('TC-STUDY-059 should handle rapid consecutive reviews of same card', async () => {
       for (let i = 0; i < 3; i++) {
         await authRequest()
           .post('/study/review')
@@ -917,7 +917,7 @@ describe('UC-20: Start Study Session & UC-21: Record Review Outcome & UC-22: Ses
       expect(reviews.length).toBe(3);
     });
 
-    it('should maintain data integrity after failed review', async () => {
+    it('TC-STUDY-060 should maintain data integrity after failed review', async () => {
       const before = await cardService.findOne(testCards[0].id);
 
       // Submit invalid review
