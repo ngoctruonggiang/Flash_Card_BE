@@ -40,8 +40,8 @@ describe('UserService  Tests', () => {
     jest.clearAllMocks();
   });
 
-  describe('create', () => {
-    it('should create a user with all required fields', async () => {
+  describe('UC-01: Register (Create)', () => {
+    it('TC-REGISTER-101: This test case aims to verify creating a user with all required fields', async () => {
       const userData = {
         username: 'testuser',
         email: 'test@example.com',
@@ -58,7 +58,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should create user with minimum required fields', async () => {
+    it('TC-REGISTER-102: This test case aims to verify creating user with minimum required fields', async () => {
       const userData = {
         username: 'abc',
         email: 'a@b.co',
@@ -72,7 +72,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeDefined();
     });
 
-    it('should handle very long username', async () => {
+    it('TC-REGISTER-103: This test case aims to verify handling very long username', async () => {
       const userData = {
         username: 'a'.repeat(255),
         email: 'test@example.com',
@@ -86,7 +86,7 @@ describe('UserService  Tests', () => {
       expect(result.username).toBe('a'.repeat(255));
     });
 
-    it('should handle very long email', async () => {
+    it('TC-REGISTER-104: This test case aims to verify handling very long email', async () => {
       const userData = {
         username: 'testuser',
         email: 'a'.repeat(100) + '@example.com',
@@ -100,7 +100,7 @@ describe('UserService  Tests', () => {
       expect(result.email).toBe('a'.repeat(100) + '@example.com');
     });
 
-    it('should handle very long password hash', async () => {
+    it('TC-REGISTER-105: This test case aims to verify handling very long password hash', async () => {
       const userData = {
         username: 'testuser',
         email: 'test@example.com',
@@ -114,7 +114,7 @@ describe('UserService  Tests', () => {
       expect(result.passwordHash).toBe('hash'.repeat(100));
     });
 
-    it('should handle lastLoginAt as specific date', async () => {
+    it('TC-REGISTER-106: This test case aims to verify handling lastLoginAt as specific date', async () => {
       const specificDate = new Date('2025-01-01T00:00:00.000Z');
       const userData = {
         username: 'testuser',
@@ -129,7 +129,7 @@ describe('UserService  Tests', () => {
       expect(result.lastLoginAt).toEqual(specificDate);
     });
 
-    it('should handle database error on create', async () => {
+    it('TC-REGISTER-107: This test case aims to verify handling database error on create', async () => {
       const userData = {
         username: 'testuser',
         email: 'test@example.com',
@@ -143,7 +143,7 @@ describe('UserService  Tests', () => {
       await expect(provider.create(userData)).rejects.toThrow('Database error');
     });
 
-    it('should handle unique constraint violation', async () => {
+    it('TC-REGISTER-108: This test case aims to verify handling unique constraint violation', async () => {
       const userData = {
         username: 'existinguser',
         email: 'test@example.com',
@@ -160,8 +160,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('getUserById', () => {
-    it('should return UserDto for existing user', async () => {
+  describe('UC-04: View User Profile (Get By ID)', () => {
+    it('TC-VIEWUSERPROFILE-001: This test case aims to verify returning UserDto for existing user', async () => {
       const mockUser: User = {
         id: 1,
         username: 'testuser',
@@ -179,7 +179,7 @@ describe('UserService  Tests', () => {
       expect(result).toEqual(new UserDto(mockUser));
     });
 
-    it('should throw NotFoundException for non-existent user', async () => {
+    it('TC-VIEWUSERPROFILE-002: This test case aims to verify throwing NotFoundException for non-existent user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(provider.getUserById(999)).rejects.toThrow(
@@ -187,7 +187,7 @@ describe('UserService  Tests', () => {
       );
     });
 
-    it('should throw NotFoundException for id = 0', async () => {
+    it('TC-VIEWUSERPROFILE-003: This test case aims to verify throwing NotFoundException for id = 0', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(provider.getUserById(0)).rejects.toThrow(
@@ -195,7 +195,7 @@ describe('UserService  Tests', () => {
       );
     });
 
-    it('should throw NotFoundException for negative id', async () => {
+    it('TC-VIEWUSERPROFILE-004: This test case aims to verify throwing NotFoundException for negative id', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(provider.getUserById(-1)).rejects.toThrow(
@@ -203,7 +203,7 @@ describe('UserService  Tests', () => {
       );
     });
 
-    it('should throw NotFoundException for very large id', async () => {
+    it('TC-VIEWUSERPROFILE-005: This test case aims to verify throwing NotFoundException for very large id', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(
@@ -212,8 +212,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('getUserByUsername', () => {
-    it('should return UserDto for existing username', async () => {
+  describe('UC-04: View User Profile (Get By Username)', () => {
+    it('TC-VIEWUSERPROFILE-006: This test case aims to verify returning UserDto for existing username', async () => {
       const mockUser: User = {
         id: 1,
         username: 'testuser',
@@ -231,7 +231,7 @@ describe('UserService  Tests', () => {
       expect(result).toEqual(new UserDto(mockUser));
     });
 
-    it('should return null for non-existent username', async () => {
+    it('TC-VIEWUSERPROFILE-007: This test case aims to verify returning null for non-existent username', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.getUserByUsername('nonexistent');
@@ -239,7 +239,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle empty string username', async () => {
+    it('TC-VIEWUSERPROFILE-008: This test case aims to verify handling empty string username', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.getUserByUsername('');
@@ -247,7 +247,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle username with special characters', async () => {
+    it('TC-VIEWUSERPROFILE-009: This test case aims to verify handling username with special characters', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await provider.getUserByUsername('user_name_123');
@@ -257,7 +257,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should handle very long username', async () => {
+    it('TC-VIEWUSERPROFILE-010: This test case aims to verify handling very long username', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.getUserByUsername('a'.repeat(255));
@@ -266,8 +266,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('getUserByEmail', () => {
-    it('should return UserDto for existing email', async () => {
+  describe('UC-04: View User Profile (Get By Email)', () => {
+    it('TC-VIEWUSERPROFILE-011: This test case aims to verify returning UserDto for existing email', async () => {
       const mockUser: User = {
         id: 1,
         username: 'testuser',
@@ -285,7 +285,7 @@ describe('UserService  Tests', () => {
       expect(result).toEqual(new UserDto(mockUser));
     });
 
-    it('should return null for non-existent email', async () => {
+    it('TC-VIEWUSERPROFILE-012: This test case aims to verify returning null for non-existent email', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.getUserByEmail('nonexistent@example.com');
@@ -293,7 +293,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle empty string email', async () => {
+    it('TC-VIEWUSERPROFILE-013: This test case aims to verify handling empty string email', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.getUserByEmail('');
@@ -301,7 +301,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle email with subdomain', async () => {
+    it('TC-VIEWUSERPROFILE-014: This test case aims to verify handling email with subdomain', async () => {
       const mockUser: User = {
         id: 1,
         username: 'testuser',
@@ -320,8 +320,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('getAllUsers', () => {
-    it('should return array of UserDtos', async () => {
+  describe('UC-04: View User Profile (Get All Users)', () => {
+    it('TC-VIEWUSERPROFILE-015: This test case aims to verify returning array of UserDtos', async () => {
       const mockUsers = [
         {
           id: 1,
@@ -355,7 +355,7 @@ describe('UserService  Tests', () => {
       expect(result[1]).toBeInstanceOf(UserDto);
     });
 
-    it('should return empty array when no users exist', async () => {
+    it('TC-VIEWUSERPROFILE-016: This test case aims to verify returning empty array when no users exist', async () => {
       mockPrismaService.user.findMany.mockResolvedValue([]);
 
       const result = await provider.getAllUsers();
@@ -363,7 +363,7 @@ describe('UserService  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should handle single user', async () => {
+    it('TC-VIEWUSERPROFILE-017: This test case aims to verify handling single user', async () => {
       const mockUsers = [
         {
           id: 1,
@@ -384,7 +384,7 @@ describe('UserService  Tests', () => {
       expect(result).toHaveLength(1);
     });
 
-    it('should handle many users', async () => {
+    it('TC-VIEWUSERPROFILE-018: This test case aims to verify handling many users', async () => {
       const mockUsers = Array.from({ length: 100 }, (_, i) => ({
         id: i + 1,
         username: `user${i + 1}`,
@@ -404,8 +404,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('findAll', () => {
-    it('should return all users with decks', async () => {
+  describe('UC-04: View User Profile (Find All)', () => {
+    it('TC-VIEWUSERPROFILE-019: This test case aims to verify returning all users with decks', async () => {
       const mockUsers = [
         {
           id: 1,
@@ -423,7 +423,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should return empty array when no users', async () => {
+    it('TC-VIEWUSERPROFILE-020: This test case aims to verify returning empty array when no users', async () => {
       mockPrismaService.user.findMany.mockResolvedValue([]);
 
       const result = await provider.findAll();
@@ -432,8 +432,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('findByEmail', () => {
-    it('should find user by email', async () => {
+  describe('UC-04: View User Profile (Find By Email)', () => {
+    it('TC-VIEWUSERPROFILE-021: This test case aims to verify finding user by email', async () => {
       const mockUser = {
         id: 1,
         email: 'test@example.com',
@@ -448,7 +448,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should return null for non-existent email', async () => {
+    it('TC-VIEWUSERPROFILE-022: This test case aims to verify returning null for non-existent email', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.findByEmail('nonexistent@example.com');
@@ -456,7 +456,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should be case-sensitive for email', async () => {
+    it('TC-VIEWUSERPROFILE-023: This test case aims to verify case-sensitivity for email', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await provider.findByEmail('TEST@EXAMPLE.COM');
@@ -467,8 +467,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('findByUsername', () => {
-    it('should find user by username', async () => {
+  describe('UC-04: View User Profile (Find By Username)', () => {
+    it('TC-VIEWUSERPROFILE-024: This test case aims to verify finding user by username', async () => {
       const mockUser = {
         id: 1,
         username: 'testuser',
@@ -483,7 +483,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should return null for non-existent username', async () => {
+    it('TC-VIEWUSERPROFILE-025: This test case aims to verify returning null for non-existent username', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.findByUsername('nonexistent');
@@ -492,8 +492,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('findOne', () => {
-    it('should find user by id with decks and cards', async () => {
+  describe('UC-04: View User Profile (Find One)', () => {
+    it('TC-VIEWUSERPROFILE-026: This test case aims to verify finding user by id with decks and cards', async () => {
       const mockUser = {
         id: 1,
         username: 'testuser',
@@ -522,7 +522,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should return null for non-existent id', async () => {
+    it('TC-VIEWUSERPROFILE-027: This test case aims to verify returning null for non-existent id', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await provider.findOne(999);
@@ -530,7 +530,7 @@ describe('UserService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle user with no decks', async () => {
+    it('TC-VIEWUSERPROFILE-028: This test case aims to verify handling user with no decks', async () => {
       const mockUser = {
         id: 1,
         username: 'testuser',
@@ -543,7 +543,7 @@ describe('UserService  Tests', () => {
       expect((result as unknown as typeof mockUser)?.decks).toEqual([]);
     });
 
-    it('should handle user with multiple decks and cards', async () => {
+    it('TC-VIEWUSERPROFILE-029: This test case aims to verify handling user with multiple decks and cards', async () => {
       const mockUser = {
         id: 1,
         username: 'testuser',
@@ -796,8 +796,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('markEmailAsConfirmed', () => {
-    it('should mark email as confirmed', async () => {
+  describe('UC-01: Register (Mark Email Confirmed)', () => {
+    it('TC-REGISTER-111: This test case aims to verify marking email as confirmed', async () => {
       mockPrismaService.user.update.mockResolvedValue({
         id: 1,
         isEmailConfirmed: true,
@@ -812,7 +812,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should handle already confirmed email', async () => {
+    it('TC-REGISTER-112: This test case aims to verify handling already confirmed email', async () => {
       mockPrismaService.user.update.mockResolvedValue({
         id: 1,
         isEmailConfirmed: true,
@@ -823,7 +823,7 @@ describe('UserService  Tests', () => {
       expect(result.isEmailConfirmed).toBe(true);
     });
 
-    it('should throw error for non-existent user', async () => {
+    it('TC-REGISTER-113: This test case aims to verify throwing error for non-existent user', async () => {
       mockPrismaService.user.update.mockRejectedValue(
         new Error('Record not found'),
       );
@@ -875,8 +875,8 @@ describe('UserService  Tests', () => {
     });
   });
 
-  describe('removeByUsername', () => {
-    it('should delete user by username', async () => {
+  describe('UC-06: Delete User Account (Remove By Username)', () => {
+    it('TC-DELETEACCOUNT-007: This test case aims to verify deleting user by username', async () => {
       const mockDeletedUser = {
         id: 1,
         username: 'testuser',
@@ -891,7 +891,7 @@ describe('UserService  Tests', () => {
       });
     });
 
-    it('should throw error for non-existent username', async () => {
+    it('TC-DELETEACCOUNT-008: This test case aims to verify throwing error for non-existent username', async () => {
       mockPrismaService.user.delete.mockRejectedValue(
         new Error('Record not found'),
       );
@@ -901,7 +901,7 @@ describe('UserService  Tests', () => {
       );
     });
 
-    it('should handle username with special characters', async () => {
+    it('TC-DELETEACCOUNT-009: This test case aims to verify handling username with special characters', async () => {
       const mockDeletedUser = { id: 1, username: 'user_123' };
       mockPrismaService.user.delete.mockResolvedValue(mockDeletedUser);
 
