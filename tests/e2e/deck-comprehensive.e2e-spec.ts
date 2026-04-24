@@ -15,7 +15,7 @@ import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
 
-describe('Deck Controller Comprehensive E2E Tests', () => {
+describe('UC-07: View Deck Library & UC-08: Create Deck & UC-09: Edit Deck & UC-10: Delete Deck & UC-11: View Deck Statistics & UC-12: View Advanced Deck Statistics - Deck E2E Tests', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let deckService: DeckService;
@@ -105,7 +105,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
 
   describe('/deck (POST) - Create Deck Tests', () => {
     describe('Valid Creation Cases', () => {
-      it('should create deck with title only', async () => {
+      it('TC-DECK-001 should create deck with title only', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({ title: 'Title Only Deck' })
@@ -119,7 +119,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with title and description', async () => {
+      it('TC-DECK-002 should create deck with title and description', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -134,7 +134,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with iconName', async () => {
+      it('TC-DECK-003 should create deck with iconName', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -148,7 +148,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with valid colorCode (6 chars)', async () => {
+      it('TC-DECK-004 should create deck with valid colorCode (6 chars)', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -162,7 +162,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with valid colorCode (3 chars)', async () => {
+      it('TC-DECK-005 should create deck with valid colorCode (3 chars)', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -176,7 +176,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with VN_EN language mode', async () => {
+      it('TC-DECK-006 should create deck with VN_EN language mode', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -190,7 +190,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with EN_VN language mode', async () => {
+      it('TC-DECK-007 should create deck with EN_VN language mode', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -204,7 +204,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with BIDIRECTIONAL language mode', async () => {
+      it('TC-DECK-008 should create deck with BIDIRECTIONAL language mode', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -218,7 +218,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with all fields', async () => {
+      it('TC-DECK-009 should create deck with all fields', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({
@@ -239,7 +239,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with very long title', async () => {
+      it('TC-DECK-010 should create deck with very long title', async () => {
         const longTitle = 'A'.repeat(200);
         const res = await authRequest()
           .post('/deck')
@@ -251,7 +251,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create deck with special characters in title', async () => {
+      it('TC-DECK-011 should create deck with special characters in title', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({ title: 'Deck with émojis 🎉 and спецсимволы' })
@@ -262,8 +262,8 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         await deckService.remove(res.body.data.id);
       });
 
-      it('should create multiple decks for same user', async () => {
-        const decks = [];
+      it('TC-DECK-012 should create multiple decks for same user', async () => {
+        const decks: Deck[] = [];
         for (let i = 0; i < 5; i++) {
           const res = await authRequest()
             .post('/deck')
@@ -279,7 +279,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         }
       });
 
-      it('should default to VN_EN language mode if not specified', async () => {
+      it('TC-DECK-013 should default to VN_EN language mode if not specified', async () => {
         const res = await authRequest()
           .post('/deck')
           .send({ title: 'Default Language Mode' })
@@ -292,70 +292,70 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
     });
 
     describe('Invalid Creation Cases', () => {
-      it('should reject deck without title', async () => {
+      it('TC-DECK-014 should reject deck without title', async () => {
         await authRequest()
           .post('/deck')
           .send({ description: 'No title' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with empty title', async () => {
+      it('TC-DECK-015 should reject deck with empty title', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: '' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with null title', async () => {
+      it('TC-DECK-016 should reject deck with null title', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: null })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with invalid colorCode format', async () => {
+      it('TC-DECK-017 should reject deck with invalid colorCode format', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: 'Invalid Color', colorCode: 'not-a-color' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with colorCode without hash', async () => {
+      it('TC-DECK-018 should reject deck with colorCode without hash', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: 'No Hash', colorCode: 'FF5733' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with colorCode with invalid chars', async () => {
+      it('TC-DECK-019 should reject deck with colorCode with invalid chars', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: 'Invalid Chars', colorCode: '#GGGGGG' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with invalid language mode', async () => {
+      it('TC-DECK-020 should reject deck with invalid language mode', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: 'Invalid Mode', languageMode: 'INVALID' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck with extra non-whitelisted fields', async () => {
+      it('TC-DECK-021 should reject deck with extra non-whitelisted fields', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: 'Extra Fields', extraField: 'not allowed' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject deck creation without authentication', async () => {
+      it('TC-DECK-022 should reject deck creation without authentication', async () => {
         await request(app.getHttpServer())
           .post('/deck')
           .send({ title: 'No Auth' })
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject deck with whitespace-only title', async () => {
+      it('TC-DECK-023 should reject deck with whitespace-only title', async () => {
         await authRequest()
           .post('/deck')
           .send({ title: '   ' })
@@ -365,14 +365,14 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck (GET) - Get All Decks Tests', () => {
-    it('should return all decks for current user', async () => {
+    it('TC-DECK-024 should return all decks for current user', async () => {
       const res = await authRequest().get('/deck').expect(HttpStatus.OK);
 
       expect(res.body.data).toBeInstanceOf(Array);
       expect(res.body.data.length).toBeGreaterThan(0);
     });
 
-    it('should return deck with correct structure', async () => {
+    it('TC-DECK-025 should return deck with correct structure', async () => {
       const res = await authRequest().get('/deck').expect(HttpStatus.OK);
 
       const deck = res.body.data.find((d: Deck) => d.id === testDeck?.id);
@@ -384,7 +384,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(deck).toHaveProperty('updatedAt');
     });
 
-    it('should not return decks from other users', async () => {
+    it('TC-DECK-026 should not return decks from other users', async () => {
       // Create another user
       const otherUserDto: SignUpDto = {
         username: 'otherdeckuser',
@@ -422,7 +422,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       await userService.remove(otherUserId);
     });
 
-    it('should return empty array for user with no decks', async () => {
+    it('TC-DECK-027 should return empty array for user with no decks', async () => {
       // Create new user with no decks
       const newUserDto: SignUpDto = {
         username: 'nodeckuser',
@@ -453,7 +453,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       await userService.remove(newUserRes.body.data.id);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-028 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get('/deck')
         .expect(HttpStatus.UNAUTHORIZED);
@@ -461,7 +461,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck/:id (GET) - Get Single Deck Tests', () => {
-    it('should return deck by id', async () => {
+    it('TC-DECK-029 should return deck by id', async () => {
       const res = await authRequest()
         .get(`/deck/${testDeck?.id}`)
         .expect(HttpStatus.OK);
@@ -470,7 +470,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.title).toBe(testDeck?.title);
     });
 
-    it('should return deck with cards', async () => {
+    it('TC-DECK-030 should return deck with cards', async () => {
       // Add cards to test deck
       const card = await cardService.create({
         deckId: testDeck!.id,
@@ -488,23 +488,23 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       await cardService.remove(card.id);
     });
 
-    it('should return 404 for non-existent deck', async () => {
+    it('TC-DECK-031 should return 404 for non-existent deck', async () => {
       await authRequest().get('/deck/999999').expect(HttpStatus.NOT_FOUND);
     });
 
-    it('should return 400 for invalid deck id', async () => {
+    it('TC-DECK-032 should return 400 for invalid deck id', async () => {
       await authRequest().get('/deck/invalid').expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should return 400 for negative deck id', async () => {
+    it('TC-DECK-033 should return 400 for negative deck id', async () => {
       await authRequest().get('/deck/-1').expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should return 400 for decimal deck id', async () => {
+    it('TC-DECK-034 should return 400 for decimal deck id', async () => {
       await authRequest().get('/deck/1.5').expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-035 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/deck/${testDeck?.id}`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -513,7 +513,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
 
   describe('/deck/:id (PATCH) - Update Deck Tests', () => {
     describe('Valid Updates', () => {
-      it('should update deck title', async () => {
+      it('TC-DECK-036 should update deck title', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ title: 'Updated Title' })
@@ -523,7 +523,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.description).toBe(testDeck?.description);
       });
 
-      it('should update deck description', async () => {
+      it('TC-DECK-037 should update deck description', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ description: 'Updated Description' })
@@ -532,7 +532,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.description).toBe('Updated Description');
       });
 
-      it('should update deck iconName', async () => {
+      it('TC-DECK-038 should update deck iconName', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ iconName: 'heart' })
@@ -541,7 +541,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.iconName).toBe('heart');
       });
 
-      it('should update deck colorCode', async () => {
+      it('TC-DECK-039 should update deck colorCode', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ colorCode: '#00FF00' })
@@ -550,7 +550,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.colorCode).toBe('#00FF00');
       });
 
-      it('should update deck languageMode', async () => {
+      it('TC-DECK-040 should update deck languageMode', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ languageMode: 'BIDIRECTIONAL' })
@@ -559,7 +559,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.languageMode).toBe('BIDIRECTIONAL');
       });
 
-      it('should update multiple fields at once', async () => {
+      it('TC-DECK-041 should update multiple fields at once', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({
@@ -574,7 +574,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.iconName).toBe('star');
       });
 
-      it('should clear description by setting to empty string', async () => {
+      it('TC-DECK-042 should clear description by setting to empty string', async () => {
         const res = await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ description: '' })
@@ -583,7 +583,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
         expect(res.body.data.description).toBe('');
       });
 
-      it('should update updatedAt timestamp', async () => {
+      it('TC-DECK-043 should update updatedAt timestamp', async () => {
         const before = new Date(testDeck!.updatedAt);
 
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -599,42 +599,42 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
     });
 
     describe('Invalid Updates', () => {
-      it('should reject update with empty title', async () => {
+      it('TC-DECK-044 should reject update with empty title', async () => {
         await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ title: '' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject update with invalid colorCode', async () => {
+      it('TC-DECK-045 should reject update with invalid colorCode', async () => {
         await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ colorCode: 'invalid' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject update with invalid languageMode', async () => {
+      it('TC-DECK-046 should reject update with invalid languageMode', async () => {
         await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ languageMode: 'INVALID' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should return 404 for non-existent deck', async () => {
+      it('TC-DECK-047 should return 404 for non-existent deck', async () => {
         await authRequest()
           .patch('/deck/999999')
           .send({ title: 'Update' })
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-DECK-048 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .patch(`/deck/${testDeck?.id}`)
           .send({ title: 'No Auth Update' })
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject with extra non-whitelisted fields', async () => {
+      it('TC-DECK-049 should reject with extra non-whitelisted fields', async () => {
         await authRequest()
           .patch(`/deck/${testDeck?.id}`)
           .send({ title: 'Valid', extraField: 'invalid' })
@@ -644,7 +644,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck/:id (DELETE) - Delete Deck Tests', () => {
-    it('should delete deck', async () => {
+    it('TC-DECK-050 should delete deck', async () => {
       const res = await authRequest()
         .delete(`/deck/${testDeck?.id}`)
         .expect(HttpStatus.OK);
@@ -657,7 +657,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       testDeck = null;
     });
 
-    it('should cascade delete cards when deck is deleted', async () => {
+    it('TC-DECK-051 should cascade delete cards when deck is deleted', async () => {
       const tempDeck = await deckService.create(testUser.id, {
         title: 'Cascade Delete Test',
       });
@@ -674,7 +674,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(deletedCard).toBeNull();
     });
 
-    it('should cascade delete reviews when deck is deleted', async () => {
+    it('TC-DECK-052 should cascade delete reviews when deck is deleted', async () => {
       const tempDeck = await deckService.create(testUser.id, {
         title: 'Review Cascade Test',
       });
@@ -709,17 +709,17 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(reviews).toHaveLength(0);
     });
 
-    it('should return 404 for non-existent deck', async () => {
+    it('TC-DECK-053 should return 404 for non-existent deck', async () => {
       await authRequest().delete('/deck/999999').expect(HttpStatus.NOT_FOUND);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-054 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .delete(`/deck/${testDeck?.id}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should reject deleting already deleted deck', async () => {
+    it('TC-DECK-055 should reject deleting already deleted deck', async () => {
       const tempDeck = await deckService.create(testUser.id, {
         title: 'Double Delete Test',
       });
@@ -733,7 +733,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck/:id/reviewed-count-day (GET) - Reviewed Count Tests', () => {
-    it('should return 0 for deck with no reviews', async () => {
+    it('TC-DECK-056 should return 0 for deck with no reviews', async () => {
       const res = await authRequest()
         .get(`/deck/${testDeck?.id}/reviewed-count-day`)
         .expect(HttpStatus.OK);
@@ -741,7 +741,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.reviewedCount).toBe(0);
     });
 
-    it('should return count for deck with reviews today', async () => {
+    it('TC-DECK-057 should return count for deck with reviews today', async () => {
       // Create card and review
       const card = await prismaService.card.create({
         data: {
@@ -772,7 +772,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.reviewedCount).toBeGreaterThan(0);
     });
 
-    it('should accept date parameter', async () => {
+    it('TC-DECK-058 should accept date parameter', async () => {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const dateStr = yesterday.toISOString().split('T')[0];
@@ -784,13 +784,13 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data).toHaveProperty('reviewedCount');
     });
 
-    it('should return 404 for non-existent deck', async () => {
+    it('TC-DECK-059 should return 404 for non-existent deck', async () => {
       await authRequest()
         .get('/deck/999999/reviewed-count-day')
         .expect(HttpStatus.NOT_FOUND);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-060 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/deck/${testDeck?.id}/reviewed-count-day`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -798,7 +798,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck/:id/statistics (GET) - Statistics Tests', () => {
-    it('should return statistics for deck', async () => {
+    it('TC-DECK-061 should return statistics for deck', async () => {
       const res = await authRequest()
         .get(`/deck/${testDeck?.id}/statistics`)
         .expect(HttpStatus.OK);
@@ -812,7 +812,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data).toHaveProperty('easyCount');
     });
 
-    it('should return 0 for all stats on new deck', async () => {
+    it('TC-DECK-062 should return 0 for all stats on new deck', async () => {
       const res = await authRequest()
         .get(`/deck/${testDeck?.id}/statistics`)
         .expect(HttpStatus.OK);
@@ -825,19 +825,19 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.easyCount).toBe(0);
     });
 
-    it('should return 404 for non-existent deck', async () => {
+    it('TC-DECK-063 should return 404 for non-existent deck', async () => {
       await authRequest()
         .get('/deck/999999/statistics')
         .expect(HttpStatus.NOT_FOUND);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-064 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/deck/${testDeck?.id}/statistics`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('should calculate correct statistics after reviews', async () => {
+    it('TC-DECK-065 should calculate correct statistics after reviews', async () => {
       const card = await prismaService.card.create({
         data: {
           deckId: testDeck!.id,
@@ -877,7 +877,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck/:id/last-studied (GET) - Last Studied Tests', () => {
-    it('should return null for never studied deck', async () => {
+    it('TC-DECK-066 should return null for never studied deck', async () => {
       const res = await authRequest()
         .get(`/deck/${testDeck?.id}/last-studied`)
         .expect(HttpStatus.OK);
@@ -885,7 +885,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.lastStudied).toBeNull();
     });
 
-    it('should return date for studied deck', async () => {
+    it('TC-DECK-067 should return date for studied deck', async () => {
       const card = await prismaService.card.create({
         data: {
           deckId: testDeck!.id,
@@ -916,13 +916,13 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.lastStudied).toBeDefined();
     });
 
-    it('should return 404 for non-existent deck', async () => {
+    it('TC-DECK-068 should return 404 for non-existent deck', async () => {
       await authRequest()
         .get('/deck/999999/last-studied')
         .expect(HttpStatus.NOT_FOUND);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-069 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/deck/${testDeck?.id}/last-studied`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -930,7 +930,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
   });
 
   describe('/deck/:id/due-today (GET) - Due Today Tests', () => {
-    it('should return empty array for deck with no due cards', async () => {
+    it('TC-DECK-070 should return empty array for deck with no due cards', async () => {
       const res = await authRequest()
         .get(`/deck/${testDeck?.id}/due-today`)
         .expect(HttpStatus.OK);
@@ -938,7 +938,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data).toBeInstanceOf(Array);
     });
 
-    it('should return new cards as due', async () => {
+    it('TC-DECK-071 should return new cards as due', async () => {
       await cardService.create({
         deckId: testDeck!.id,
         front: 'Due Test',
@@ -952,13 +952,13 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data.length).toBeGreaterThan(0);
     });
 
-    it('should return 404 for non-existent deck', async () => {
+    it('TC-DECK-072 should return 404 for non-existent deck', async () => {
       await authRequest()
         .get('/deck/999999/due-today')
         .expect(HttpStatus.NOT_FOUND);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-073 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/deck/${testDeck?.id}/due-today`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -1005,7 +1005,7 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       }
     });
 
-    it('should allow admin to get decks by userId', async () => {
+    it('TC-DECK-074 should allow admin to get decks by userId', async () => {
       const res = await request(app.getHttpServer())
         .get(`/deck/by?userId=${testUser.id}`)
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
@@ -1014,13 +1014,13 @@ describe('Deck Controller Comprehensive E2E Tests', () => {
       expect(res.body.data).toBeInstanceOf(Array);
     });
 
-    it('should reject non-admin user', async () => {
+    it('TC-DECK-075 should reject non-admin user', async () => {
       await authRequest()
         .get(`/deck/by?userId=${testUser.id}`)
         .expect(HttpStatus.FORBIDDEN);
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-DECK-076 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/deck/by?userId=${testUser.id}`)
         .expect(HttpStatus.UNAUTHORIZED);

@@ -16,7 +16,7 @@ import { SignUpDto } from 'src/utils/types/dto/user/signUp.dto';
 import { AuthResponseDto } from 'src/utils/types/dto/user/authResponse.dto';
 import { createTestUser } from './create-test-user';
 
-describe('Review & Algorithm Comprehensive E2E Tests', () => {
+describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View Study Session Statistics - Review & Algorithm E2E Tests', () => {
   let app: INestApplication<App>;
   let userService: UserService;
   let deckService: DeckService;
@@ -133,7 +133,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
   describe('Review Submission Tests', () => {
     describe('Valid Review Submissions', () => {
-      it('should submit review with Again quality', async () => {
+      it('TC-REV-001 should submit review with Again quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -148,7 +148,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data[0].quality).toBe(ReviewQuality.Again);
       });
 
-      it('should submit review with Hard quality', async () => {
+      it('TC-REV-002 should submit review with Hard quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -161,7 +161,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data[0].quality).toBe(ReviewQuality.Hard);
       });
 
-      it('should submit review with Good quality', async () => {
+      it('TC-REV-003 should submit review with Good quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -174,7 +174,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data[0].quality).toBe(ReviewQuality.Good);
       });
 
-      it('should submit review with Easy quality', async () => {
+      it('TC-REV-004 should submit review with Easy quality', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -187,7 +187,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data[0].quality).toBe(ReviewQuality.Easy);
       });
 
-      it('should submit multiple reviews at once', async () => {
+      it('TC-REV-005 should submit multiple reviews at once', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -202,7 +202,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data.length).toBe(3);
       });
 
-      it('should submit review with custom reviewedAt time', async () => {
+      it('TC-REV-006 should submit review with custom reviewedAt time', async () => {
         const customDate = new Date('2024-01-01T10:00:00Z');
 
         const res = await authRequest()
@@ -218,7 +218,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data).toBeDefined();
       });
 
-      it('should return review with correct structure', async () => {
+      it('TC-REV-007 should return review with correct structure', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -237,21 +237,21 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
     });
 
     describe('Invalid Review Submissions', () => {
-      it('should reject review without CardReviews', async () => {
+      it('TC-REV-008 should reject review without CardReviews', async () => {
         await authRequest()
           .post('/study/review')
           .send({})
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review with empty CardReviews array', async () => {
+      it('TC-REV-009 should reject review with empty CardReviews array', async () => {
         await authRequest()
           .post('/study/review')
           .send({ CardReviews: [] })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review with invalid quality', async () => {
+      it('TC-REV-010 should reject review with invalid quality', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -260,7 +260,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review without cardId', async () => {
+      it('TC-REV-011 should reject review without cardId', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -269,7 +269,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review without quality', async () => {
+      it('TC-REV-012 should reject review without quality', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -278,7 +278,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject review with non-existent card', async () => {
+      it('TC-REV-013 should reject review with non-existent card', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -287,7 +287,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .expect(HttpStatus.NOT_FOUND); // Returns 404 for non-existent cards
       });
 
-      it('should reject review without authentication', async () => {
+      it('TC-REV-014 should reject review without authentication', async () => {
         await request(app.getHttpServer())
           .post('/study/review')
           .send({
@@ -298,7 +298,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('should reject review with negative cardId', async () => {
+      it('TC-REV-015 should reject review with negative cardId', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -307,7 +307,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject review with extra non-whitelisted fields', async () => {
+      it('TC-REV-016 should reject review with extra non-whitelisted fields', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -326,7 +326,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
   describe('Anki Algorithm State Transitions', () => {
     describe('New Card Transitions', () => {
-      it('should stay in learning on Again (step 0)', async () => {
+      it('TC-REV-017 should stay in learning on Again (step 0)', async () => {
         // New card -> Again -> Learning step 0
         await authRequest()
           .post('/study/review')
@@ -344,7 +344,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.stepIndex).toBe(0);
       });
 
-      it('should advance to learning step 1 on Good', async () => {
+      it('TC-REV-018 should advance to learning step 1 on Good', async () => {
         // New card -> Good -> Learning step 1
         await authRequest()
           .post('/study/review')
@@ -362,7 +362,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.stepIndex).toBe(1);
       });
 
-      it('should graduate immediately on Easy', async () => {
+      it('TC-REV-019 should graduate immediately on Easy', async () => {
         // New card -> Easy -> Review (graduate)
         await authRequest()
           .post('/study/review')
@@ -392,7 +392,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           });
       });
 
-      it('should reset to step 0 on Again', async () => {
+      it('TC-REV-020 should reset to step 0 on Again', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -409,7 +409,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.stepIndex).toBe(0);
       });
 
-      it('should graduate on Good from last step', async () => {
+      it('TC-REV-021 should graduate on Good from last step', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -425,7 +425,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.status).toBe('review');
       });
 
-      it('should graduate immediately on Easy', async () => {
+      it('TC-REV-022 should graduate immediately on Easy', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -454,7 +454,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           });
       });
 
-      it('should lapse to relearning on Again', async () => {
+      it('TC-REV-023 should lapse to relearning on Again', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -470,7 +470,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.status).toBe('relearning');
       });
 
-      it('should stay in review on Good', async () => {
+      it('TC-REV-024 should stay in review on Good', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -486,7 +486,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.status).toBe('review');
       });
 
-      it('should increase interval on Good', async () => {
+      it('TC-REV-025 should increase interval on Good', async () => {
         const cardBefore = await prismaService.card.findUnique({
           where: { id: testCards[0].id },
         });
@@ -507,7 +507,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(cardAfter?.interval).toBeGreaterThan(intervalBefore);
       });
 
-      it('should increase interval more on Easy', async () => {
+      it('TC-REV-026 should increase interval more on Easy', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -524,7 +524,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.interval).toBeGreaterThanOrEqual(1);
       });
 
-      it('should decrease ease factor on Hard', async () => {
+      it('TC-REV-027 should decrease ease factor on Hard', async () => {
         const cardBefore = await prismaService.card.findUnique({
           where: { id: testCards[0].id },
         });
@@ -565,7 +565,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
           });
       });
 
-      it('should stay in relearning on Again', async () => {
+      it('TC-REV-028 should stay in relearning on Again', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -581,7 +581,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(card?.status).toBe('relearning');
       });
 
-      it('should graduate back to review on Good', async () => {
+      it('TC-REV-029 should graduate back to review on Good', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -601,7 +601,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
   describe('Review Preview Tests', () => {
     describe('Valid Preview Requests', () => {
-      it('should preview for new card', async () => {
+      it('TC-REV-030 should preview for new card', async () => {
         const res = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.OK);
@@ -612,7 +612,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data).toHaveProperty('Easy');
       });
 
-      it('should show correct intervals for new card', async () => {
+      it('TC-REV-031 should show correct intervals for new card', async () => {
         const res = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.OK);
@@ -624,7 +624,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data.Easy).toBe('4 days');
       });
 
-      it('should show different intervals after review', async () => {
+      it('TC-REV-032 should show different intervals after review', async () => {
         // First review
         await authRequest()
           .post('/study/review')
@@ -643,7 +643,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data.Good).toBe('1 day');
       });
 
-      it('should show graduated card intervals', async () => {
+      it('TC-REV-033 should show graduated card intervals', async () => {
         // Graduate card
         await authRequest()
           .post('/study/review')
@@ -663,19 +663,19 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
     });
 
     describe('Invalid Preview Requests', () => {
-      it('should return 404 for non-existent card', async () => {
+      it('TC-REV-034 should return 404 for non-existent card', async () => {
         await authRequest()
           .get('/study/preview/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should return 400 for invalid card id', async () => {
+      it('TC-REV-035 should return 400 for invalid card id', async () => {
         await authRequest()
           .get('/study/preview/invalid')
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-REV-036 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -685,7 +685,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
 
   describe('Due Reviews Tests', () => {
     describe('Get Due Reviews (Study Start)', () => {
-      it('should return all new cards as due', async () => {
+      it('TC-REV-037 should return all new cards as due', async () => {
         const res = await authRequest()
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -693,7 +693,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data.length).toBe(5);
       });
 
-      it('should not return card with future review date', async () => {
+      it('TC-REV-038 should not return card with future review date', async () => {
         // Graduate card and set future date
         await authRequest()
           .post('/study/review')
@@ -712,7 +712,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(dueCardIds).not.toContain(testCards[0].id);
       });
 
-      it('should return cards in learning as due', async () => {
+      it('TC-REV-039 should return cards in learning as due', async () => {
         // Move to learning
         await authRequest()
           .post('/study/review')
@@ -730,13 +730,13 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
       });
 
-      it('should return 404 for non-existent deck', async () => {
+      it('TC-REV-040 should return 404 for non-existent deck', async () => {
         await authRequest()
           .get('/study/start/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('should reject without authentication', async () => {
+      it('TC-REV-041 should reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -745,7 +745,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
   });
 
   describe('Cram Mode Tests', () => {
-    it('should submit cram review without updating schedule', async () => {
+    it('TC-REV-042 should submit cram review without updating schedule', async () => {
       // First, graduate the card
       await authRequest()
         .post('/study/review')
@@ -782,7 +782,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(cardAfter?.interval).toBe(cardBefore?.interval);
     });
 
-    it('should record cram review in history', async () => {
+    it('TC-REV-043 should record cram review in history', async () => {
       await authRequest()
         .post('/study/cram/review')
         .send({
@@ -800,7 +800,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(reviews.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should handle cram with multiple cards', async () => {
+    it('TC-REV-044 should handle cram with multiple cards', async () => {
       const res = await authRequest()
         .post('/study/cram/review')
         .send({
@@ -815,7 +815,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(res.body.data.length).toBe(3);
     });
 
-    it('should reject cram without authentication', async () => {
+    it('TC-REV-045 should reject cram without authentication', async () => {
       await request(app.getHttpServer())
         .post('/study/cram/review')
         .send({
@@ -828,7 +828,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
   });
 
   describe('Consecutive Days Streak Tests', () => {
-    it('should return 0 for deck with no reviews', async () => {
+    it('TC-REV-046 should return 0 for deck with no reviews', async () => {
       const res = await authRequest()
         .get(`/study/consecutive-days/${testDeck.id}`)
         .expect(HttpStatus.OK);
@@ -838,7 +838,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(res.body.data.lastStudyDate).toBeNull();
     });
 
-    it('should return 1 for deck with review today', async () => {
+    it('TC-REV-047 should return 1 for deck with review today', async () => {
       // Submit review today
       await authRequest()
         .post('/study/review')
@@ -855,7 +855,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(res.body.data.consecutiveDays).toBeGreaterThanOrEqual(0);
     });
 
-    it('should return correct structure', async () => {
+    it('TC-REV-048 should return correct structure', async () => {
       await authRequest()
         .post('/study/review')
         .send({
@@ -873,7 +873,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(res.body.data).toHaveProperty('lastStudyDate');
     });
 
-    it('should reject without authentication', async () => {
+    it('TC-REV-049 should reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/study/consecutive-days/${testDeck.id}`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -881,14 +881,14 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
   });
 
   describe('Ease Factor Tests', () => {
-    it('should start with default ease factor (2.5)', async () => {
+    it('TC-REV-050 should start with default ease factor (2.5)', async () => {
       const card = await prismaService.card.findUnique({
         where: { id: testCards[0].id },
       });
       expect(card?.easeFactor).toBe(2.5);
     });
 
-    it('should decrease ease factor on consecutive Again', async () => {
+    it('TC-REV-051 should decrease ease factor on consecutive Again', async () => {
       // Graduate card first
       await authRequest()
         .post('/study/review')
@@ -927,7 +927,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(efAfter).toBeLessThan(efBefore!);
     });
 
-    it('should not go below minimum ease factor (1.3)', async () => {
+    it('TC-REV-052 should not go below minimum ease factor (1.3)', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -961,7 +961,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(card?.easeFactor).toBeGreaterThanOrEqual(1.3);
     });
 
-    it('should increase ease factor on Easy', async () => {
+    it('TC-REV-053 should increase ease factor on Easy', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -993,7 +993,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
   });
 
   describe('Interval Calculation Tests', () => {
-    it('should set interval based on learning steps', async () => {
+    it('TC-REV-054 should set interval based on learning steps', async () => {
       // New card - first review
       await authRequest()
         .post('/study/review')
@@ -1009,7 +1009,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(card?.interval).toBe(10); // 10 minutes for step 1
     });
 
-    it('should set graduated interval', async () => {
+    it('TC-REV-055 should set graduated interval', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -1033,7 +1033,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(card?.interval).toBeGreaterThanOrEqual(1);
     });
 
-    it('should increase interval exponentially on Good', async () => {
+    it('TC-REV-056 should increase interval exponentially on Good', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -1068,7 +1068,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
   });
 
   describe('Review History Tests', () => {
-    it('should record review in history', async () => {
+    it('TC-REV-057 should record review in history', async () => {
       await authRequest()
         .post('/study/review')
         .send({
@@ -1085,7 +1085,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(reviews[0].quality).toBe(ReviewQuality.Good);
     });
 
-    it('should track previous and new status', async () => {
+    it('TC-REV-058 should track previous and new status', async () => {
       await authRequest()
         .post('/study/review')
         .send({
@@ -1102,7 +1102,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(reviews[0].newStatus).toBe('learning');
     });
 
-    it('should maintain review history over multiple reviews', async () => {
+    it('TC-REV-059 should maintain review history over multiple reviews', async () => {
       // Multiple reviews
       await authRequest()
         .post('/study/review')
@@ -1136,7 +1136,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle reviewing same card multiple times rapidly', async () => {
+    it('TC-REV-060 should handle reviewing same card multiple times rapidly', async () => {
       for (let i = 0; i < 5; i++) {
         await authRequest()
           .post('/study/review')
@@ -1155,7 +1155,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(reviews.length).toBe(5);
     });
 
-    it('should handle all cards reviewed at once', async () => {
+    it('TC-REV-061 should handle all cards reviewed at once', async () => {
       const res = await authRequest()
         .post('/study/review')
         .send({
@@ -1169,7 +1169,7 @@ describe('Review & Algorithm Comprehensive E2E Tests', () => {
       expect(res.body.data.length).toBe(5);
     });
 
-    it('should handle review with all quality types', async () => {
+    it('TC-REV-062 should handle review with all quality types', async () => {
       const qualities = [
         ReviewQuality.Again,
         ReviewQuality.Hard,
