@@ -461,4 +461,497 @@ describe('StudyService  Tests', () => {
       });
     });
   });
+
+  describe('UC-STATISTICS: User Statistics Endpoints', () => {
+    const mockPrismaServiceExtended = {
+      ...mockPrismaService,
+      deck: {
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+      },
+      card: {
+        count: jest.fn(),
+      },
+      cardReview: {
+        findMany: jest.fn(),
+      },
+    };
+
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      Object.assign(mockPrismaService, mockPrismaServiceExtended);
+    });
+
+    describe('getUserStatistics', () => {
+      it('TC-USERSTATS-001: This test case aims to verify user statistics are returned correctly', async () => {
+        const mockDecks = [{ id: 1 }, { id: 2 }];
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date(),
+            quality: 'Good',
+            card: { id: 1, deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date(),
+            quality: 'Easy',
+            card: { id: 2, deckId: 1 },
+          },
+          {
+            cardId: 3,
+            reviewedAt: new Date(),
+            quality: 'Again',
+            card: { id: 3, deckId: 2 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.card.count.mockResolvedValue(100);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserStatistics(1);
+
+        expect(result).toHaveProperty('totalCards');
+        expect(result).toHaveProperty('studiedToday');
+        expect(result).toHaveProperty('studiedThisWeek');
+        expect(result).toHaveProperty('studiedThisMonth');
+        expect(result).toHaveProperty('currentStreak');
+        expect(result).toHaveProperty('longestStreak');
+        expect(result).toHaveProperty('averageAccuracy');
+        expect(result).toHaveProperty('totalStudyTime');
+        expect(result).toHaveProperty('cardsPerDay');
+        expect(result).toHaveProperty('bestDay');
+        expect(result).toHaveProperty('totalDecks');
+        expect(result).toHaveProperty('totalReviews');
+      });
+
+      it('TC-USERSTATS-002: This test case aims to verify statistics with no decks', async () => {
+        mockPrismaService.deck.findMany.mockResolvedValue([]);
+        mockPrismaService.card.count.mockResolvedValue(0);
+        mockPrismaService.cardReview.findMany.mockResolvedValue([]);
+
+        const result = await service.getUserStatistics(1);
+
+        expect(result.totalCards).toBe(0);
+        expect(result.totalDecks).toBe(0);
+        expect(result.totalReviews).toBe(0);
+        expect(result.studiedToday).toBe(0);
+        expect(result.averageAccuracy).toBe(0);
+      });
+
+      it('TC-USERSTATS-003: This test case aims to verify accuracy calculation', async () => {
+        const mockDecks = [{ id: 1 }];
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date(),
+            quality: 'Good',
+            card: { id: 1, deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date(),
+            quality: 'Easy',
+            card: { id: 2, deckId: 1 },
+          },
+          {
+            cardId: 3,
+            reviewedAt: new Date(),
+            quality: 'Hard',
+            card: { id: 3, deckId: 1 },
+          },
+          {
+            cardId: 4,
+            reviewedAt: new Date(),
+            quality: 'Again',
+            card: { id: 4, deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.card.count.mockResolvedValue(4);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserStatistics(1);
+
+        // 3 correct (Good, Easy, Hard) out of 4 = 75%
+        expect(result.averageAccuracy).toBe(75);
+      });
+
+      it('TC-USERSTATS-004: This test case aims to verify total study time calculation', async () => {
+        const mockDecks = [{ id: 1 }];
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date(),
+            quality: 'Good',
+            card: { id: 1, deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date(),
+            quality: 'Good',
+            card: { id: 2, deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.card.count.mockResolvedValue(2);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserStatistics(1);
+
+        // 2 reviews * 10 seconds = 20 seconds
+        expect(result.totalStudyTime).toBe(20);
+      });
+
+      it('TC-USERSTATS-005: This test case aims to verify streak calculation with consecutive days', async () => {
+        const mockDecks = [{ id: 1 }];
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const twoDaysAgo = new Date(today);
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: twoDaysAgo,
+            quality: 'Good',
+            card: { id: 1, deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: yesterday,
+            quality: 'Good',
+            card: { id: 2, deckId: 1 },
+          },
+          {
+            cardId: 3,
+            reviewedAt: today,
+            quality: 'Good',
+            card: { id: 3, deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.card.count.mockResolvedValue(3);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserStatistics(1);
+
+        expect(result.currentStreak).toBeGreaterThanOrEqual(1);
+        expect(result.longestStreak).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    describe('getUserDailyBreakdown', () => {
+      it('TC-DAILYBREAKDOWN-001: This test case aims to verify daily breakdown is returned correctly', async () => {
+        const mockDecks = [{ id: 1 }];
+        const startDate = new Date('2025-12-16');
+        const endDate = new Date('2025-12-18');
+
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-16T10:00:00'),
+            quality: 'Good',
+            card: { deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date('2025-12-17T14:00:00'),
+            quality: 'Easy',
+            card: { deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserDailyBreakdown(
+          1,
+          startDate,
+          endDate,
+        );
+
+        expect(result).toHaveProperty('startDate');
+        expect(result).toHaveProperty('endDate');
+        expect(result).toHaveProperty('dailyBreakdown');
+        expect(result).toHaveProperty('summary');
+        expect(Array.isArray(result.dailyBreakdown)).toBe(true);
+      });
+
+      it('TC-DAILYBREAKDOWN-002: This test case aims to verify days with no reviews are included with zeros', async () => {
+        const mockDecks = [{ id: 1 }];
+        const startDate = new Date('2025-12-16');
+        const endDate = new Date('2025-12-18');
+
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-16T10:00:00'),
+            quality: 'Good',
+            card: { deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserDailyBreakdown(
+          1,
+          startDate,
+          endDate,
+        );
+
+        // Should have 3 days in the breakdown
+        expect(result.dailyBreakdown.length).toBeGreaterThanOrEqual(1);
+
+        // Find the day with no reviews
+        const emptyDay = result.dailyBreakdown.find(
+          (d) => d.cardsReviewed === 0,
+        );
+        if (emptyDay) {
+          expect(emptyDay.accuracy).toBe(0);
+          expect(emptyDay.studyTime).toBe(0);
+          expect(emptyDay.decksStudied).toBe(0);
+        }
+      });
+
+      it('TC-DAILYBREAKDOWN-003: This test case aims to verify summary calculation', async () => {
+        const mockDecks = [{ id: 1 }];
+        const startDate = new Date('2025-12-16');
+        const endDate = new Date('2025-12-17');
+
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-16T10:00:00'),
+            quality: 'Good',
+            card: { deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date('2025-12-16T10:00:00'),
+            quality: 'Again',
+            card: { deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserDailyBreakdown(
+          1,
+          startDate,
+          endDate,
+        );
+
+        expect(result.summary.totalCardsReviewed).toBe(2);
+        expect(result.summary.daysStudied).toBe(1);
+      });
+
+      it('TC-DAILYBREAKDOWN-004: This test case aims to verify day of week is correctly calculated', async () => {
+        const mockDecks = [{ id: 1 }];
+        // December 16, 2025 is a Tuesday
+        const startDate = new Date('2025-12-16');
+        const endDate = new Date('2025-12-16');
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue([]);
+
+        const result = await service.getUserDailyBreakdown(
+          1,
+          startDate,
+          endDate,
+        );
+
+        expect(result.dailyBreakdown[0]).toHaveProperty('dayOfWeek');
+      });
+
+      it('TC-DAILYBREAKDOWN-005: This test case aims to verify multiple decks studied count', async () => {
+        const mockDecks = [{ id: 1 }, { id: 2 }];
+        const startDate = new Date('2025-12-16');
+        const endDate = new Date('2025-12-16');
+
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-16T10:00:00'),
+            quality: 'Good',
+            card: { deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date('2025-12-16T11:00:00'),
+            quality: 'Easy',
+            card: { deckId: 2 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getUserDailyBreakdown(
+          1,
+          startDate,
+          endDate,
+        );
+
+        expect(result.dailyBreakdown[0].decksStudied).toBe(2);
+      });
+    });
+
+    describe('getRecentActivity', () => {
+      it('TC-RECENTACTIVITY-001: This test case aims to verify recent activities are returned correctly', async () => {
+        const mockDecks = [
+          { id: 1, title: 'Test Deck', createdAt: new Date('2025-12-01') },
+        ];
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-20T10:00:00'),
+            quality: 'Good',
+            previousStatus: 'new',
+            card: { deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getRecentActivity(1, 10);
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      it('TC-RECENTACTIVITY-002: This test case aims to verify activities are sorted by date descending', async () => {
+        const mockDecks = [
+          { id: 1, title: 'Test Deck', createdAt: new Date('2025-12-01') },
+        ];
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-18T10:00:00'),
+            quality: 'Good',
+            previousStatus: 'new',
+            card: { deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date('2025-12-20T10:00:00'),
+            quality: 'Good',
+            previousStatus: 'review',
+            card: { deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getRecentActivity(1, 10);
+
+        // Activities should be sorted by date descending
+        for (let i = 1; i < result.length; i++) {
+          expect(new Date(result[i - 1].date).getTime()).toBeGreaterThanOrEqual(
+            new Date(result[i].date).getTime(),
+          );
+        }
+      });
+
+      it('TC-RECENTACTIVITY-003: This test case aims to verify limit parameter works correctly', async () => {
+        const mockDecks = Array.from({ length: 20 }, (_, i) => ({
+          id: i + 1,
+          title: `Deck ${i + 1}`,
+          createdAt: new Date(`2025-12-${(i + 1).toString().padStart(2, '0')}`),
+        }));
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue([]);
+
+        const result = await service.getRecentActivity(1, 5);
+
+        expect(result.length).toBeLessThanOrEqual(5);
+      });
+
+      it('TC-RECENTACTIVITY-004: This test case aims to verify deck_created activity type', async () => {
+        const mockDecks = [
+          { id: 1, title: 'Test Deck', createdAt: new Date('2025-12-20') },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue([]);
+
+        const result = await service.getRecentActivity(1, 10);
+
+        const deckCreatedActivity = result.find(
+          (a) => a.type === 'deck_created',
+        );
+        expect(deckCreatedActivity).toBeDefined();
+        expect(deckCreatedActivity?.deckName).toBe('Test Deck');
+      });
+
+      it('TC-RECENTACTIVITY-005: This test case aims to verify study activity includes correct stats', async () => {
+        const mockDecks = [
+          { id: 1, title: 'Test Deck', createdAt: new Date('2025-12-01') },
+        ];
+        const mockReviews = [
+          {
+            cardId: 1,
+            reviewedAt: new Date('2025-12-20T10:00:00'),
+            quality: 'Good',
+            previousStatus: 'new',
+            card: { deckId: 1 },
+          },
+          {
+            cardId: 2,
+            reviewedAt: new Date('2025-12-20T10:05:00'),
+            quality: 'Again',
+            previousStatus: 'review',
+            card: { deckId: 1 },
+          },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
+
+        const result = await service.getRecentActivity(1, 10);
+
+        const studyActivity = result.find((a) => a.type === 'study');
+        expect(studyActivity).toBeDefined();
+        expect(studyActivity?.cardsReviewed).toBe(2);
+        expect(studyActivity?.newCards).toBe(1);
+        expect(studyActivity?.reviewCards).toBe(1);
+      });
+
+      it('TC-RECENTACTIVITY-006: This test case aims to verify empty result with no decks', async () => {
+        mockPrismaService.deck.findMany.mockResolvedValue([]);
+        mockPrismaService.cardReview.findMany.mockResolvedValue([]);
+
+        const result = await service.getRecentActivity(1, 10);
+
+        expect(result).toEqual([]);
+      });
+
+      it('TC-RECENTACTIVITY-007: This test case aims to verify sequential IDs are assigned', async () => {
+        const mockDecks = [
+          { id: 1, title: 'Deck 1', createdAt: new Date('2025-12-01') },
+          { id: 2, title: 'Deck 2', createdAt: new Date('2025-12-02') },
+        ];
+
+        mockPrismaService.deck.findMany.mockResolvedValue(mockDecks);
+        mockPrismaService.cardReview.findMany.mockResolvedValue([]);
+
+        const result = await service.getRecentActivity(1, 10);
+
+        result.forEach((activity, index) => {
+          expect(activity.id).toBe(index + 1);
+        });
+      });
+    });
+  });
 });

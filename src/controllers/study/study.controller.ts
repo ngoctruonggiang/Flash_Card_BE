@@ -10,6 +10,18 @@ import { ReviewPreviewDto } from 'src/utils/types/dto/review/previewReview.dto';
 import { ConsecutiveDaysDto } from 'src/utils/types/dto/review/consecutiveDays.dto';
 import { StudySessionStatisticsDto } from 'src/utils/types/dto/study/studySessionStatistics.dto';
 import { TimeRangeStatisticsDto } from 'src/utils/types/dto/study/timeRangeStatistics.dto';
+import {
+  UserStatisticsDto,
+  UserStatisticsQueryDto,
+} from 'src/utils/types/dto/study/userStatistics.dto';
+import {
+  UserDailyBreakdownDto,
+  UserDailyBreakdownQueryDto,
+} from 'src/utils/types/dto/study/userDailyBreakdown.dto';
+import {
+  RecentActivityItemDto,
+  RecentActivityQueryDto,
+} from 'src/utils/types/dto/study/recentActivity.dto';
 import type { User } from '@prisma/client';
 
 @ApiTags('Study')
@@ -19,6 +31,127 @@ export class StudyController {
     private readonly reviewService: ReviewService,
     private readonly studyService: StudyService,
   ) {}
+
+  // ==================== STATIC ROUTES (must come before parameterized routes) ====================
+
+  @Get('/user-statistics')
+  @ApiOperation({
+    summary:
+      'Get comprehensive statistics for the current user across all decks',
+  })
+  @ApiQuery({
+    name: 'timeRange',
+    required: false,
+    enum: ['week', 'month', 'year'],
+    description: 'Time range for statistics. Defaults to week.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns user statistics aggregated across all decks',
+    type: UserStatisticsDto,
+  })
+  @RouteConfig({
+    message: 'Get User Statistics',
+    requiresAuth: true,
+  })
+  async getUserStatistics(
+    @GetUser() user: User,
+    @Query() query: UserStatisticsQueryDto,
+  ) {
+    return await this.studyService.getUserStatistics(user.id, query.timeRange);
+  }
+
+  @Get('/user-daily-breakdown')
+  @ApiOperation({
+    summary: 'Get daily statistics for the user within a time range',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: true,
+    type: String,
+    description: 'Start date in ISO 8601 format (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: true,
+    type: String,
+    description: 'End date in ISO 8601 format (YYYY-MM-DD)',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns daily statistics aggregated across all user decks for the specified range',
+    type: UserDailyBreakdownDto,
+  })
+  @RouteConfig({
+    message: 'Get User Daily Breakdown',
+    requiresAuth: true,
+  })
+  async getUserDailyBreakdown(
+    @GetUser() user: User,
+    @Query() query: UserDailyBreakdownQueryDto,
+  ) {
+    return await this.studyService.getUserDailyBreakdown(
+      user.id,
+      new Date(query.startDate),
+      new Date(query.endDate),
+    );
+  }
+
+  @Get('/recent-activity')
+  @ApiOperation({
+    summary: "Get the user's most recent study activities across all decks",
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of activities to return. Default: 10, Max: 50',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns recent study activities sorted by date descending',
+    type: [RecentActivityItemDto],
+  })
+  @RouteConfig({
+    message: 'Get Recent Activity',
+    requiresAuth: true,
+  })
+  async getRecentActivity(
+    @GetUser() user: User,
+    @Query() query: RecentActivityQueryDto,
+  ) {
+    return await this.studyService.getRecentActivity(user.id, query.limit);
+  }
+
+  @Post('/review')
+  @ApiOperation({ summary: 'Submit card review' })
+  @ApiResponse({ status: 201, description: 'Review submitted successfully' })
+  @RouteConfig({
+    message: 'Submitting card review',
+    requiresAuth: true,
+  })
+  submitReview(@Body() cardReview: SubmitReviewDto) {
+    return this.reviewService.submitReviews(cardReview);
+  }
+
+  @Post('/cram/review')
+  @ApiOperation({
+    summary: 'Submit cram session review (does not affect scheduling)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Cram review submitted successfully',
+  })
+  @RouteConfig({
+    message: 'Submitting cram review',
+    requiresAuth: true,
+  })
+  submitCramReview(@Body() cardReview: SubmitReviewDto) {
+    return this.reviewService.submitCramReviews(cardReview);
+  }
+
+  // ==================== PARAMETERIZED ROUTES ====================
 
   @Get('/start/:id')
   @ApiOperation({ summary: 'Get due reviews for a deck' })
@@ -44,17 +177,6 @@ export class StudyController {
   })
   getReviewPreview(@Param() params: IdParamDto) {
     return this.reviewService.getReviewPreview(Number(params.id));
-  }
-
-  @Post('/review')
-  @ApiOperation({ summary: 'Submit card review' })
-  @ApiResponse({ status: 201, description: 'Review submitted successfully' })
-  @RouteConfig({
-    message: 'Submitting card review',
-    requiresAuth: true,
-  })
-  submitReview(@Body() cardReview: SubmitReviewDto) {
-    return this.reviewService.submitReviews(cardReview);
   }
 
   @Get('/consecutive-days/:id')
@@ -101,22 +223,6 @@ export class StudyController {
       data: cards,
       total: cards.length,
     };
-  }
-
-  @Post('/cram/review')
-  @ApiOperation({
-    summary: 'Submit cram session review (does not affect scheduling)',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Cram review submitted successfully',
-  })
-  @RouteConfig({
-    message: 'Submitting cram review',
-    requiresAuth: true,
-  })
-  submitCramReview(@Body() cardReview: SubmitReviewDto) {
-    return this.reviewService.submitCramReviews(cardReview);
   }
 
   @Get('/session-statistics/:deckId')
