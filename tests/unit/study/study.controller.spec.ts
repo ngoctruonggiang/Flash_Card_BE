@@ -500,4 +500,192 @@ describe('StudyController  Tests', () => {
       expect(studyService).toBeDefined();
     });
   });
+
+  describe('UC-STATISTICS: User Statistics Controller Endpoints', () => {
+    beforeEach(() => {
+      mockStudyService.getUserStatistics = jest.fn();
+      mockStudyService.getUserDailyBreakdown = jest.fn();
+      mockStudyService.getRecentActivity = jest.fn();
+    });
+
+    describe('getUserStatistics', () => {
+      it('TC-CTRL-USERSTATS-001: This test case aims to verify user statistics endpoint returns data', async () => {
+        const mockStats = {
+          totalCards: 100,
+          studiedToday: 10,
+          studiedThisWeek: 50,
+          studiedThisMonth: 200,
+          currentStreak: 5,
+          longestStreak: 10,
+          averageAccuracy: 85.5,
+          totalStudyTime: 3600,
+          cardsPerDay: 15,
+          bestDay: 'Monday',
+          totalDecks: 5,
+          totalReviews: 500,
+        };
+        mockStudyService.getUserStatistics.mockResolvedValue(mockStats);
+
+        const result = await controller.getUserStatistics(mockUser as any, {
+          timeRange: undefined,
+        });
+
+        expect(result).toEqual(mockStats);
+        expect(studyService.getUserStatistics).toHaveBeenCalledWith(
+          1,
+          undefined,
+        );
+      });
+
+      it('TC-CTRL-USERSTATS-002: This test case aims to verify time range parameter is passed correctly', async () => {
+        mockStudyService.getUserStatistics.mockResolvedValue({});
+
+        await controller.getUserStatistics(mockUser as any, {
+          timeRange: 'month' as any,
+        });
+
+        expect(studyService.getUserStatistics).toHaveBeenCalledWith(1, 'month');
+      });
+
+      it('TC-CTRL-USERSTATS-003: This test case aims to verify error propagation from service', async () => {
+        mockStudyService.getUserStatistics.mockRejectedValue(
+          new Error('Database error'),
+        );
+
+        await expect(
+          controller.getUserStatistics(mockUser as any, {
+            timeRange: undefined,
+          }),
+        ).rejects.toThrow('Database error');
+      });
+    });
+
+    describe('getUserDailyBreakdown', () => {
+      it('TC-CTRL-DAILYBREAKDOWN-001: This test case aims to verify daily breakdown endpoint returns data', async () => {
+        const mockBreakdown = {
+          startDate: '2025-12-16',
+          endDate: '2025-12-23',
+          dailyBreakdown: [
+            {
+              date: '2025-12-16',
+              dayOfWeek: 'Monday',
+              cardsReviewed: 10,
+              accuracy: 85,
+              studyTime: 100,
+              decksStudied: 2,
+            },
+          ],
+          summary: {
+            totalCardsReviewed: 10,
+            averageAccuracy: 85,
+            totalStudyTime: 100,
+            daysStudied: 1,
+            totalDaysInRange: 7,
+          },
+        };
+        mockStudyService.getUserDailyBreakdown.mockResolvedValue(mockBreakdown);
+
+        const result = await controller.getUserDailyBreakdown(mockUser as any, {
+          startDate: '2025-12-16',
+          endDate: '2025-12-23',
+        });
+
+        expect(result).toEqual(mockBreakdown);
+      });
+
+      it('TC-CTRL-DAILYBREAKDOWN-002: This test case aims to verify date parameters are converted to Date objects', async () => {
+        mockStudyService.getUserDailyBreakdown.mockResolvedValue({});
+
+        await controller.getUserDailyBreakdown(mockUser as any, {
+          startDate: '2025-12-16',
+          endDate: '2025-12-23',
+        });
+
+        expect(studyService.getUserDailyBreakdown).toHaveBeenCalledWith(
+          1,
+          expect.any(Date),
+          expect.any(Date),
+        );
+      });
+
+      it('TC-CTRL-DAILYBREAKDOWN-003: This test case aims to verify error propagation from service', async () => {
+        mockStudyService.getUserDailyBreakdown.mockRejectedValue(
+          new Error('Invalid date range'),
+        );
+
+        await expect(
+          controller.getUserDailyBreakdown(mockUser as any, {
+            startDate: '2025-12-16',
+            endDate: '2025-12-23',
+          }),
+        ).rejects.toThrow('Invalid date range');
+      });
+    });
+
+    describe('getRecentActivity', () => {
+      it('TC-CTRL-RECENTACTIVITY-001: This test case aims to verify recent activity endpoint returns data', async () => {
+        const mockActivities = [
+          {
+            id: 1,
+            type: 'study',
+            date: '2025-12-23T09:30:00.000Z',
+            deckId: 5,
+            deckName: 'Test Deck',
+            cardsReviewed: 23,
+            accuracy: 89.0,
+            studyTime: 900,
+            newCards: 5,
+            reviewCards: 18,
+          },
+        ];
+        mockStudyService.getRecentActivity.mockResolvedValue(mockActivities);
+
+        const result = await controller.getRecentActivity(mockUser as any, {
+          limit: 10,
+        });
+
+        expect(result).toEqual(mockActivities);
+        expect(studyService.getRecentActivity).toHaveBeenCalledWith(1, 10);
+      });
+
+      it('TC-CTRL-RECENTACTIVITY-002: This test case aims to verify default limit is used when not provided', async () => {
+        mockStudyService.getRecentActivity.mockResolvedValue([]);
+
+        await controller.getRecentActivity(mockUser as any, {});
+
+        expect(studyService.getRecentActivity).toHaveBeenCalledWith(
+          1,
+          undefined,
+        );
+      });
+
+      it('TC-CTRL-RECENTACTIVITY-003: This test case aims to verify custom limit is passed correctly', async () => {
+        mockStudyService.getRecentActivity.mockResolvedValue([]);
+
+        await controller.getRecentActivity(mockUser as any, { limit: 25 });
+
+        expect(studyService.getRecentActivity).toHaveBeenCalledWith(1, 25);
+      });
+
+      it('TC-CTRL-RECENTACTIVITY-004: This test case aims to verify error propagation from service', async () => {
+        mockStudyService.getRecentActivity.mockRejectedValue(
+          new Error('Service unavailable'),
+        );
+
+        await expect(
+          controller.getRecentActivity(mockUser as any, { limit: 10 }),
+        ).rejects.toThrow('Service unavailable');
+      });
+
+      it('TC-CTRL-RECENTACTIVITY-005: This test case aims to verify empty array is returned when no activities', async () => {
+        mockStudyService.getRecentActivity.mockResolvedValue([]);
+
+        const result = await controller.getRecentActivity(mockUser as any, {
+          limit: 10,
+        });
+
+        expect(result).toEqual([]);
+      });
+    });
+  });
 });
