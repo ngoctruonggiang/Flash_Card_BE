@@ -214,7 +214,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('getAllUser (Admin)', () => {
-    it('should return all users', async () => {
+    it('TC-ADMINALLUSERS-001: This test case aims to verify return of all users', async () => {
       const allUsers = [
         mockUser,
         { ...mockUser, id: 2, username: 'user2' },
@@ -228,7 +228,7 @@ describe('UserController  Tests', () => {
       expect(userService.getAllUsers).toHaveBeenCalled();
     });
 
-    it('should return empty array when no users exist', async () => {
+    it('TC-ADMINALLUSERS-002: This test case aims to verify empty array is returned when no users exist', async () => {
       mockUserService.getAllUsers.mockResolvedValue([]);
 
       const result = await controller.getAllUser();
@@ -236,7 +236,7 @@ describe('UserController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should return users without passwords', async () => {
+    it('TC-ADMINALLUSERS-003: This test case aims to verify users are returned without passwords', async () => {
       const usersWithoutPasswords = [
         { id: 1, email: 'user1@example.com', username: 'user1' },
         { id: 2, email: 'user2@example.com', username: 'user2' },
@@ -250,7 +250,7 @@ describe('UserController  Tests', () => {
       });
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-ADMINALLUSERS-004: This test case aims to verify service errors are propagated', async () => {
       mockUserService.getAllUsers.mockRejectedValue(
         new Error('Database error'),
       );
@@ -260,7 +260,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('getUserById (Admin)', () => {
-    it('should return user by id', async () => {
+    it('TC-ADMINGETUSER-001: This test case aims to verify user is returned by id', async () => {
       const params = { id: 1 };
       mockUserService.getUserById.mockResolvedValue(mockUser);
 
@@ -270,7 +270,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(1);
     });
 
-    it('should handle different user ids', async () => {
+    it('TC-ADMINGETUSER-002: This test case aims to verify handling of different user ids', async () => {
       const params = { id: 999 };
       const user = { ...mockUser, id: 999 };
       mockUserService.getUserById.mockResolvedValue(user);
@@ -281,7 +281,7 @@ describe('UserController  Tests', () => {
       expect(userService.getUserById).toHaveBeenCalledWith(999);
     });
 
-    it('should propagate NotFoundException for non-existent user', async () => {
+    it('TC-ADMINGETUSER-003: This test case aims to verify NotFoundException propagation for non-existent user', async () => {
       const params = { id: 999 };
       mockUserService.getUserById.mockRejectedValue(
         new NotFoundException('User not found'),
@@ -292,7 +292,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('should handle id = 0', async () => {
+    it('TC-ADMINGETUSER-004: This test case aims to verify handling of id = 0', async () => {
       const params = { id: 0 };
       mockUserService.getUserById.mockResolvedValue(null);
 
@@ -303,7 +303,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('updateAdmin (Admin)', () => {
-    it('should update any user by id', async () => {
+    it('TC-ADMINUPDATE-001: This test case aims to verify updating any user by id', async () => {
       const params = { id: 2 };
       const updateDto = { username: 'updateduser' };
       const updatedUser = { ...mockUser, id: 2, username: 'updateduser' };
@@ -315,7 +315,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
-    it('should update user email', async () => {
+    it('TC-ADMINUPDATE-002: This test case aims to verify updating user email', async () => {
       const params = { id: 2 };
       const updateDto = { email: 'updated@example.com' };
       mockUserService.update.mockResolvedValue({
@@ -329,7 +329,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
-    it('should update user role', async () => {
+    it('TC-ADMINUPDATE-003: This test case aims to verify updating user role', async () => {
       const params = { id: 2 };
       const updateDto = { role: 'ADMIN' as any };
       mockUserService.update.mockResolvedValue({
@@ -343,7 +343,7 @@ describe('UserController  Tests', () => {
       expect(userService.update).toHaveBeenCalledWith(2, updateDto);
     });
 
-    it('should propagate NotFoundException for non-existent user', async () => {
+    it('TC-ADMINUPDATE-004: This test case aims to verify NotFoundException propagation for non-existent user', async () => {
       const params = { id: 999 };
       const updateDto = { username: 'newname' };
       mockUserService.update.mockRejectedValue(
@@ -355,7 +355,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('should handle empty update dto', async () => {
+    it('TC-ADMINUPDATE-005: This test case aims to verify handling of empty update dto', async () => {
       const params = { id: 2 };
       const updateDto = {};
       mockUserService.update.mockResolvedValue(mockUser);
@@ -367,7 +367,7 @@ describe('UserController  Tests', () => {
   });
 
   describe('removeAdmin (Admin)', () => {
-    it('should remove any user by id', async () => {
+    it('TC-ADMINREMOVE-001: This test case aims to verify removing any user by id', async () => {
       const params = { id: 2 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -377,7 +377,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(2);
     });
 
-    it('should propagate NotFoundException for non-existent user', async () => {
+    it('TC-ADMINREMOVE-002: This test case aims to verify NotFoundException propagation for non-existent user', async () => {
       const params = { id: 999 };
       mockUserService.remove.mockRejectedValue(
         new NotFoundException('User not found'),
@@ -388,7 +388,7 @@ describe('UserController  Tests', () => {
       );
     });
 
-    it('should handle removing admin user', async () => {
+    it('TC-ADMINREMOVE-003: This test case aims to verify handling of removing admin user', async () => {
       const params = { id: 99 }; // Admin user id
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -397,7 +397,7 @@ describe('UserController  Tests', () => {
       expect(userService.remove).toHaveBeenCalledWith(99);
     });
 
-    it('should handle removing user with id 0', async () => {
+    it('TC-ADMINREMOVE-004: This test case aims to verify handling of removing user with id 0', async () => {
       const params = { id: 0 };
       mockUserService.remove.mockResolvedValue({ deleted: true });
 
@@ -408,11 +408,11 @@ describe('UserController  Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('should be defined', () => {
+    it('TC-USERCTRL-001: This test case aims to verify controller is defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should have userService injected', () => {
+    it('TC-USERCTRL-002: This test case aims to verify userService is injected', () => {
       expect(userService).toBeDefined();
     });
   });

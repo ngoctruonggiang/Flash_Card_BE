@@ -56,7 +56,7 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('updateReview', () => {
-    it('should update a review', async () => {
+    it('TC-REVIEW-001: This test case aims to verify updating a review', async () => {
       const mockReview: any = {
         id: 1,
         quality: 'Good',
@@ -74,7 +74,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should handle review with all fields', async () => {
+    it('TC-REVIEW-002: This test case aims to verify handling of review with all fields', async () => {
       const mockReview: any = {
         id: 1,
         cardId: 1,
@@ -94,7 +94,7 @@ describe('ReviewService  Tests', () => {
       expect(result).toEqual(mockReview);
     });
 
-    it('should throw error for non-existent review', async () => {
+    it('TC-REVIEW-003: This test case aims to verify error is thrown for non-existent review', async () => {
       mockPrismaService.cardReview.update.mockRejectedValue(
         new Error('Record not found'),
       );
@@ -106,7 +106,7 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('removeByCardId', () => {
-    it('should remove all reviews for a card', async () => {
+    it('TC-REVIEW-004: This test case aims to verify removal of all reviews for a card', async () => {
       mockPrismaService.cardReview.deleteMany.mockResolvedValue({ count: 5 });
 
       const result = await service.removeByCardId(1);
@@ -117,7 +117,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should return count 0 when no reviews exist', async () => {
+    it('TC-REVIEW-005: This test case aims to verify return of count 0 when no reviews exist', async () => {
       mockPrismaService.cardReview.deleteMany.mockResolvedValue({ count: 0 });
 
       const result = await service.removeByCardId(999);
@@ -125,7 +125,7 @@ describe('ReviewService  Tests', () => {
       expect(result).toEqual({ count: 0 });
     });
 
-    it('should handle cardId = 0', async () => {
+    it('TC-REVIEW-006: This test case aims to verify handling of cardId = 0', async () => {
       mockPrismaService.cardReview.deleteMany.mockResolvedValue({ count: 0 });
 
       await service.removeByCardId(0);
@@ -135,7 +135,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should handle negative cardId', async () => {
+    it('TC-REVIEW-007: This test case aims to verify handling of negative cardId', async () => {
       mockPrismaService.cardReview.deleteMany.mockResolvedValue({ count: 0 });
 
       await service.removeByCardId(-1);
@@ -147,7 +147,7 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('addReview', () => {
-    it('should create a new review', async () => {
+    it('TC-REVIEW-008: This test case aims to verify creation of a new review', async () => {
       const mockReview: any = {
         cardId: 1,
         quality: 'Good',
@@ -172,7 +172,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should handle all quality types', async () => {
+    it('TC-REVIEW-009: This test case aims to verify handling of all quality types', async () => {
       const qualities = ['Again', 'Hard', 'Good', 'Easy'];
 
       for (const quality of qualities) {
@@ -198,7 +198,7 @@ describe('ReviewService  Tests', () => {
       }
     });
 
-    it('should handle all status transitions', async () => {
+    it('TC-REVIEW-010: This test case aims to verify handling of all status transitions', async () => {
       const statuses = ['new', 'learning', 'review', 'relearning'];
 
       for (const status of statuses) {
@@ -226,7 +226,7 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('getLastestReviewByCardId', () => {
-    it('should return the latest review', async () => {
+    it('TC-REVIEW-011: This test case aims to verify return of the latest review', async () => {
       const mockReview = {
         id: 1,
         cardId: 1,
@@ -243,7 +243,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should return null when no reviews exist', async () => {
+    it('TC-REVIEW-012: This test case aims to verify return of null when no reviews exist', async () => {
       mockPrismaService.cardReview.findFirst.mockResolvedValue(null);
 
       const result = await service.getLastestReviewByCardId(999);
@@ -251,7 +251,7 @@ describe('ReviewService  Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('should order by reviewedAt desc', async () => {
+    it('TC-REVIEW-013: This test case aims to verify ordering by reviewedAt desc', async () => {
       mockPrismaService.cardReview.findFirst.mockResolvedValue(null);
 
       await service.getLastestReviewByCardId(1);
@@ -522,7 +522,7 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('submitCramReviews', () => {
-    it('should create review without updating card schedule', async () => {
+    it('TC-CRAMREVIEW-001: This test case aims to verify creation of review without updating card schedule', async () => {
       const submitDto: any = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
       };
@@ -546,7 +546,7 @@ describe('ReviewService  Tests', () => {
       expect(prismaService.card.update).not.toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException for non-existent cards', async () => {
+    it('TC-CRAMREVIEW-002: This test case aims to verify NotFoundException is thrown for non-existent cards', async () => {
       const submitDto: any = {
         CardReviews: [{ cardId: 999, quality: 'Good' }],
       };
@@ -557,7 +557,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should preserve card status in review', async () => {
+    it('TC-CRAMREVIEW-003: This test case aims to verify preservation of card status in review', async () => {
       const submitDto: any = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
       };
@@ -583,7 +583,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should use custom reviewedAt if provided', async () => {
+    it('TC-CRAMREVIEW-004: This test case aims to verify use of custom reviewedAt if provided', async () => {
       const reviewedAt = new Date('2025-12-01T10:00:00.000Z');
       const submitDto: any = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
@@ -610,7 +610,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should handle multiple cram reviews', async () => {
+    it('TC-CRAMREVIEW-005: This test case aims to verify handling of multiple cram reviews', async () => {
       const submitDto: any = {
         CardReviews: [
           { cardId: 1, quality: 'Good' },
@@ -642,7 +642,7 @@ describe('ReviewService  Tests', () => {
       });
     });
 
-    it('should return due cards', async () => {
+    it('TC-DUEREVIEW-001: This test case aims to verify return of due cards', async () => {
       const mockCards = [
         { id: 1, status: 'new', nextReviewDate: null },
         { id: 2, status: 'review', nextReviewDate: new Date('2025-01-01') },
@@ -654,7 +654,7 @@ describe('ReviewService  Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    it('should return empty array when no cards due', async () => {
+    it('TC-DUEREVIEW-002: This test case aims to verify return of empty array when no cards due', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       const result = await service.getDueReviews(1);
@@ -662,7 +662,7 @@ describe('ReviewService  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should respect limit parameter', async () => {
+    it('TC-DUEREVIEW-003: This test case aims to verify respect for limit parameter', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       await service.getDueReviews(1, 10);
@@ -674,7 +674,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should order by nextReviewDate asc', async () => {
+    it('TC-DUEREVIEW-004: This test case aims to verify ordering by nextReviewDate asc', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       await service.getDueReviews(1);
@@ -686,7 +686,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should include new cards', async () => {
+    it('TC-DUEREVIEW-005: This test case aims to verify inclusion of new cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       await service.getDueReviews(1);
@@ -700,7 +700,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should include learning cards', async () => {
+    it('TC-DUEREVIEW-006: This test case aims to verify inclusion of learning cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       await service.getDueReviews(1);
@@ -716,7 +716,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should include relearning cards', async () => {
+    it('TC-DUEREVIEW-007: This test case aims to verify inclusion of relearning cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       await service.getDueReviews(1);
@@ -732,7 +732,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should throw NotFoundException when deck does not exist', async () => {
+    it('TC-DUEREVIEW-008: This test case aims to verify NotFoundException when deck does not exist', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(service.getDueReviews(999)).rejects.toThrow(
@@ -742,7 +742,7 @@ describe('ReviewService  Tests', () => {
   });
 
   describe('getReviewPreview', () => {
-    it('should return preview for all quality options', async () => {
+    it('TC-PREVIEW-001: This test case aims to verify return of preview for all quality options', async () => {
       const mockCard = {
         id: 1,
         status: 'learning',
@@ -777,7 +777,7 @@ describe('ReviewService  Tests', () => {
       expect(result).toHaveProperty('Easy');
     });
 
-    it('should throw NotFoundException for non-existent card', async () => {
+    it('TC-PREVIEW-002: This test case aims to verify NotFoundException for non-existent card', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
       await expect(service.getReviewPreview(999)).rejects.toThrow(
@@ -785,7 +785,7 @@ describe('ReviewService  Tests', () => {
       );
     });
 
-    it('should format intervals in minutes for learning cards', async () => {
+    it('TC-PREVIEW-003: This test case aims to verify formatting of intervals in minutes for learning cards', async () => {
       const mockCard = {
         id: 1,
         status: 'learning',
@@ -804,7 +804,7 @@ describe('ReviewService  Tests', () => {
       expect(result.Again).toContain('min');
     });
 
-    it('should format intervals in days for review cards', async () => {
+    it('TC-PREVIEW-004: This test case aims to verify formatting of intervals in days for review cards', async () => {
       const mockCard = {
         id: 1,
         status: 'review',
@@ -823,7 +823,7 @@ describe('ReviewService  Tests', () => {
       expect(result.Good).toContain('day');
     });
 
-    it('should handle singular day', async () => {
+    it('TC-PREVIEW-005: This test case aims to verify handling of singular day', async () => {
       const mockCard = {
         id: 1,
         status: 'review',
@@ -842,7 +842,7 @@ describe('ReviewService  Tests', () => {
       expect(result.Good).toBe('1 day');
     });
 
-    it('should handle plural days', async () => {
+    it('TC-PREVIEW-006: This test case aims to verify handling of plural days', async () => {
       const mockCard = {
         id: 1,
         status: 'review',

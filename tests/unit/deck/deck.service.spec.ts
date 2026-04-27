@@ -193,7 +193,7 @@ describe('DeckService Tests', () => {
     });
 
     describe('User ID variations', () => {
-      it('should create deck with user ID 0', async () => {
+      it('TC-CREATEDECK-016: This test case aims to verify deck creation with user ID 0', async () => {
         const createDto: CreateDeckDto = { title: 'Test' };
         const mockDeck = { id: 1, title: 'Test', userId: 0 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -203,7 +203,7 @@ describe('DeckService Tests', () => {
         expect(result.userId).toBe(0);
       });
 
-      it('should create deck with large user ID', async () => {
+      it('TC-CREATEDECK-017: This test case aims to verify deck creation with large user ID', async () => {
         const createDto: CreateDeckDto = { title: 'Test' };
         const mockDeck = { id: 1, title: 'Test', userId: 999999999 };
         mockPrismaService.deck.create.mockResolvedValue(mockDeck);
@@ -215,7 +215,7 @@ describe('DeckService Tests', () => {
     });
 
     describe('Icon and color code', () => {
-      it('should create deck with valid hex color code', async () => {
+      it('TC-CREATEDECK-018: This test case aims to verify deck creation with valid hex color code', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           colorCode: '#FFFFFF',
@@ -228,7 +228,7 @@ describe('DeckService Tests', () => {
         expect(result.colorCode).toBe('#FFFFFF');
       });
 
-      it('should create deck with lowercase hex color code', async () => {
+      it('TC-CREATEDECK-019: This test case aims to verify deck creation with lowercase hex color code', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           colorCode: '#ff5733',
@@ -241,7 +241,7 @@ describe('DeckService Tests', () => {
         expect(result.colorCode).toBe('#ff5733');
       });
 
-      it('should create deck with icon name', async () => {
+      it('TC-CREATEDECK-020: This test case aims to verify deck creation with icon name', async () => {
         const createDto: CreateDeckDto = {
           title: 'Test',
           iconName: 'book-open',
@@ -257,7 +257,7 @@ describe('DeckService Tests', () => {
   });
 
   describe('findAll', () => {
-    it('should return all decks with users and cards', async () => {
+    it('TC-BROWSEDECKS-001: This test case aims to verify return of all decks with users and cards', async () => {
       const mockDecks = [
         { id: 1, title: 'Deck 1', user: { id: 1 }, cards: [] },
         {
@@ -277,7 +277,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should return empty array when no decks exist', async () => {
+    it('TC-BROWSEDECKS-002: This test case aims to verify return of empty array when no decks exist', async () => {
       mockPrismaService.deck.findMany.mockResolvedValue([]);
 
       const result = await provider.findAll();
@@ -285,7 +285,7 @@ describe('DeckService Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should parse examples JSON for cards', async () => {
+    it('TC-BROWSEDECKS-003: This test case aims to verify parsing of examples JSON for cards', async () => {
       const mockDecks = [
         {
           id: 1,
@@ -308,7 +308,7 @@ describe('DeckService Tests', () => {
       ]);
     });
 
-    it('should handle cards with null examples', async () => {
+    it('TC-BROWSEDECKS-004: This test case aims to verify handling of cards with null examples', async () => {
       const mockDecks = [
         {
           id: 1,
@@ -324,7 +324,7 @@ describe('DeckService Tests', () => {
       expect(result[0].cards[0].examples).toBeNull();
     });
 
-    it('should handle many decks', async () => {
+    it('TC-BROWSEDECKS-005: This test case aims to verify handling of many decks', async () => {
       const mockDecks = Array.from({ length: 100 }, (_, i) => ({
         id: i + 1,
         title: `Deck ${i + 1}`,
@@ -340,7 +340,7 @@ describe('DeckService Tests', () => {
   });
 
   describe('findOne', () => {
-    it('should find deck by id with all relations', async () => {
+    it('TC-BROWSEDECKS-006: This test case aims to verify finding deck by id with all relations', async () => {
       const mockDeck = {
         id: 1,
         title: 'Test Deck',
@@ -361,25 +361,25 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should throw NotFoundException for non-existent deck', async () => {
+    it('TC-BROWSEDECKS-007: This test case aims to verify NotFoundException is thrown for non-existent deck', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(provider.findOne(999)).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw NotFoundException for id = 0', async () => {
+    it('TC-BROWSEDECKS-008: This test case aims to verify NotFoundException is thrown for id = 0', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(provider.findOne(0)).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw NotFoundException for negative id', async () => {
+    it('TC-BROWSEDECKS-009: This test case aims to verify NotFoundException is thrown for negative id', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(provider.findOne(-1)).rejects.toThrow(NotFoundException);
     });
 
-    it('should parse examples JSON for cards', async () => {
+    it('TC-BROWSEDECKS-010: This test case aims to verify parsing of examples JSON for cards', async () => {
       const mockDeck = {
         id: 1,
         title: 'Test',
@@ -401,7 +401,7 @@ describe('DeckService Tests', () => {
       ]);
     });
 
-    it('should handle database errors gracefully', async () => {
+    it('TC-BROWSEDECKS-011: This test case aims to verify handling of database errors gracefully', async () => {
       mockPrismaService.deck.findUnique.mockRejectedValue(
         new Error('Database error'),
       );
@@ -411,7 +411,7 @@ describe('DeckService Tests', () => {
   });
 
   describe('findByUser', () => {
-    it('should find all decks by user id', async () => {
+    it('TC-BROWSEDECKS-012: This test case aims to verify finding all decks by user id', async () => {
       const mockDecks = [
         { id: 1, title: 'Deck 1', userId: 1, cards: [] },
         { id: 2, title: 'Deck 2', userId: 1, cards: [] },
@@ -427,7 +427,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should return empty array for user with no decks', async () => {
+    it('TC-BROWSEDECKS-013: This test case aims to verify return of empty array for user with no decks', async () => {
       mockPrismaService.deck.findMany.mockResolvedValue([]);
 
       const result = await provider.findByUser(999);
@@ -435,7 +435,7 @@ describe('DeckService Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should parse examples JSON for cards', async () => {
+    it('TC-BROWSEDECKS-014: This test case aims to verify parsing of examples JSON for cards by user', async () => {
       const mockDecks = [
         {
           id: 1,
@@ -626,7 +626,7 @@ describe('DeckService Tests', () => {
   });
 
   describe('getReviewedCardsCountInDay', () => {
-    it('should return reviewed cards count', async () => {
+    it('TC-DECKSTATS-005: This test case aims to verify return of reviewed cards count', async () => {
       const date = new Date('2025-12-01');
       const mockDeck = {
         id: 1,
@@ -648,7 +648,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should return zero when no cards reviewed', async () => {
+    it('TC-DECKSTATS-006: This test case aims to verify return of zero when no cards reviewed', async () => {
       const date = new Date('2025-12-01');
       const mockDeck = {
         id: 1,
@@ -665,7 +665,7 @@ describe('DeckService Tests', () => {
       expect(result.totalCards).toBe(2);
     });
 
-    it('should return zero when deck has no cards', async () => {
+    it('TC-DECKSTATS-007: This test case aims to verify return of zero when deck has no cards', async () => {
       const date = new Date('2025-12-01');
       const mockDeck = { id: 1, cards: [] };
       mockPrismaService.deck.findUnique.mockResolvedValue(mockDeck);
@@ -676,7 +676,7 @@ describe('DeckService Tests', () => {
       expect(result.totalCards).toBe(0);
     });
 
-    it('should throw error for non-existent deck', async () => {
+    it('TC-DECKSTATS-008: This test case aims to verify error is thrown for non-existent deck', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(
@@ -684,7 +684,7 @@ describe('DeckService Tests', () => {
       ).rejects.toThrow('Deck with id 999 not found');
     });
 
-    it('should use correct date range for filtering', async () => {
+    it('TC-DECKSTATS-009: This test case aims to verify use of correct date range for filtering', async () => {
       const date = new Date('2025-12-01T12:00:00.000Z');
       mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1, cards: [] });
 
@@ -707,7 +707,7 @@ describe('DeckService Tests', () => {
   });
 
   describe('getCardsDueToday', () => {
-    it('should return cards due today', async () => {
+    it('TC-DECKSTATS-010: This test case aims to verify return of cards due today', async () => {
       const now = new Date();
       const pastDate = new Date(now.getTime() - 86400000); // Yesterday
       const mockCards = [
@@ -721,7 +721,7 @@ describe('DeckService Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    it('should return empty array when no cards due', async () => {
+    it('TC-DECKSTATS-011: This test case aims to verify return of empty array when no cards due', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       const result = await provider.getCardsDueToday(1);
@@ -729,7 +729,7 @@ describe('DeckService Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should sort cards - never reviewed first', async () => {
+    it('TC-DECKSTATS-012: This test case aims to verify cards are sorted with never reviewed first', async () => {
       const now = new Date();
       const pastDate = new Date(now.getTime() - 86400000);
       const mockCards = [
@@ -744,7 +744,7 @@ describe('DeckService Tests', () => {
       expect(result[1].id).toBe(1);
     });
 
-    it('should parse examples JSON', async () => {
+    it('TC-DECKSTATS-013: This test case aims to verify parsing of examples JSON', async () => {
       const mockCards = [
         {
           id: 1,
@@ -761,7 +761,7 @@ describe('DeckService Tests', () => {
       ]);
     });
 
-    it('should include nextReviewDate in result', async () => {
+    it('TC-DECKSTATS-014: This test case aims to verify inclusion of nextReviewDate in result', async () => {
       const nextReviewDate = new Date('2025-12-01');
       const mockCards = [
         { id: 1, reviews: [{ nextReviewDate }], examples: null },
@@ -798,7 +798,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should return zero statistics when no reviews', async () => {
+    it('TC-DECKSTATS-015: This test case aims to verify return of zero statistics when no reviews', async () => {
       mockPrismaService.cardReview.findMany.mockResolvedValue([]);
 
       const result = await provider.getDeckStatistics(1);
@@ -814,7 +814,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should return 100% when all reviews are correct', async () => {
+    it('TC-DECKSTATS-016: This test case aims to verify return of 100% when all reviews are correct', async () => {
       const mockReviews = [
         { quality: ReviewQuality.Good },
         { quality: ReviewQuality.Easy },
@@ -827,7 +827,7 @@ describe('DeckService Tests', () => {
       expect(result.correctPercentage).toBe(100);
     });
 
-    it('should return 0% when all reviews are Again', async () => {
+    it('TC-DECKSTATS-017: This test case aims to verify return of 0% when all reviews are Again', async () => {
       const mockReviews = [
         { quality: ReviewQuality.Again },
         { quality: ReviewQuality.Again },
@@ -840,7 +840,7 @@ describe('DeckService Tests', () => {
       expect(result.correctReviews).toBe(0);
     });
 
-    it('should handle only Again reviews', async () => {
+    it('TC-DECKSTATS-018: This test case aims to verify handling of only Again reviews', async () => {
       const mockReviews = [{ quality: ReviewQuality.Again }];
       mockPrismaService.cardReview.findMany.mockResolvedValue(mockReviews);
 
@@ -852,7 +852,7 @@ describe('DeckService Tests', () => {
       expect(result.easyCount).toBe(0);
     });
 
-    it('should handle only Easy reviews', async () => {
+    it('TC-DECKSTATS-019: This test case aims to verify handling of only Easy reviews', async () => {
       const mockReviews = [
         { quality: ReviewQuality.Easy },
         { quality: ReviewQuality.Easy },
@@ -865,7 +865,7 @@ describe('DeckService Tests', () => {
       expect(result.correctPercentage).toBe(100);
     });
 
-    it('should round percentage to 2 decimal places', async () => {
+    it('TC-DECKSTATS-020: This test case aims to verify rounding of percentage to 2 decimal places', async () => {
       const mockReviews = [
         { quality: ReviewQuality.Again },
         { quality: ReviewQuality.Good },
@@ -885,7 +885,7 @@ describe('DeckService Tests', () => {
       mockPrismaService.deck.findUnique.mockResolvedValue({ id: 1 });
     });
 
-    it('should return last studied date', async () => {
+    it('TC-ADVDECKSTATS-001: This test case aims to verify return of last studied date', async () => {
       const lastStudied = new Date('2025-12-01T10:30:00.000Z');
       mockPrismaService.cardReview.findFirst.mockResolvedValue({
         reviewedAt: lastStudied,
@@ -899,7 +899,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should return null when never studied', async () => {
+    it('TC-ADVDECKSTATS-002: This test case aims to verify return of null when never studied', async () => {
       mockPrismaService.cardReview.findFirst.mockResolvedValue(null);
 
       const result = await provider.getLastStudiedDate(1);
@@ -910,7 +910,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should query for most recent review', async () => {
+    it('TC-ADVDECKSTATS-003: This test case aims to verify query for most recent review', async () => {
       mockPrismaService.cardReview.findFirst.mockResolvedValue(null);
 
       await provider.getLastStudiedDate(1);
@@ -922,7 +922,7 @@ describe('DeckService Tests', () => {
       });
     });
 
-    it('should throw NotFoundException for non-existent deck', async () => {
+    it('TC-ADVDECKSTATS-004: This test case aims to verify NotFoundException for non-existent deck', async () => {
       mockPrismaService.deck.findUnique.mockResolvedValue(null);
 
       await expect(provider.getLastStudiedDate(999)).rejects.toThrow(

@@ -203,7 +203,7 @@ describe('CardService  Tests', () => {
     });
 
     describe('Bidirectional card creation', () => {
-      it('should create reverse card for BIDIRECTIONAL deck', async () => {
+      it('TC-ADDCARD-011: This test case aims to verify that reverse card is created for BIDIRECTIONAL deck', async () => {
         const createDto = { deckId: 1, front: 'Hello', back: 'Xin chao' };
         const mockDeck = { id: 1, languageMode: 'BIDIRECTIONAL' };
         const mockCard = { id: 1, ...createDto, examples: null };
@@ -228,7 +228,7 @@ describe('CardService  Tests', () => {
         });
       });
 
-      it('should NOT create reverse card for VN_EN deck', async () => {
+      it('TC-ADDCARD-012: This test case aims to verify that reverse card is NOT created for VN_EN deck', async () => {
         const createDto = { deckId: 1, front: 'Hello', back: 'Xin chao' };
         const mockDeck = { id: 1, languageMode: 'VN_EN' };
         const mockCard = { id: 1, ...createDto, examples: null };
@@ -241,7 +241,7 @@ describe('CardService  Tests', () => {
         expect(prismaService.card.create).toHaveBeenCalledTimes(1);
       });
 
-      it('should NOT create reverse card for EN_VN deck', async () => {
+      it('TC-ADDCARD-013: This test case aims to verify that reverse card is NOT created for EN_VN deck', async () => {
         const createDto = { deckId: 1, front: 'Xin chao', back: 'Hello' };
         const mockDeck = { id: 1, languageMode: 'EN_VN' };
         const mockCard = { id: 1, ...createDto, examples: null };
@@ -254,7 +254,7 @@ describe('CardService  Tests', () => {
         expect(prismaService.card.create).toHaveBeenCalledTimes(1);
       });
 
-      it('should copy rich content fields to reverse card', async () => {
+      it('TC-ADDCARD-014: This test case aims to verify that rich content fields are copied to reverse card', async () => {
         const createDto = {
           deckId: 1,
           front: 'Hello',
@@ -287,7 +287,7 @@ describe('CardService  Tests', () => {
     });
 
     describe('Tags handling', () => {
-      it('should handle single tag', async () => {
+      it('TC-ADDCARD-015: This test case aims to verify handling of single tag', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -305,7 +305,7 @@ describe('CardService  Tests', () => {
         expect(result.tags).toBe('single');
       });
 
-      it('should handle multiple tags', async () => {
+      it('TC-ADDCARD-016: This test case aims to verify handling of multiple tags', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -323,7 +323,7 @@ describe('CardService  Tests', () => {
         expect(result.tags).toBe('tag1,tag2,tag3');
       });
 
-      it('should handle empty tags', async () => {
+      it('TC-ADDCARD-017: This test case aims to verify handling of empty tags', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -341,7 +341,7 @@ describe('CardService  Tests', () => {
         expect(result.tags).toBe('');
       });
 
-      it('should handle undefined tags', async () => {
+      it('TC-ADDCARD-018: This test case aims to verify handling of undefined tags', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -360,7 +360,7 @@ describe('CardService  Tests', () => {
     });
 
     describe('Examples handling', () => {
-      it('should handle single example', async () => {
+      it('TC-ADDCARD-019: This test case aims to verify handling of single example', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -382,7 +382,7 @@ describe('CardService  Tests', () => {
         expect(result.examples).toEqual(createDto.examples);
       });
 
-      it('should handle multiple examples', async () => {
+      it('TC-ADDCARD-020: This test case aims to verify handling of multiple examples', async () => {
         const examples = [
           { sentence: 'Example 1', translation: 'Vi du 1' },
           { sentence: 'Example 2', translation: 'Vi du 2' },
@@ -404,7 +404,7 @@ describe('CardService  Tests', () => {
         expect(result.examples).toHaveLength(3);
       });
 
-      it('should handle empty examples array', async () => {
+      it('TC-ADDCARD-021: This test case aims to verify handling of empty examples array', async () => {
         const createDto = {
           deckId: 1,
           front: 'Q',
@@ -422,7 +422,7 @@ describe('CardService  Tests', () => {
         expect(result.examples).toEqual([]);
       });
 
-      it('should handle undefined examples', async () => {
+      it('TC-ADDCARD-022: This test case aims to verify handling of undefined examples', async () => {
         const createDto = { deckId: 1, front: 'Q', back: 'A' };
         const mockDeck = { id: 1, languageMode: 'VN_EN' };
         const mockCard = { id: 1, ...createDto, examples: null };
@@ -435,7 +435,7 @@ describe('CardService  Tests', () => {
         expect(result.examples).toBeNull();
       });
 
-      it('should handle examples with special characters', async () => {
+      it('TC-ADDCARD-023: This test case aims to verify handling of examples with special characters', async () => {
         const examples = [
           { sentence: 'Hello <b>World</b>', translation: '日本語 🎉' },
         ];
@@ -459,7 +459,7 @@ describe('CardService  Tests', () => {
   });
 
   describe('findAll', () => {
-    it('should return all cards with deck and reviews', async () => {
+    it('TC-BROWSECARDS-001: This test case aims to verify return of all cards with deck and reviews', async () => {
       const mockCards = [
         {
           id: 1,
@@ -488,7 +488,7 @@ describe('CardService  Tests', () => {
       });
     });
 
-    it('should return empty array when no cards exist', async () => {
+    it('TC-BROWSECARDS-002: This test case aims to verify return of empty array when no cards exist', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       const result = await provider.findAll();
@@ -496,7 +496,7 @@ describe('CardService  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should parse examples JSON for each card', async () => {
+    it('TC-BROWSECARDS-003: This test case aims to verify parsing of examples JSON for each card', async () => {
       const mockCards = [
         {
           id: 1,
@@ -515,7 +515,7 @@ describe('CardService  Tests', () => {
       ]);
     });
 
-    it('should handle cards with null examples', async () => {
+    it('TC-BROWSECARDS-004: This test case aims to verify handling of cards with null examples', async () => {
       const mockCards = [
         { id: 1, front: 'Q1', examples: null, deck: { id: 1 }, reviews: [] },
       ];
@@ -526,7 +526,7 @@ describe('CardService  Tests', () => {
       expect(result[0].examples).toBeNull();
     });
 
-    it('should handle many cards', async () => {
+    it('TC-BROWSECARDS-005: This test case aims to verify handling of many cards', async () => {
       const mockCards = Array.from({ length: 1000 }, (_, i) => ({
         id: i + 1,
         front: `Q${i + 1}`,
@@ -544,7 +544,7 @@ describe('CardService  Tests', () => {
   });
 
   describe('findOne', () => {
-    it('should find card by id with all relations', async () => {
+    it('TC-BROWSECARDS-006: This test case aims to verify finding card by id with all relations', async () => {
       const mockCard = {
         id: 1,
         front: 'Q1',
@@ -570,7 +570,7 @@ describe('CardService  Tests', () => {
       });
     });
 
-    it('should throw NotFoundException for non-existent card', async () => {
+    it('TC-BROWSECARDS-007: This test case aims to verify NotFoundException is thrown for non-existent card', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
       await expect(provider.findOne(999)).rejects.toThrow(
@@ -578,7 +578,7 @@ describe('CardService  Tests', () => {
       );
     });
 
-    it('should throw NotFoundException for id = 0', async () => {
+    it('TC-BROWSECARDS-008: This test case aims to verify NotFoundException is thrown for id = 0', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
       await expect(provider.findOne(0)).rejects.toThrow(
@@ -586,7 +586,7 @@ describe('CardService  Tests', () => {
       );
     });
 
-    it('should throw NotFoundException for negative id', async () => {
+    it('TC-BROWSECARDS-009: This test case aims to verify NotFoundException is thrown for negative id', async () => {
       mockPrismaService.card.findUnique.mockResolvedValue(null);
 
       await expect(provider.findOne(-1)).rejects.toThrow(
@@ -594,7 +594,7 @@ describe('CardService  Tests', () => {
       );
     });
 
-    it('should parse examples JSON', async () => {
+    it('TC-BROWSECARDS-010: This test case aims to verify parsing of examples JSON', async () => {
       const mockCard = {
         id: 1,
         front: 'Q1',
@@ -609,7 +609,7 @@ describe('CardService  Tests', () => {
       expect(result?.examples).toEqual([{ sentence: 'Ex', translation: 'Tr' }]);
     });
 
-    it('should order reviews by reviewedAt desc', async () => {
+    it('TC-BROWSECARDS-011: This test case aims to verify ordering of reviews by reviewedAt desc', async () => {
       const mockCard = {
         id: 1,
         front: 'Q1',
@@ -635,7 +635,7 @@ describe('CardService  Tests', () => {
   });
 
   describe('findByDeck', () => {
-    it('should find all cards in deck', async () => {
+    it('TC-BROWSECARDS-012: This test case aims to verify finding all cards in deck', async () => {
       const mockCards = [
         { id: 1, deckId: 1, front: 'Q1', examples: null, reviews: [] },
         { id: 2, deckId: 1, front: 'Q2', examples: null, reviews: [] },
@@ -653,7 +653,7 @@ describe('CardService  Tests', () => {
       });
     });
 
-    it('should return empty array for deck with no cards', async () => {
+    it('TC-BROWSECARDS-013: This test case aims to verify return of empty array for deck with no cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
       const result = await provider.findByDeck(999);
@@ -661,7 +661,7 @@ describe('CardService  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should return only the latest review per card', async () => {
+    it('TC-BROWSECARDS-014: This test case aims to verify return of only the latest review per card', async () => {
       const mockCards = [
         {
           id: 1,
@@ -683,7 +683,7 @@ describe('CardService  Tests', () => {
       );
     });
 
-    it('should parse examples JSON for each card', async () => {
+    it('TC-BROWSECARDS-015: This test case aims to verify parsing of examples JSON for each card in deck', async () => {
       const mockCards = [
         {
           id: 1,
