@@ -240,7 +240,7 @@ describe('StudyService  Tests', () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
       });
 
-      it('should handle userId = 0', async () => {
+      it('TC-STARTSTUDY-021: This test case aims to verify handling of userId = 0', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
         await expect(service.getCramCards(0, 1)).rejects.toThrow(
@@ -248,7 +248,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should handle negative userId', async () => {
+      it('TC-STARTSTUDY-022: This test case aims to verify handling of negative userId', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
         await expect(service.getCramCards(-1, 1)).rejects.toThrow(
@@ -256,7 +256,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should handle large userId', async () => {
+      it('TC-STARTSTUDY-023: This test case aims to verify handling of large userId', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue({
           id: 1,
           userId: 999999,
@@ -273,7 +273,7 @@ describe('StudyService  Tests', () => {
         mockPrismaService.$queryRaw.mockResolvedValue([]);
       });
 
-      it('should handle deckId = 0', async () => {
+      it('TC-STARTSTUDY-024: This test case aims to verify handling of deckId = 0', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
         await expect(service.getCramCards(1, 0)).rejects.toThrow(
@@ -281,7 +281,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should handle negative deckId', async () => {
+      it('TC-STARTSTUDY-025: This test case aims to verify handling of negative deckId', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
         await expect(service.getCramCards(1, -1)).rejects.toThrow(
@@ -289,7 +289,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should handle large deckId', async () => {
+      it('TC-STARTSTUDY-026: This test case aims to verify handling of large deckId', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue({
           id: 999999,
           userId: 1,
@@ -309,7 +309,7 @@ describe('StudyService  Tests', () => {
         });
       });
 
-      it('should return cards with all fields', async () => {
+      it('TC-STARTSTUDY-027: This test case aims to verify cards are returned with all fields', async () => {
         const mockCard = {
           id: 1,
           front: 'Test Front',
@@ -334,7 +334,7 @@ describe('StudyService  Tests', () => {
         expect(result[0]).toHaveProperty('deckId');
       });
 
-      it('should return cards with unicode content', async () => {
+      it('TC-STARTSTUDY-028: This test case aims to verify cards are returned with unicode content', async () => {
         const mockCard = {
           id: 1,
           front: 'Xin chào',
@@ -348,7 +348,7 @@ describe('StudyService  Tests', () => {
         expect(result[0].front).toBe('Xin chào');
       });
 
-      it('should return cards with special characters', async () => {
+      it('TC-STARTSTUDY-029: This test case aims to verify cards are returned with special characters', async () => {
         const mockCard = {
           id: 1,
           front: 'What is 2 + 2?',
@@ -362,7 +362,7 @@ describe('StudyService  Tests', () => {
         expect(result[0].front).toBe('What is 2 + 2?');
       });
 
-      it('should return cards with very long content', async () => {
+      it('TC-STARTSTUDY-030: This test case aims to verify cards are returned with very long content', async () => {
         const longText = 'A'.repeat(5000);
         const mockCard = {
           id: 1,
@@ -377,7 +377,7 @@ describe('StudyService  Tests', () => {
         expect(result[0].front).toHaveLength(5000);
       });
 
-      it('should return cards with empty strings', async () => {
+      it('TC-STARTSTUDY-031: This test case aims to verify cards are returned with empty strings', async () => {
         const mockCard = {
           id: 1,
           front: '',
@@ -393,7 +393,7 @@ describe('StudyService  Tests', () => {
     });
 
     describe('Database error handling', () => {
-      it('should propagate deck.findFirst errors', async () => {
+      it('TC-STARTSTUDY-032: This test case aims to verify propagation of deck.findFirst errors', async () => {
         mockPrismaService.deck.findFirst.mockRejectedValue(
           new Error('Database connection failed'),
         );
@@ -403,7 +403,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should propagate $queryRaw errors', async () => {
+      it('TC-STARTSTUDY-033: This test case aims to verify propagation of $queryRaw errors', async () => {
         mockPrismaService.deck.findFirst.mockResolvedValue({
           id: 1,
           userId: 1,
@@ -417,7 +417,7 @@ describe('StudyService  Tests', () => {
         );
       });
 
-      it('should handle timeout errors', async () => {
+      it('TC-STARTSTUDY-034: This test case aims to verify handling of timeout errors', async () => {
         mockPrismaService.deck.findFirst.mockRejectedValue(
           new Error('Query timeout'),
         );
@@ -436,7 +436,7 @@ describe('StudyService  Tests', () => {
         });
       });
 
-      it('should return both original and reverse cards', async () => {
+      it('TC-STARTSTUDY-035: This test case aims to verify both original and reverse cards are returned', async () => {
         const mockCards = [
           { id: 1, front: 'Hello', back: 'Xin chào', reverseCardId: 2 },
           { id: 2, front: 'Xin chào', back: 'Hello', reverseCardId: 1 },
@@ -448,7 +448,7 @@ describe('StudyService  Tests', () => {
         expect(result).toHaveLength(2);
       });
 
-      it('should return cards without reverse', async () => {
+      it('TC-STARTSTUDY-036: This test case aims to verify cards without reverse are returned correctly', async () => {
         const mockCards = [
           { id: 1, front: 'Hello', back: 'Xin chào', reverseCardId: null },
         ];
