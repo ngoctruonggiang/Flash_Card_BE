@@ -55,7 +55,7 @@ describe('ReviewService  Tests', () => {
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
-  describe('updateReview', () => {
+  describe('UC-21: Record Review Outcome - updateReview', () => {
     it('TC-REVIEW-001: This test case aims to verify updating a review', async () => {
       const mockReview: any = {
         id: 1,
@@ -105,7 +105,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('removeByCardId', () => {
+  describe('UC-16: Delete Card - removeByCardId', () => {
     it('TC-REVIEW-004: This test case aims to verify removal of all reviews for a card', async () => {
       mockPrismaService.cardReview.deleteMany.mockResolvedValue({ count: 5 });
 
@@ -146,7 +146,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('addReview', () => {
+  describe('UC-21: Record Review Outcome - addReview', () => {
     it('TC-REVIEW-008: This test case aims to verify creation of a new review', async () => {
       const mockReview: any = {
         cardId: 1,
@@ -225,7 +225,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('getLastestReviewByCardId', () => {
+  describe('UC-21: Record Review Outcome - getLastestReviewByCardId', () => {
     it('TC-REVIEW-011: This test case aims to verify return of the latest review', async () => {
       const mockReview = {
         id: 1,
@@ -521,7 +521,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('submitCramReviews', () => {
+  describe('UC-21: Record Review Outcome - submitCramReviews', () => {
     it('TC-CRAMREVIEW-001: This test case aims to verify creation of review without updating card schedule', async () => {
       const submitDto: any = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
@@ -633,7 +633,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('getDueReviews', () => {
+  describe('UC-20: Start Study Session - getDueReviews', () => {
     beforeEach(() => {
       // Mock deck existence check
       mockPrismaService.deck.findUnique.mockResolvedValue({
@@ -741,7 +741,7 @@ describe('ReviewService  Tests', () => {
     });
   });
 
-  describe('getReviewPreview', () => {
+  describe('UC-20: Start Study Session - getReviewPreview', () => {
     it('TC-PREVIEW-001: This test case aims to verify return of preview for all quality options', async () => {
       const mockCard = {
         id: 1,

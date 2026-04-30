@@ -110,8 +110,8 @@ describe('DeckController Tests', () => {
     });
   });
 
-  describe('findAllByUser (Admin)', () => {
-    it('should find all decks by user id', async () => {
+  describe('UC-07: View Deck Library - Admin findAllByUser', () => {
+    it('TC-VIEWLIBRARY-004: This test case aims to find all decks by user id', async () => {
       const decks = [mockDeck, { ...mockDeck, id: 2, name: 'Deck 2' }];
       mockDeckService.findByUser.mockResolvedValue(decks);
 
@@ -121,7 +121,7 @@ describe('DeckController Tests', () => {
       expect(deckService.findByUser).toHaveBeenCalledWith(1);
     });
 
-    it('should find all decks when no userId provided', async () => {
+    it('TC-VIEWLIBRARY-005: This test case aims to find all decks when no userId provided', async () => {
       const allDecks = [mockDeck, { ...mockDeck, id: 2, userId: 2 }];
       mockDeckService.findAll.mockResolvedValue(allDecks);
 
@@ -131,7 +131,7 @@ describe('DeckController Tests', () => {
       expect(deckService.findAll).toHaveBeenCalled();
     });
 
-    it('should return empty array when user has no decks', async () => {
+    it('TC-VIEWLIBRARY-006: This test case aims to return empty array when user has no decks', async () => {
       mockDeckService.findByUser.mockResolvedValue([]);
 
       const result = await controller.findAllByUser(999);
@@ -169,8 +169,8 @@ describe('DeckController Tests', () => {
     });
   });
 
-  describe('findOne', () => {
-    it('should find deck by id', async () => {
+  describe('UC-07: View Deck Library - findOne', () => {
+    it('TC-VIEWLIBRARY-007: This test case aims to find deck by id', async () => {
       mockDeckService.findOne.mockResolvedValue(mockDeck);
 
       const result = await controller.findOne(mockUser as any, { id: 1 });
@@ -179,7 +179,7 @@ describe('DeckController Tests', () => {
       expect(deckService.findOne).toHaveBeenCalledWith(1, mockUser.id);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-VIEWLIBRARY-008: This test case aims to propagate NotFoundException', async () => {
       mockDeckService.findOne.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -189,7 +189,7 @@ describe('DeckController Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should handle different deck ids', async () => {
+    it('TC-VIEWLIBRARY-009: This test case aims to handle different deck ids', async () => {
       const deck = { ...mockDeck, id: 100 };
       mockDeckService.findOne.mockResolvedValue(deck);
 
@@ -324,8 +324,8 @@ describe('DeckController Tests', () => {
     });
   });
 
-  describe('getReviewedCountInDay', () => {
-    it('should get reviewed count for today', async () => {
+  describe('UC-11: View Deck Statistics - getReviewedCountInDay', () => {
+    it('TC-DECKSTATS-021: This test case aims to get reviewed count for today', async () => {
       mockDeckService.getReviewedCardsCountInDay.mockResolvedValue(10);
 
       const result = await controller.getReviewedCountInDay({ id: 1 });
@@ -334,7 +334,7 @@ describe('DeckController Tests', () => {
       expect(deckService.getReviewedCardsCountInDay).toHaveBeenCalled();
     });
 
-    it('should get reviewed count for specific date', async () => {
+    it('TC-DECKSTATS-022: This test case aims to get reviewed count for specific date', async () => {
       mockDeckService.getReviewedCardsCountInDay.mockResolvedValue(5);
 
       await controller.getReviewedCountInDay({ id: 1 }, '2025-01-15');
@@ -345,7 +345,7 @@ describe('DeckController Tests', () => {
       );
     });
 
-    it('should return 0 when no reviews', async () => {
+    it('TC-DECKSTATS-023: This test case aims to return 0 when no reviews', async () => {
       mockDeckService.getReviewedCardsCountInDay.mockResolvedValue(0);
 
       const result = await controller.getReviewedCountInDay({ id: 1 });
@@ -353,7 +353,7 @@ describe('DeckController Tests', () => {
       expect(result).toBe(0);
     });
 
-    it('should handle invalid date string', async () => {
+    it('TC-DECKSTATS-024: This test case aims to handle invalid date string', async () => {
       mockDeckService.getReviewedCardsCountInDay.mockResolvedValue(0);
 
       await controller.getReviewedCountInDay({ id: 1 }, 'invalid-date');
@@ -362,8 +362,8 @@ describe('DeckController Tests', () => {
     });
   });
 
-  describe('getCardsDueToday', () => {
-    it('should get cards due today', async () => {
+  describe('UC-20: Start Study Session - getCardsDueToday', () => {
+    it('TC-STARTSTUDY-006: This test case aims to get cards due today', async () => {
       const dueCards = [
         { id: 1, front: 'Card 1' },
         { id: 2, front: 'Card 2' },
@@ -376,7 +376,7 @@ describe('DeckController Tests', () => {
       expect(deckService.getCardsDueToday).toHaveBeenCalledWith(1);
     });
 
-    it('should return empty array when no cards due', async () => {
+    it('TC-STARTSTUDY-007: This test case aims to return empty array when no cards due', async () => {
       mockDeckService.getCardsDueToday.mockResolvedValue([]);
 
       const result = await controller.getCardsDueToday({ id: 1 });
@@ -384,7 +384,7 @@ describe('DeckController Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-STARTSTUDY-008: This test case aims to propagate NotFoundException', async () => {
       mockDeckService.getCardsDueToday.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -442,8 +442,8 @@ describe('DeckController Tests', () => {
     });
   });
 
-  describe('getLastStudiedDate', () => {
-    it('should get last studied date', async () => {
+  describe('UC-12: View Advanced Deck Statistics - getLastStudiedDate', () => {
+    it('TC-ADVDECKSTATS-005: This test case aims to get last studied date', async () => {
       const lastStudied = { lastStudied: new Date('2025-01-15') };
       mockDeckService.getLastStudiedDate.mockResolvedValue(lastStudied);
 
@@ -453,7 +453,7 @@ describe('DeckController Tests', () => {
       expect(deckService.getLastStudiedDate).toHaveBeenCalledWith(1);
     });
 
-    it('should return null when never studied', async () => {
+    it('TC-ADVDECKSTATS-006: This test case aims to return null when never studied', async () => {
       mockDeckService.getLastStudiedDate.mockResolvedValue({
         lastStudied: null,
       });
@@ -463,7 +463,7 @@ describe('DeckController Tests', () => {
       expect(result.lastStudied).toBeNull();
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-ADVDECKSTATS-007: This test case aims to propagate NotFoundException', async () => {
       mockDeckService.getLastStudiedDate.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -475,11 +475,11 @@ describe('DeckController Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('should be defined', () => {
+    it('TC-DECKCTRL-001: This test case aims to verify controller is defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should have deckService injected', () => {
+    it('TC-DECKCTRL-002: This test case aims to verify deckService is injected', () => {
       expect(deckService).toBeDefined();
     });
   });
