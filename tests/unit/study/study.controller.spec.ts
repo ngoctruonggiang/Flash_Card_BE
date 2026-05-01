@@ -21,6 +21,9 @@ describe('StudyController  Tests', () => {
 
   const mockStudyService = {
     getCramCards: jest.fn(),
+    getUserStatistics: jest.fn(),
+    getUserDailyBreakdown: jest.fn(),
+    getRecentActivity: jest.fn(),
   };
 
   const mockUser = {
@@ -101,7 +104,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('getReviewPreview', () => {
-    it('should return preview for all quality options', async () => {
+    it('TC-PREVIEW-001: This test case aims to verify preview is returned for all quality options', async () => {
       const preview = {
         Again: '1 min',
         Hard: '1 min',
@@ -116,7 +119,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getReviewPreview).toHaveBeenCalledWith(1);
     });
 
-    it('should propagate NotFoundException for non-existent card', async () => {
+    it('TC-PREVIEW-002: This test case aims to verify NotFoundException propagation for non-existent card', async () => {
       mockReviewService.getReviewPreview.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -126,7 +129,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should handle string id conversion', async () => {
+    it('TC-PREVIEW-003: This test case aims to verify string id conversion to number', async () => {
       const preview = {
         Again: '1 min',
         Hard: '1 min',
@@ -140,7 +143,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.getReviewPreview).toHaveBeenCalledWith(42);
     });
 
-    it('should return day intervals for review cards', async () => {
+    it('TC-PREVIEW-004: This test case aims to verify day intervals for review cards', async () => {
       const preview = {
         Again: '10 min',
         Hard: '12 days',
@@ -154,7 +157,7 @@ describe('StudyController  Tests', () => {
       expect(result.Good).toContain('days');
     });
 
-    it('should return minute intervals for learning cards', async () => {
+    it('TC-PREVIEW-005: This test case aims to verify minute intervals for learning cards', async () => {
       const preview = {
         Again: '1 min',
         Hard: '1 min',
@@ -319,7 +322,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('startCramSession', () => {
-    it('should start cram session with default limit', async () => {
+    it('TC-CRAM-001: This test case aims to verify cram session start with default limit', async () => {
       const cards = [
         { id: 1, front: 'Card 1' },
         { id: 2, front: 'Card 2' },
@@ -340,7 +343,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should start cram session with custom limit', async () => {
+    it('TC-CRAM-002: This test case aims to verify cram session start with custom limit', async () => {
       const cards = Array.from({ length: 10 }, (_, i) => ({ id: i + 1 }));
       mockStudyService.getCramCards.mockResolvedValue(cards);
 
@@ -354,7 +357,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should return empty array when no cards', async () => {
+    it('TC-CRAM-003: This test case aims to verify empty array is returned when no cards', async () => {
       mockStudyService.getCramCards.mockResolvedValue([]);
 
       const result = await controller.startCramSession(mockUser as any, 1);
@@ -363,7 +366,7 @@ describe('StudyController  Tests', () => {
       expect(result.total).toBe(0);
     });
 
-    it('should propagate NotFoundException for wrong deck', async () => {
+    it('TC-CRAM-004: This test case aims to verify NotFoundException propagation for wrong deck', async () => {
       mockStudyService.getCramCards.mockRejectedValue(
         new NotFoundException('Deck not found'),
       );
@@ -373,7 +376,7 @@ describe('StudyController  Tests', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should convert string limit to number', async () => {
+    it('TC-CRAM-005: This test case aims to verify string limit conversion to number', async () => {
       mockStudyService.getCramCards.mockResolvedValue([]);
 
       await controller.startCramSession(mockUser as any, 1, '25' as any);
@@ -385,7 +388,7 @@ describe('StudyController  Tests', () => {
       );
     });
 
-    it('should use correct user id', async () => {
+    it('TC-CRAM-006: This test case aims to verify correct user id is used', async () => {
       const user = { ...mockUser, id: 99 };
       mockStudyService.getCramCards.mockResolvedValue([]);
 
@@ -394,7 +397,7 @@ describe('StudyController  Tests', () => {
       expect(studyService.getCramCards).toHaveBeenCalledWith(99, 1, 50);
     });
 
-    it('should handle undefined limit', async () => {
+    it('TC-CRAM-007: This test case aims to verify handling of undefined limit', async () => {
       mockStudyService.getCramCards.mockResolvedValue([]);
 
       await controller.startCramSession(mockUser as any, 1, undefined);
@@ -408,7 +411,7 @@ describe('StudyController  Tests', () => {
   });
 
   describe('submitCramReview', () => {
-    it('should submit cram review', async () => {
+    it('TC-CRAMREVIEW-001: This test case aims to verify cram review submission', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],
       };
@@ -428,7 +431,7 @@ describe('StudyController  Tests', () => {
       expect(reviewService.submitCramReviews).toHaveBeenCalledWith(submitDto);
     });
 
-    it('should submit multiple cram reviews', async () => {
+    it('TC-CRAMREVIEW-002: This test case aims to verify multiple cram reviews submission', async () => {
       const submitDto = {
         CardReviews: [
           { cardId: 1, quality: 'Good' },
@@ -445,7 +448,7 @@ describe('StudyController  Tests', () => {
       expect(result).toHaveLength(2);
     });
 
-    it('should not affect card scheduling', async () => {
+    it('TC-CRAMREVIEW-003: This test case aims to verify cram reviews do not affect card scheduling', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Easy' }],
       };
@@ -464,7 +467,7 @@ describe('StudyController  Tests', () => {
       expect(result[0].previousStatus).toBe(result[0].newStatus);
     });
 
-    it('should handle empty CardReviews', async () => {
+    it('TC-CRAMREVIEW-004: This test case aims to verify handling of empty CardReviews', async () => {
       const submitDto = { CardReviews: [] };
       mockReviewService.submitCramReviews.mockResolvedValue([]);
 
@@ -473,7 +476,7 @@ describe('StudyController  Tests', () => {
       expect(result).toEqual([]);
     });
 
-    it('should propagate service errors', async () => {
+    it('TC-CRAMREVIEW-005: This test case aims to verify service errors are propagated', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 999, quality: 'Good' }],
       };
@@ -488,26 +491,20 @@ describe('StudyController  Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('should be defined', () => {
+    it('TC-STUDYCTRL-001: This test case aims to verify controller is defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should have reviewService injected', () => {
+    it('TC-STUDYCTRL-002: This test case aims to verify reviewService is injected', () => {
       expect(reviewService).toBeDefined();
     });
 
-    it('should have studyService injected', () => {
+    it('TC-STUDYCTRL-003: This test case aims to verify studyService is injected', () => {
       expect(studyService).toBeDefined();
     });
   });
 
   describe('UC-STATISTICS: User Statistics Controller Endpoints', () => {
-    beforeEach(() => {
-      mockStudyService.getUserStatistics = jest.fn();
-      mockStudyService.getUserDailyBreakdown = jest.fn();
-      mockStudyService.getRecentActivity = jest.fn();
-    });
-
     describe('getUserStatistics', () => {
       it('TC-CTRL-USERSTATS-001: This test case aims to verify user statistics endpoint returns data', async () => {
         const mockStats = {

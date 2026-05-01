@@ -205,7 +205,7 @@ describe('CardController Tests', () => {
   });
 
   describe('findOne', () => {
-    it('should find card by id', async () => {
+    it('TC-BROWSECARDS-006: This test case aims to verify finding card by id', async () => {
       mockCardService.findOne.mockResolvedValue(mockCard);
 
       const result = await controller.findOne({ id: 1 });
@@ -214,7 +214,7 @@ describe('CardController Tests', () => {
       expect(cardService.findOne).toHaveBeenCalledWith(1);
     });
 
-    it('should propagate NotFoundException', async () => {
+    it('TC-BROWSECARDS-007: This test case aims to verify NotFoundException propagation', async () => {
       mockCardService.findOne.mockRejectedValue(
         new NotFoundException('Card not found'),
       );
@@ -224,7 +224,7 @@ describe('CardController Tests', () => {
       );
     });
 
-    it('should handle different card ids', async () => {
+    it('TC-BROWSECARDS-008: This test case aims to verify handling of different card ids', async () => {
       const card = { ...mockCard, id: 100 };
       mockCardService.findOne.mockResolvedValue(card);
 
@@ -234,7 +234,7 @@ describe('CardController Tests', () => {
       expect(cardService.findOne).toHaveBeenCalledWith(100);
     });
 
-    it('should return card with all fields', async () => {
+    it('TC-BROWSECARDS-009: This test case aims to verify return of card with all fields', async () => {
       mockCardService.findOne.mockResolvedValue(mockCard);
 
       const result = await controller.findOne({ id: 1 });
@@ -486,11 +486,11 @@ describe('CardController Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('should be defined', () => {
+    it('TC-CARDCTRL-001: This test case aims to verify controller is defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should have cardService injected', () => {
+    it('TC-CARDCTRL-002: This test case aims to verify cardService is injected', () => {
       expect(cardService).toBeDefined();
     });
   });
