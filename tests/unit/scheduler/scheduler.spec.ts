@@ -16,7 +16,7 @@ describe('AnkiScheduler  Tests', () => {
     scheduler = new AnkiScheduler({ useFuzz: false });
   });
 
-  describe('Constructor', () => {
+  describe('UC-21: Record Review Outcome - Constructor', () => {
     it('TC-SCHEDULER-001: This test case aims to verify scheduler creation with default settings', () => {
       const defaultScheduler = new AnkiScheduler();
       expect(defaultScheduler).toBeDefined();
@@ -59,7 +59,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('DEFAULT_SETTINGS', () => {
+  describe('UC-21: Record Review Outcome - DEFAULT_SETTINGS', () => {
     it('TC-SCHEDULER-006: This test case aims to verify correct learning steps in default settings', () => {
       expect(DEFAULT_SETTINGS.learningSteps).toEqual([1, 10]);
     });
@@ -101,7 +101,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('calculateNext - New Cards', () => {
+  describe('UC-21: Record Review Outcome - calculateNext New Cards', () => {
     const newCard: SchedulerCard = {
       status: 'new',
       stepIndex: 0,
@@ -145,7 +145,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('calculateNext - Learning Cards', () => {
+  describe('UC-21: Record Review Outcome - calculateNext Learning Cards', () => {
     describe('Again rating', () => {
       it('TC-SCHEDULER-022: This test case aims to verify stepIndex is reset to 0 on Again', () => {
         const card: SchedulerCard = {
@@ -333,7 +333,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('calculateNext - Review Cards', () => {
+  describe('UC-21: Record Review Outcome - calculateNext Review Cards', () => {
     describe('Again rating', () => {
       it('TC-SCHEDULER-036: This test case aims to verify transition to relearning on Again', () => {
         const card: SchedulerCard = {
@@ -559,7 +559,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('calculateNext - Relearning Cards', () => {
+  describe('UC-21: Record Review Outcome - calculateNext Relearning Cards', () => {
     describe('Again rating', () => {
       it('TC-SCHEDULER-054: This test case aims to verify stepIndex is reset to 0 on Again for relearning', () => {
         const card: SchedulerCard = {
@@ -689,7 +689,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('Custom Settings', () => {
+  describe('UC-21: Record Review Outcome - Custom Settings', () => {
     it('TC-SCHEDULER-064: This test case aims to verify use of custom learning steps', () => {
       const customScheduler = new AnkiScheduler({
         learningSteps: [1, 5, 15, 30],
@@ -828,7 +828,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('Fuzz Behavior', () => {
+  describe('UC-21: Record Review Outcome - Fuzz Behavior', () => {
     it('TC-SCHEDULER-071: This test case aims to verify fuzz is not applied when useFuzz is false', () => {
       const noFuzzScheduler = new AnkiScheduler({ useFuzz: false });
       const card: SchedulerCard = {
@@ -892,7 +892,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('Edge Cases', () => {
+  describe('UC-21: Record Review Outcome - Edge Cases', () => {
     it('TC-SCHEDULER-074: This test case aims to verify handling of very large ease factor', () => {
       const card: SchedulerCard = {
         status: 'review',
@@ -1031,7 +1031,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('Date Calculations', () => {
+  describe('UC-21: Record Review Outcome - Date Calculations', () => {
     it('TC-SCHEDULER-082: This test case aims to verify correct date is set for learning cards (minutes)', () => {
       const card: SchedulerCard = {
         status: 'learning',
@@ -1080,7 +1080,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('Multiple Consecutive Reviews', () => {
+  describe('UC-21: Record Review Outcome - Multiple Consecutive Reviews', () => {
     it('TC-SCHEDULER-084: This test case aims to verify handling of multiple Good ratings building interval', () => {
       let card: SchedulerCard = {
         status: 'new',
