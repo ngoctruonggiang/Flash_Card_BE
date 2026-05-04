@@ -999,7 +999,7 @@ describe('AnkiScheduler  Tests', () => {
     });
   });
 
-  describe('Rating Type Validation', () => {
+  describe('UC-21: Record Review Outcome - Rating Type Validation', () => {
     const allRatings: Rating[] = ['Again', 'Hard', 'Good', 'Easy'];
     const allStatuses: CardStatus[] = [
       'new',
@@ -1010,7 +1010,7 @@ describe('AnkiScheduler  Tests', () => {
 
     allStatuses.forEach((status) => {
       allRatings.forEach((rating) => {
-        it(`should handle ${status} card with ${rating} rating`, () => {
+        it(`TC-SCHEDULER-COMBO-${status}-${rating}: This test case aims to verify handling of ${status} card with ${rating} rating`, () => {
           const card: SchedulerCard = {
             status,
             stepIndex: 0,

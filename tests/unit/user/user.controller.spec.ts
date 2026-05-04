@@ -213,7 +213,7 @@ describe('UserController  Tests', () => {
     });
   });
 
-  describe('getAllUser (Admin)', () => {
+  describe('UC-04: View User Profile - Admin getAllUser', () => {
     it('TC-ADMINALLUSERS-001: This test case aims to verify return of all users', async () => {
       const allUsers = [
         mockUser,
@@ -259,7 +259,7 @@ describe('UserController  Tests', () => {
     });
   });
 
-  describe('getUserById (Admin)', () => {
+  describe('UC-04: View User Profile - Admin getUserById', () => {
     it('TC-ADMINGETUSER-001: This test case aims to verify user is returned by id', async () => {
       const params = { id: 1 };
       mockUserService.getUserById.mockResolvedValue(mockUser);
@@ -302,7 +302,7 @@ describe('UserController  Tests', () => {
     });
   });
 
-  describe('updateAdmin (Admin)', () => {
+  describe('UC-05: Update User Profile - Admin updateAdmin', () => {
     it('TC-ADMINUPDATE-001: This test case aims to verify updating any user by id', async () => {
       const params = { id: 2 };
       const updateDto = { username: 'updateduser' };
@@ -366,7 +366,7 @@ describe('UserController  Tests', () => {
     });
   });
 
-  describe('removeAdmin (Admin)', () => {
+  describe('UC-06: Delete User Account - Admin removeAdmin', () => {
     it('TC-ADMINREMOVE-001: This test case aims to verify removing any user by id', async () => {
       const params = { id: 2 };
       mockUserService.remove.mockResolvedValue({ deleted: true });

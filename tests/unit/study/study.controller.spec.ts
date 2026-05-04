@@ -103,7 +103,7 @@ describe('StudyController  Tests', () => {
     });
   });
 
-  describe('getReviewPreview', () => {
+  describe('UC-20: Start Study Session - getReviewPreview', () => {
     it('TC-PREVIEW-001: This test case aims to verify preview is returned for all quality options', async () => {
       const preview = {
         Again: '1 min',
@@ -321,7 +321,7 @@ describe('StudyController  Tests', () => {
     });
   });
 
-  describe('startCramSession', () => {
+  describe('UC-20: Start Study Session - startCramSession', () => {
     it('TC-CRAM-001: This test case aims to verify cram session start with default limit', async () => {
       const cards = [
         { id: 1, front: 'Card 1' },
@@ -410,7 +410,7 @@ describe('StudyController  Tests', () => {
     });
   });
 
-  describe('submitCramReview', () => {
+  describe('UC-21: Record Review Outcome - submitCramReview', () => {
     it('TC-CRAMREVIEW-001: This test case aims to verify cram review submission', async () => {
       const submitDto = {
         CardReviews: [{ cardId: 1, quality: 'Good' }],

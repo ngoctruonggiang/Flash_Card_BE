@@ -256,7 +256,7 @@ describe('DeckService Tests', () => {
     });
   });
 
-  describe('findAll', () => {
+  describe('UC-07: View Deck Library - findAll', () => {
     it('TC-BROWSEDECKS-001: This test case aims to verify return of all decks with users and cards', async () => {
       const mockDecks = [
         { id: 1, title: 'Deck 1', user: { id: 1 }, cards: [] },
@@ -339,7 +339,7 @@ describe('DeckService Tests', () => {
     });
   });
 
-  describe('findOne', () => {
+  describe('UC-07: View Deck Library - findOne', () => {
     it('TC-BROWSEDECKS-006: This test case aims to verify finding deck by id with all relations', async () => {
       const mockDeck = {
         id: 1,
@@ -410,7 +410,7 @@ describe('DeckService Tests', () => {
     });
   });
 
-  describe('findByUser', () => {
+  describe('UC-07: View Deck Library - findByUser', () => {
     it('TC-BROWSEDECKS-012: This test case aims to verify finding all decks by user id', async () => {
       const mockDecks = [
         { id: 1, title: 'Deck 1', userId: 1, cards: [] },
@@ -625,7 +625,7 @@ describe('DeckService Tests', () => {
     });
   });
 
-  describe('getReviewedCardsCountInDay', () => {
+  describe('UC-11: View Deck Statistics - getReviewedCardsCountInDay', () => {
     it('TC-DECKSTATS-005: This test case aims to verify return of reviewed cards count', async () => {
       const date = new Date('2025-12-01');
       const mockDeck = {
@@ -706,7 +706,7 @@ describe('DeckService Tests', () => {
     });
   });
 
-  describe('getCardsDueToday', () => {
+  describe('UC-20: Start Study Session - getCardsDueToday', () => {
     it('TC-DECKSTATS-010: This test case aims to verify return of cards due today', async () => {
       const now = new Date();
       const pastDate = new Date(now.getTime() - 86400000); // Yesterday
