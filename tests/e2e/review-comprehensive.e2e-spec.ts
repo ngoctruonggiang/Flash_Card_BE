@@ -133,7 +133,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
 
   describe('Review Submission Tests', () => {
     describe('Valid Review Submissions', () => {
-      it('TC-REV-001 should submit review with Again quality', async () => {
+      it('TC-REV-001 This test case aims to successfully submit a card review with "Again" quality rating indicating the user failed to recall the card and return the updated card scheduling information', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -148,7 +148,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data[0].quality).toBe(ReviewQuality.Again);
       });
 
-      it('TC-REV-002 should submit review with Hard quality', async () => {
+      it('TC-REV-002 This test case aims to successfully submit a card review with "Hard" quality rating indicating the user had difficulty recalling the card but eventually succeeded', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -161,7 +161,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data[0].quality).toBe(ReviewQuality.Hard);
       });
 
-      it('TC-REV-003 should submit review with Good quality', async () => {
+      it('TC-REV-003 This test case aims to successfully submit a card review with "Good" quality rating indicating normal recall with acceptable difficulty level', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -174,7 +174,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data[0].quality).toBe(ReviewQuality.Good);
       });
 
-      it('TC-REV-004 should submit review with Easy quality', async () => {
+      it('TC-REV-004 This test case aims to successfully submit a card review with "Easy" quality rating indicating effortless recall and triggering longer interval scheduling', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -187,7 +187,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data[0].quality).toBe(ReviewQuality.Easy);
       });
 
-      it('TC-REV-005 should submit multiple reviews at once', async () => {
+      it('TC-REV-005 This test case aims to successfully submit multiple card reviews in a single batch request to efficiently process an entire study session', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -202,7 +202,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data.length).toBe(3);
       });
 
-      it('TC-REV-006 should submit review with custom reviewedAt time', async () => {
+      it('TC-REV-006 This test case aims to successfully submit a review with a custom reviewedAt timestamp to support offline study sessions that are synced later', async () => {
         const customDate = new Date('2024-01-01T10:00:00Z');
 
         const res = await authRequest()
@@ -218,7 +218,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data).toBeDefined();
       });
 
-      it('TC-REV-007 should return review with correct structure', async () => {
+      it('TC-REV-007 This test case aims to return review response with complete structure including cardId, quality, interval, eFactor, and nextReviewDate fields', async () => {
         const res = await authRequest()
           .post('/study/review')
           .send({
@@ -237,21 +237,21 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
     });
 
     describe('Invalid Review Submissions', () => {
-      it('TC-REV-008 should reject review without CardReviews', async () => {
+      it('TC-REV-008 This test case aims to reject review without CardReviews', async () => {
         await authRequest()
           .post('/study/review')
           .send({})
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-REV-009 should reject review with empty CardReviews array', async () => {
+      it('TC-REV-009 This test case aims to reject review with empty CardReviews array', async () => {
         await authRequest()
           .post('/study/review')
           .send({ CardReviews: [] })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-REV-010 should reject review with invalid quality', async () => {
+      it('TC-REV-010 This test case aims to reject review with invalid quality', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -260,7 +260,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-REV-011 should reject review without cardId', async () => {
+      it('TC-REV-011 This test case aims to reject review without cardId', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -269,7 +269,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-REV-012 should reject review without quality', async () => {
+      it('TC-REV-012 This test case aims to reject review without quality', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -278,7 +278,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-REV-013 should reject review with non-existent card', async () => {
+      it('TC-REV-013 This test case aims to reject review with non-existent card', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -287,7 +287,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .expect(HttpStatus.NOT_FOUND); // Returns 404 for non-existent cards
       });
 
-      it('TC-REV-014 should reject review without authentication', async () => {
+      it('TC-REV-014 This test case aims to reject review without authentication', async () => {
         await request(app.getHttpServer())
           .post('/study/review')
           .send({
@@ -298,7 +298,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('TC-REV-015 should reject review with negative cardId', async () => {
+      it('TC-REV-015 This test case aims to reject review with negative cardId', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -307,7 +307,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('TC-REV-016 should reject review with extra non-whitelisted fields', async () => {
+      it('TC-REV-016 This test case aims to reject review with extra non-whitelisted fields', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -326,7 +326,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
 
   describe('Anki Algorithm State Transitions', () => {
     describe('New Card Transitions', () => {
-      it('TC-REV-017 should stay in learning on Again (step 0)', async () => {
+      it('TC-REV-017 This test case aims to stay in learning on Again (step 0)', async () => {
         // New card -> Again -> Learning step 0
         await authRequest()
           .post('/study/review')
@@ -344,7 +344,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.stepIndex).toBe(0);
       });
 
-      it('TC-REV-018 should advance to learning step 1 on Good', async () => {
+      it('TC-REV-018 This test case aims to advance to learning step 1 on Good', async () => {
         // New card -> Good -> Learning step 1
         await authRequest()
           .post('/study/review')
@@ -362,7 +362,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.stepIndex).toBe(1);
       });
 
-      it('TC-REV-019 should graduate immediately on Easy', async () => {
+      it('TC-REV-019 This test case aims to graduate immediately on Easy', async () => {
         // New card -> Easy -> Review (graduate)
         await authRequest()
           .post('/study/review')
@@ -392,7 +392,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           });
       });
 
-      it('TC-REV-020 should reset to step 0 on Again', async () => {
+      it('TC-REV-020 This test case aims to reset to step 0 on Again', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -409,7 +409,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.stepIndex).toBe(0);
       });
 
-      it('TC-REV-021 should graduate on Good from last step', async () => {
+      it('TC-REV-021 This test case aims to graduate on Good from last step', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -425,7 +425,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.status).toBe('review');
       });
 
-      it('TC-REV-022 should graduate immediately on Easy', async () => {
+      it('TC-REV-022 This test case aims to graduate immediately on Easy', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -454,7 +454,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           });
       });
 
-      it('TC-REV-023 should lapse to relearning on Again', async () => {
+      it('TC-REV-023 This test case aims to lapse to relearning on Again', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -470,7 +470,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.status).toBe('relearning');
       });
 
-      it('TC-REV-024 should stay in review on Good', async () => {
+      it('TC-REV-024 This test case aims to stay in review on Good', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -486,7 +486,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.status).toBe('review');
       });
 
-      it('TC-REV-025 should increase interval on Good', async () => {
+      it('TC-REV-025 This test case aims to increase interval on Good', async () => {
         const cardBefore = await prismaService.card.findUnique({
           where: { id: testCards[0].id },
         });
@@ -507,7 +507,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(cardAfter?.interval).toBeGreaterThan(intervalBefore);
       });
 
-      it('TC-REV-026 should increase interval more on Easy', async () => {
+      it('TC-REV-026 This test case aims to increase interval more on Easy', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -524,7 +524,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.interval).toBeGreaterThanOrEqual(1);
       });
 
-      it('TC-REV-027 should decrease ease factor on Hard', async () => {
+      it('TC-REV-027 This test case aims to decrease ease factor on Hard', async () => {
         const cardBefore = await prismaService.card.findUnique({
           where: { id: testCards[0].id },
         });
@@ -565,7 +565,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           });
       });
 
-      it('TC-REV-028 should stay in relearning on Again', async () => {
+      it('TC-REV-028 This test case aims to stay in relearning on Again', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -581,7 +581,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(card?.status).toBe('relearning');
       });
 
-      it('TC-REV-029 should graduate back to review on Good', async () => {
+      it('TC-REV-029 This test case aims to graduate back to review on Good', async () => {
         await authRequest()
           .post('/study/review')
           .send({
@@ -601,7 +601,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
 
   describe('Review Preview Tests', () => {
     describe('Valid Preview Requests', () => {
-      it('TC-REV-030 should preview for new card', async () => {
+      it('TC-REV-030 This test case aims to preview for new card', async () => {
         const res = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.OK);
@@ -612,7 +612,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data).toHaveProperty('Easy');
       });
 
-      it('TC-REV-031 should show correct intervals for new card', async () => {
+      it('TC-REV-031 This test case aims to show correct intervals for new card', async () => {
         const res = await authRequest()
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.OK);
@@ -624,7 +624,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data.Easy).toBe('4 days');
       });
 
-      it('TC-REV-032 should show different intervals after review', async () => {
+      it('TC-REV-032 This test case aims to show different intervals after review', async () => {
         // First review
         await authRequest()
           .post('/study/review')
@@ -643,7 +643,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data.Good).toBe('1 day');
       });
 
-      it('TC-REV-033 should show graduated card intervals', async () => {
+      it('TC-REV-033 This test case aims to show graduated card intervals', async () => {
         // Graduate card
         await authRequest()
           .post('/study/review')
@@ -663,19 +663,19 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
     });
 
     describe('Invalid Preview Requests', () => {
-      it('TC-REV-034 should return 404 for non-existent card', async () => {
+      it('TC-REV-034 This test case aims to return 404 for non-existent card', async () => {
         await authRequest()
           .get('/study/preview/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('TC-REV-035 should return 400 for invalid card id', async () => {
+      it('TC-REV-035 This test case aims to return 400 for invalid card id', async () => {
         await authRequest()
           .get('/study/preview/invalid')
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-REV-036 should reject without authentication', async () => {
+      it('TC-REV-036 This test case aims to reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/preview/${testCards[0].id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -685,7 +685,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
 
   describe('Due Reviews Tests', () => {
     describe('Get Due Reviews (Study Start)', () => {
-      it('TC-REV-037 should return all new cards as due', async () => {
+      it('TC-REV-037 This test case aims to return all new cards as due', async () => {
         const res = await authRequest()
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.OK);
@@ -693,7 +693,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
         expect(res.body.data.length).toBe(5);
       });
 
-      it('TC-REV-038 should not return card with future review date', async () => {
+      it('TC-REV-038 This test case aims to not return card with future review date', async () => {
         // Graduate card and set future date
         await authRequest()
           .post('/study/review')
@@ -707,12 +707,12 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.OK);
 
-        // The graduated card should not be due (has future nextReviewDate)
+        // The graduated card This test case aims to not be due (has future nextReviewDate)
         const dueCardIds = res.body.data.map((c: Card) => c.id);
         expect(dueCardIds).not.toContain(testCards[0].id);
       });
 
-      it('TC-REV-039 should return cards in learning as due', async () => {
+      it('TC-REV-039 This test case aims to return cards in learning as due', async () => {
         // Move to learning
         await authRequest()
           .post('/study/review')
@@ -726,17 +726,17 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.OK);
 
-        // Learning cards with past/present nextReviewDate should be due
+        // Learning cards with past/present nextReviewDate This test case aims to be due
         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
       });
 
-      it('TC-REV-040 should return 404 for non-existent deck', async () => {
+      it('TC-REV-040 This test case aims to return 404 for non-existent deck', async () => {
         await authRequest()
           .get('/study/start/999999')
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('TC-REV-041 should reject without authentication', async () => {
+      it('TC-REV-041 This test case aims to reject without authentication', async () => {
         await request(app.getHttpServer())
           .get(`/study/start/${testDeck.id}`)
           .expect(HttpStatus.UNAUTHORIZED);
@@ -745,7 +745,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
   });
 
   describe('Cram Mode Tests', () => {
-    it('TC-REV-042 should submit cram review without updating schedule', async () => {
+    it('TC-REV-042 This test case aims to submit cram review without updating schedule', async () => {
       // First, graduate the card
       await authRequest()
         .post('/study/review')
@@ -771,7 +771,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
 
       expect(res.body.data.length).toBe(1);
 
-      // Card schedule should not change
+      // Card schedule This test case aims to not change
       const cardAfter = await prismaService.card.findUnique({
         where: { id: testCards[0].id },
       });
@@ -782,7 +782,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(cardAfter?.interval).toBe(cardBefore?.interval);
     });
 
-    it('TC-REV-043 should record cram review in history', async () => {
+    it('TC-REV-043 This test case aims to record cram review in history', async () => {
       await authRequest()
         .post('/study/cram/review')
         .send({
@@ -800,7 +800,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(reviews.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('TC-REV-044 should handle cram with multiple cards', async () => {
+    it('TC-REV-044 This test case aims to handle cram with multiple cards', async () => {
       const res = await authRequest()
         .post('/study/cram/review')
         .send({
@@ -815,7 +815,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(res.body.data.length).toBe(3);
     });
 
-    it('TC-REV-045 should reject cram without authentication', async () => {
+    it('TC-REV-045 This test case aims to reject cram without authentication', async () => {
       await request(app.getHttpServer())
         .post('/study/cram/review')
         .send({
@@ -828,7 +828,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
   });
 
   describe('Consecutive Days Streak Tests', () => {
-    it('TC-REV-046 should return 0 for deck with no reviews', async () => {
+    it('TC-REV-046 This test case aims to return 0 for deck with no reviews', async () => {
       const res = await authRequest()
         .get(`/study/consecutive-days/${testDeck.id}`)
         .expect(HttpStatus.OK);
@@ -838,7 +838,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(res.body.data.lastStudyDate).toBeNull();
     });
 
-    it('TC-REV-047 should return 1 for deck with review today', async () => {
+    it('TC-REV-047 This test case aims to return 1 for deck with review today', async () => {
       // Submit review today
       await authRequest()
         .post('/study/review')
@@ -855,7 +855,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(res.body.data.consecutiveDays).toBeGreaterThanOrEqual(0);
     });
 
-    it('TC-REV-048 should return correct structure', async () => {
+    it('TC-REV-048 This test case aims to return correct structure', async () => {
       await authRequest()
         .post('/study/review')
         .send({
@@ -873,7 +873,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(res.body.data).toHaveProperty('lastStudyDate');
     });
 
-    it('TC-REV-049 should reject without authentication', async () => {
+    it('TC-REV-049 This test case aims to reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/study/consecutive-days/${testDeck.id}`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -881,14 +881,14 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
   });
 
   describe('Ease Factor Tests', () => {
-    it('TC-REV-050 should start with default ease factor (2.5)', async () => {
+    it('TC-REV-050 This test case aims to start with default ease factor (2.5)', async () => {
       const card = await prismaService.card.findUnique({
         where: { id: testCards[0].id },
       });
       expect(card?.easeFactor).toBe(2.5);
     });
 
-    it('TC-REV-051 should decrease ease factor on consecutive Again', async () => {
+    it('TC-REV-051 This test case aims to decrease ease factor on consecutive Again', async () => {
       // Graduate card first
       await authRequest()
         .post('/study/review')
@@ -927,7 +927,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(efAfter).toBeLessThan(efBefore!);
     });
 
-    it('TC-REV-052 should not go below minimum ease factor (1.3)', async () => {
+    it('TC-REV-052 This test case aims to not go below minimum ease factor (1.3)', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -961,7 +961,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(card?.easeFactor).toBeGreaterThanOrEqual(1.3);
     });
 
-    it('TC-REV-053 should increase ease factor on Easy', async () => {
+    it('TC-REV-053 This test case aims to increase ease factor on Easy', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -993,7 +993,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
   });
 
   describe('Interval Calculation Tests', () => {
-    it('TC-REV-054 should set interval based on learning steps', async () => {
+    it('TC-REV-054 This test case aims to set interval based on learning steps', async () => {
       // New card - first review
       await authRequest()
         .post('/study/review')
@@ -1009,7 +1009,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(card?.interval).toBe(10); // 10 minutes for step 1
     });
 
-    it('TC-REV-055 should set graduated interval', async () => {
+    it('TC-REV-055 This test case aims to set graduated interval', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -1033,7 +1033,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(card?.interval).toBeGreaterThanOrEqual(1);
     });
 
-    it('TC-REV-056 should increase interval exponentially on Good', async () => {
+    it('TC-REV-056 This test case aims to increase interval exponentially on Good', async () => {
       // Graduate card
       await authRequest()
         .post('/study/review')
@@ -1060,7 +1060,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
           });
       }
 
-      // Each interval should be larger than previous
+      // Each interval This test case aims to be larger than previous
       for (let i = 1; i < intervals.length; i++) {
         expect(intervals[i]).toBeGreaterThanOrEqual(intervals[i - 1]);
       }
@@ -1068,7 +1068,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
   });
 
   describe('Review History Tests', () => {
-    it('TC-REV-057 should record review in history', async () => {
+    it('TC-REV-057 This test case aims to record review in history', async () => {
       await authRequest()
         .post('/study/review')
         .send({
@@ -1085,7 +1085,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(reviews[0].quality).toBe(ReviewQuality.Good);
     });
 
-    it('TC-REV-058 should track previous and new status', async () => {
+    it('TC-REV-058 This test case aims to track previous and new status', async () => {
       await authRequest()
         .post('/study/review')
         .send({
@@ -1102,7 +1102,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(reviews[0].newStatus).toBe('learning');
     });
 
-    it('TC-REV-059 should maintain review history over multiple reviews', async () => {
+    it('TC-REV-059 This test case aims to maintain review history over multiple reviews', async () => {
       // Multiple reviews
       await authRequest()
         .post('/study/review')
@@ -1136,7 +1136,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
   });
 
   describe('Edge Cases', () => {
-    it('TC-REV-060 should handle reviewing same card multiple times rapidly', async () => {
+    it('TC-REV-060 This test case aims to handle reviewing same card multiple times rapidly', async () => {
       for (let i = 0; i < 5; i++) {
         await authRequest()
           .post('/study/review')
@@ -1155,7 +1155,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(reviews.length).toBe(5);
     });
 
-    it('TC-REV-061 should handle all cards reviewed at once', async () => {
+    it('TC-REV-061 This test case aims to handle all cards reviewed at once', async () => {
       const res = await authRequest()
         .post('/study/review')
         .send({
@@ -1169,7 +1169,7 @@ describe('UC-21: Record Review Outcome & UC-22: Session Summary & UC-23: View St
       expect(res.body.data.length).toBe(5);
     });
 
-    it('TC-REV-062 should handle review with all quality types', async () => {
+    it('TC-REV-062 This test case aims to handle review with all quality types', async () => {
       const qualities = [
         ReviewQuality.Again,
         ReviewQuality.Hard,
