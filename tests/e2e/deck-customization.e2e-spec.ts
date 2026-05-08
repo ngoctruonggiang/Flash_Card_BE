@@ -89,7 +89,7 @@ describe('Deck Customization E2E', () => {
   });
 
   describe('Create Deck with Customization', () => {
-    it('TC-DCUST-001 should create deck with iconName and colorCode', async () => {
+    it('TC-DCUST-001 This test case aims to successfully create a deck with custom iconName and colorCode fields for visual personalization and deck identification in the UI', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -108,7 +108,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(res.body.data.id);
     });
 
-    it('TC-DCUST-002 should create deck with VN_EN language mode', async () => {
+    it('TC-DCUST-002 This test case aims to successfully create a deck with VN_EN language mode for Vietnamese-to-English vocabulary study with front in Vietnamese and back in English', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -121,7 +121,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(res.body.data.id);
     });
 
-    it('TC-DCUST-003 should create deck with EN_VN language mode', async () => {
+    it('TC-DCUST-003 This test case aims to successfully create a deck with EN_VN language mode for English-to-Vietnamese vocabulary study with front in English and back in Vietnamese', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -134,7 +134,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(res.body.data.id);
     });
 
-    it('TC-DCUST-004 should create deck with BIDIRECTIONAL language mode', async () => {
+    it('TC-DCUST-004 This test case aims to successfully create a deck with BIDIRECTIONAL language mode that automatically creates reverse cards for learning vocabulary in both directions', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -147,7 +147,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(res.body.data.id);
     });
 
-    it('TC-DCUST-005 should create deck with full hex color code', async () => {
+    it('TC-DCUST-005 This test case aims to successfully create a deck with a full 6-character hex color code (e.g., #4CAF50) for precise color theming of the deck card', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -160,7 +160,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(res.body.data.id);
     });
 
-    it('TC-DCUST-006 should create deck with short hex color code', async () => {
+    it('TC-DCUST-006 This test case aims to successfully create a deck with a shorthand 3-character hex color code (e.g., #F00) which expands to the full 6-character equivalent', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -173,7 +173,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(res.body.data.id);
     });
 
-    it('TC-DCUST-007 should reject invalid hex color code', async () => {
+    it('TC-DCUST-007 This test case aims to return 400 Bad Request when colorCode is provided as a color name (e.g., "red") instead of valid hex format', async () => {
       await authRequest()
         .post('/deck')
         .send({
@@ -183,7 +183,7 @@ describe('Deck Customization E2E', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('TC-DCUST-008 should reject invalid hex color format', async () => {
+    it('TC-DCUST-008 This test case aims to return 400 Bad Request when colorCode contains invalid hexadecimal characters (e.g., #GGGGGG with letters G-Z)', async () => {
       await authRequest()
         .post('/deck')
         .send({
@@ -193,7 +193,7 @@ describe('Deck Customization E2E', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('TC-DCUST-009 should reject invalid language mode', async () => {
+    it('TC-DCUST-009 This test case aims to reject invalid language mode', async () => {
       await authRequest()
         .post('/deck')
         .send({
@@ -203,7 +203,7 @@ describe('Deck Customization E2E', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('TC-DCUST-010 should create deck with all optional fields null', async () => {
+    it('TC-DCUST-010 This test case aims to create deck with all optional fields null', async () => {
       const res = await authRequest()
         .post('/deck')
         .send({
@@ -230,7 +230,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(testDeckId);
     });
 
-    it('TC-DCUST-011 should update deck icon and color', async () => {
+    it('TC-DCUST-011 This test case aims to update deck icon and color', async () => {
       const res = await authRequest()
         .patch(`/deck/${testDeckId}`)
         .send({
@@ -244,7 +244,7 @@ describe('Deck Customization E2E', () => {
       expect(res.body.data.title).toBe('Original Deck');
     });
 
-    it('TC-DCUST-012 should update language mode', async () => {
+    it('TC-DCUST-012 This test case aims to update language mode', async () => {
       const res = await authRequest()
         .patch(`/deck/${testDeckId}`)
         .send({
@@ -255,7 +255,7 @@ describe('Deck Customization E2E', () => {
       expect(res.body.data.languageMode).toBe('BIDIRECTIONAL');
     });
 
-    it('TC-DCUST-013 should update multiple fields at once', async () => {
+    it('TC-DCUST-013 This test case aims to update multiple fields at once', async () => {
       const res = await authRequest()
         .patch(`/deck/${testDeckId}`)
         .send({
@@ -272,7 +272,7 @@ describe('Deck Customization E2E', () => {
       expect(res.body.data.languageMode).toBe('EN_VN');
     });
 
-    it('TC-DCUST-014 should reject invalid color code on update', async () => {
+    it('TC-DCUST-014 This test case aims to reject invalid color code on update', async () => {
       await authRequest()
         .patch(`/deck/${testDeckId}`)
         .send({
@@ -296,7 +296,7 @@ describe('Deck Customization E2E', () => {
       createdDeckIds.push(customDeckId);
     });
 
-    it('TC-DCUST-015 should return deck with all customization fields', async () => {
+    it('TC-DCUST-015 This test case aims to return deck with all customization fields', async () => {
       const res = await authRequest()
         .get(`/deck/${customDeckId}`)
         .expect(HttpStatus.OK);
@@ -306,7 +306,7 @@ describe('Deck Customization E2E', () => {
       expect(res.body.data.languageMode).toBe('BIDIRECTIONAL');
     });
 
-    it('TC-DCUST-016 should return all decks with customization in list', async () => {
+    it('TC-DCUST-016 This test case aims to return all decks with customization in list', async () => {
       const res = await authRequest().get('/deck').expect(HttpStatus.OK);
 
       const customDeck = res.body.data.find((d: any) => d.id === customDeckId);
@@ -318,7 +318,7 @@ describe('Deck Customization E2E', () => {
   });
 
   describe('I - Vietnamese Front, English Back Deck with All Fields', () => {
-    it('TC-DCUST-017 should create VN_EN deck with all fields filled, retrieve it, and verify all fields', async () => {
+    it('TC-DCUST-017 This test case aims to create VN_EN deck with all fields filled, retrieve it, and verify all fields', async () => {
       // Step 1: Create Vietnamese Front, English Back deck with all fields filled
       const deckData = {
         title: 'Basic Vietnamese',
@@ -372,7 +372,7 @@ describe('Deck Customization E2E', () => {
   });
 
   describe('II - English Front, Vietnamese Back Deck with All Fields', () => {
-    it('TC-DCUST-018 should create EN_VN deck with all fields filled, retrieve it, and verify all fields', async () => {
+    it('TC-DCUST-018 This test case aims to create EN_VN deck with all fields filled, retrieve it, and verify all fields', async () => {
       // Step 1: Create English Front, Vietnamese Back deck with all fields filled
       const deckData = {
         title: 'English to Vietnamese',
@@ -426,7 +426,7 @@ describe('Deck Customization E2E', () => {
   });
 
   describe('III - Bidirectional Deck with All Fields', () => {
-    it('TC-DCUST-019 should create BIDIRECTIONAL deck with all fields filled, retrieve it, and verify all fields', async () => {
+    it('TC-DCUST-019 This test case aims to create BIDIRECTIONAL deck with all fields filled, retrieve it, and verify all fields', async () => {
       // Step 1: Create BIDIRECTIONAL deck with all fields filled
       const deckData = {
         title: 'Bidirectional Language Learning',

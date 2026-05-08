@@ -69,7 +69,7 @@ describe('SM2 Algorithm E2E Sequence', () => {
   });
 
   describe('TC-SM2-001 3. Simulate a study session and check the preview', () => {
-    it('Step 1: Initial State (New Card)', async () => {
+    it('Step 1: Initial State (New Card) - This test case aims to preview a new card and verify default Anki algorithm intervals: Again=1min, Hard=1min, Good=10min, Easy=4days', async () => {
       const response = await request(app.getHttpServer())
         .get(`/study/preview/${testCard.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
@@ -86,7 +86,7 @@ describe('SM2 Algorithm E2E Sequence', () => {
       expect(response.body.data.Easy).toBe('4 days');
     });
 
-    it('Step 2: First Review (Good) -> Learning Step 1', async () => {
+    it('Step 2: First Review (Good) -> Learning Step 1 - This test case aims to advance card from New to Learning Step 1 with updated preview intervals after "Good" rating', async () => {
       // User presses "Good"
       await request(app.getHttpServer())
         .post('/study/review')
@@ -119,7 +119,7 @@ describe('SM2 Algorithm E2E Sequence', () => {
       expect(response.body.data.Easy).toBe('4 days');
     });
 
-    it('Step 3: Second Review (Good) -> Graduate to Review', async () => {
+    it('Step 3: Second Review (Good) -> Graduate to Review - This test case aims to graduate card from Learning to Review status after completing all learning steps with "Good" rating', async () => {
       // User presses "Good" again
       await request(app.getHttpServer())
         .post('/study/review')
@@ -159,7 +159,7 @@ describe('SM2 Algorithm E2E Sequence', () => {
       expect(response.body.data.Easy).toMatch(/3 days|4 days/);
     });
 
-    it('Step 4: Lapse (Again) -> Relearning', async () => {
+    it('Step 4: Lapse (Again) -> Relearning - This test case aims to move card from Review to Relearning status when user presses "Again" indicating a lapse in memory', async () => {
       // User presses "Again"
       await request(app.getHttpServer())
         .post('/study/review')

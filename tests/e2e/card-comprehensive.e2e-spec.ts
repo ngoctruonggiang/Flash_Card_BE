@@ -114,7 +114,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
 
   describe('/card (POST) - Create Card Tests', () => {
     describe('Valid Creation Cases', () => {
-      it('TC-CARD-001 should create card with required fields only', async () => {
+      it('TC-CARD-001 This test case aims to successfully create a flashcard when only required fields (deckId, front, back) are provided, returning the created card with default values for optional fields', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -131,7 +131,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-002 should create card with tags', async () => {
+      it('TC-CARD-002 This test case aims to successfully create a flashcard with comma-separated tags string for categorization and filtering purposes', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -147,7 +147,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-003 should create card with wordType', async () => {
+      it('TC-CARD-003 This test case aims to successfully create a flashcard with wordType field specifying the grammatical category (noun, verb, adjective, etc.) of the vocabulary', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -163,7 +163,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-004 should create card with pronunciation', async () => {
+      it('TC-CARD-004 This test case aims to successfully create a flashcard with IPA pronunciation notation to help users learn correct word pronunciation', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -179,7 +179,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-005 should create card with examples', async () => {
+      it('TC-CARD-005 This test case aims to successfully create a flashcard with an array of example sentences containing both source and translation to provide usage context', async () => {
         const examples = [
           {
             sentence: 'Hello, how are you?',
@@ -203,7 +203,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-006 should create card with all optional fields', async () => {
+      it('TC-CARD-006 This test case aims to successfully create a flashcard with all optional fields populated (tags, wordType, pronunciation, examples) to demonstrate full card creation capability', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -227,7 +227,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-007 should create card with long text content', async () => {
+      it('TC-CARD-007 This test case aims to successfully create a flashcard when front and back content contain very long text (1000+ characters) to verify database text field capacity', async () => {
         const longText = 'A'.repeat(1000);
         const res = await authRequest()
           .post('/card')
@@ -244,7 +244,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-008 should create card with special characters', async () => {
+      it('TC-CARD-008 This test case aims to successfully create a flashcard containing Unicode characters including Chinese, emojis, and Cyrillic text to support multilingual vocabulary learning', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -259,7 +259,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-009 should create card with HTML-like content', async () => {
+      it('TC-CARD-009 This test case aims to create card with HTML-like content', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -274,7 +274,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-010 should create card with newlines in content', async () => {
+      it('TC-CARD-010 This test case aims to create card with newlines in content', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -289,7 +289,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-011 should create multiple cards in same deck', async () => {
+      it('TC-CARD-011 This test case aims to create multiple cards in same deck', async () => {
         const cards: Card[] = [];
         for (let i = 0; i < 10; i++) {
           const res = await authRequest()
@@ -310,7 +310,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         }
       });
 
-      it('TC-CARD-012 should initialize card with default status', async () => {
+      it('TC-CARD-012 This test case aims to initialize card with default status', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -325,7 +325,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         await cardService.remove(res.body.data.id);
       });
 
-      it('TC-CARD-013 should initialize card with default ease factor', async () => {
+      it('TC-CARD-013 This test case aims to initialize card with default ease factor', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -342,7 +342,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
     });
 
     describe('Invalid Creation Cases', () => {
-      it('TC-CARD-014 should reject card without deckId', async () => {
+      it('TC-CARD-014 This test case aims to reject card without deckId', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -352,7 +352,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-015 should reject card without front', async () => {
+      it('TC-CARD-015 This test case aims to reject card without front', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -362,7 +362,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-016 should reject card without back', async () => {
+      it('TC-CARD-016 This test case aims to reject card without back', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -372,7 +372,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-017 should reject card with empty front', async () => {
+      it('TC-CARD-017 This test case aims to reject card with empty front', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -383,7 +383,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-018 should reject card with empty back', async () => {
+      it('TC-CARD-018 This test case aims to reject card with empty back', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -394,7 +394,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-019 should reject card with non-existent deckId', async () => {
+      it('TC-CARD-019 This test case aims to reject card with non-existent deckId', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -405,7 +405,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('TC-CARD-020 should reject card with negative deckId', async () => {
+      it('TC-CARD-020 This test case aims to reject card with negative deckId', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -416,7 +416,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-021 should reject card with string deckId', async () => {
+      it('TC-CARD-021 This test case aims to reject card with string deckId', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -427,7 +427,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-022 should reject card with null front', async () => {
+      it('TC-CARD-022 This test case aims to reject card with null front', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -438,7 +438,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-023 should reject card with null back', async () => {
+      it('TC-CARD-023 This test case aims to reject card with null back', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -449,7 +449,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-024 should reject card with invalid examples format', async () => {
+      it('TC-CARD-024 This test case aims to reject card with invalid examples format', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -461,7 +461,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-025 should reject card with incomplete example objects', async () => {
+      it('TC-CARD-025 This test case aims to reject card with incomplete example objects', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -473,7 +473,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-026 should reject card with extra non-whitelisted fields', async () => {
+      it('TC-CARD-026 This test case aims to reject card with extra non-whitelisted fields', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -485,7 +485,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-027 should reject card creation without authentication', async () => {
+      it('TC-CARD-027 This test case aims to reject card creation without authentication', async () => {
         await request(app.getHttpServer())
           .post('/card')
           .send({
@@ -496,7 +496,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('TC-CARD-028 should reject card with whitespace-only front', async () => {
+      it('TC-CARD-028 This test case aims to reject card with whitespace-only front', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -507,7 +507,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-029 should reject card with whitespace-only back', async () => {
+      it('TC-CARD-029 This test case aims to reject card with whitespace-only back', async () => {
         await authRequest()
           .post('/card')
           .send({
@@ -537,7 +537,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         }
       });
 
-      it('TC-CARD-030 should create two cards for bidirectional deck', async () => {
+      it('TC-CARD-030 This test case aims to create two cards for bidirectional deck', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -556,7 +556,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         }
       });
 
-      it('TC-CARD-031 should create reverse card with swapped front/back', async () => {
+      it('TC-CARD-031 This test case aims to create reverse card with swapped front/back', async () => {
         const res = await authRequest()
           .post('/card')
           .send({
@@ -581,13 +581,13 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
   });
 
   describe('/card (GET) - Get All Cards Tests', () => {
-    it('TC-CARD-032 should return all cards for user', async () => {
+    it('TC-CARD-032 This test case aims to return all cards for user', async () => {
       const res = await authRequest().get('/card').expect(HttpStatus.OK);
 
       expect(res.body.data).toBeInstanceOf(Array);
     });
 
-    it('TC-CARD-033 should return cards filtered by deckId', async () => {
+    it('TC-CARD-033 This test case aims to return cards filtered by deckId', async () => {
       const res = await authRequest()
         .get(`/card?deckId=${testDeck.id}`)
         .expect(HttpStatus.OK);
@@ -598,7 +598,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       }
     });
 
-    it('TC-CARD-034 should return empty array for deck with no cards', async () => {
+    it('TC-CARD-034 This test case aims to return empty array for deck with no cards', async () => {
       const emptyDeck = await deckService.create(testUser.id, {
         title: 'Empty Deck',
       });
@@ -612,7 +612,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       await deckService.remove(emptyDeck.id);
     });
 
-    it('TC-CARD-035 should return card with correct structure', async () => {
+    it('TC-CARD-035 This test case aims to return card with correct structure', async () => {
       const res = await authRequest()
         .get(`/card?deckId=${testDeck.id}`)
         .expect(HttpStatus.OK);
@@ -628,13 +628,13 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       }
     });
 
-    it('TC-CARD-036 should reject invalid deckId parameter', async () => {
+    it('TC-CARD-036 This test case aims to reject invalid deckId parameter', async () => {
       await authRequest()
         .get('/card?deckId=invalid')
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('TC-CARD-037 should reject without authentication', async () => {
+    it('TC-CARD-037 This test case aims to reject without authentication', async () => {
       await request(app.getHttpServer())
         .get('/card')
         .expect(HttpStatus.UNAUTHORIZED);
@@ -642,7 +642,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
   });
 
   describe('/card/:id (GET) - Get Single Card Tests', () => {
-    it('TC-CARD-038 should return card by id', async () => {
+    it('TC-CARD-038 This test case aims to return card by id', async () => {
       const res = await authRequest()
         .get(`/card/${testCard?.id}`)
         .expect(HttpStatus.OK);
@@ -652,7 +652,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       expect(res.body.data.back).toBe(testCard?.back);
     });
 
-    it('TC-CARD-039 should return card with all properties', async () => {
+    it('TC-CARD-039 This test case aims to return card with all properties', async () => {
       const fullCard = await cardService.create({
         deckId: testDeck.id,
         front: 'Full Card',
@@ -674,19 +674,19 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       await cardService.remove(fullCard.id);
     });
 
-    it('TC-CARD-040 should return 404 for non-existent card', async () => {
+    it('TC-CARD-040 This test case aims to return 404 for non-existent card', async () => {
       await authRequest().get('/card/999999').expect(HttpStatus.NOT_FOUND);
     });
 
-    it('TC-CARD-041 should return 400 for invalid card id', async () => {
+    it('TC-CARD-041 This test case aims to return 400 for invalid card id', async () => {
       await authRequest().get('/card/invalid').expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('TC-CARD-042 should return 400 for negative card id', async () => {
+    it('TC-CARD-042 This test case aims to return 400 for negative card id', async () => {
       await authRequest().get('/card/-1').expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('TC-CARD-043 should reject without authentication', async () => {
+    it('TC-CARD-043 This test case aims to reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/card/${testCard?.id}`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -695,7 +695,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
 
   describe('/card/:id (PATCH) - Update Card Tests', () => {
     describe('Valid Updates', () => {
-      it('TC-CARD-044 should update card front', async () => {
+      it('TC-CARD-044 This test case aims to update card front', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ front: 'Updated Front' })
@@ -705,7 +705,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.back).toBe(testCard?.back);
       });
 
-      it('TC-CARD-045 should update card back', async () => {
+      it('TC-CARD-045 This test case aims to update card back', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ back: 'Updated Back' })
@@ -714,7 +714,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.back).toBe('Updated Back');
       });
 
-      it('TC-CARD-046 should update card tags', async () => {
+      it('TC-CARD-046 This test case aims to update card tags', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ tags: 'new,tags' })
@@ -723,7 +723,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.tags).toBe('new,tags');
       });
 
-      it('TC-CARD-047 should update card wordType', async () => {
+      it('TC-CARD-047 This test case aims to update card wordType', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ wordType: 'adjective' })
@@ -732,7 +732,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.wordType).toBe('adjective');
       });
 
-      it('TC-CARD-048 should update card pronunciation', async () => {
+      it('TC-CARD-048 This test case aims to update card pronunciation', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ pronunciation: '/njuː/' })
@@ -741,7 +741,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.pronunciation).toBe('/njuː/');
       });
 
-      it('TC-CARD-049 should update card examples', async () => {
+      it('TC-CARD-049 This test case aims to update card examples', async () => {
         const newExamples = [
           { sentence: 'New example', translation: 'Ví dụ mới' },
         ];
@@ -754,7 +754,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.examples).toHaveLength(1);
       });
 
-      it('TC-CARD-050 should update multiple fields at once', async () => {
+      it('TC-CARD-050 This test case aims to update multiple fields at once', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({
@@ -769,7 +769,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.tags).toBe('multi,update');
       });
 
-      it('TC-CARD-051 should clear tags by setting to empty string', async () => {
+      it('TC-CARD-051 This test case aims to clear tags by setting to empty string', async () => {
         const res = await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ tags: '' })
@@ -778,7 +778,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
         expect(res.body.data.tags).toBe('');
       });
 
-      it('TC-CARD-052 should update updatedAt timestamp', async () => {
+      it('TC-CARD-052 This test case aims to update updatedAt timestamp', async () => {
         const before = new Date(testCard!.updatedAt);
 
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -794,42 +794,42 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
     });
 
     describe('Invalid Updates', () => {
-      it('TC-CARD-053 should reject update with empty front', async () => {
+      it('TC-CARD-053 This test case aims to reject update with empty front', async () => {
         await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ front: '' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-054 should reject update with empty back', async () => {
+      it('TC-CARD-054 This test case aims to reject update with empty back', async () => {
         await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ back: '' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-055 should reject update with invalid examples', async () => {
+      it('TC-CARD-055 This test case aims to reject update with invalid examples', async () => {
         await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ examples: 'invalid' })
           .expect(HttpStatus.BAD_REQUEST);
       });
 
-      it('TC-CARD-056 should return 404 for non-existent card', async () => {
+      it('TC-CARD-056 This test case aims to return 404 for non-existent card', async () => {
         await authRequest()
           .patch('/card/999999')
           .send({ front: 'Update' })
           .expect(HttpStatus.NOT_FOUND);
       });
 
-      it('TC-CARD-057 should reject without authentication', async () => {
+      it('TC-CARD-057 This test case aims to reject without authentication', async () => {
         await request(app.getHttpServer())
           .patch(`/card/${testCard?.id}`)
           .send({ front: 'No Auth' })
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
-      it('TC-CARD-058 should reject with extra non-whitelisted fields', async () => {
+      it('TC-CARD-058 This test case aims to reject with extra non-whitelisted fields', async () => {
         await authRequest()
           .patch(`/card/${testCard?.id}`)
           .send({ front: 'Valid', extraField: 'invalid' })
@@ -839,7 +839,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
   });
 
   describe('/card/:id (DELETE) - Delete Card Tests', () => {
-    it('TC-CARD-059 should delete card', async () => {
+    it('TC-CARD-059 This test case aims to delete card', async () => {
       const res = await authRequest()
         .delete(`/card/${testCard?.id}`)
         .expect(HttpStatus.OK);
@@ -852,7 +852,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       testCard = null;
     });
 
-    it('TC-CARD-060 should cascade delete reviews when card is deleted', async () => {
+    it('TC-CARD-060 This test case aims to cascade delete reviews when card is deleted', async () => {
       const cardWithReviews = await cardService.create({
         deckId: testDeck.id,
         front: 'Review Delete Test',
@@ -883,17 +883,17 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       expect(reviews).toHaveLength(0);
     });
 
-    it('TC-CARD-061 should return 404 for non-existent card', async () => {
+    it('TC-CARD-061 This test case aims to return 404 for non-existent card', async () => {
       await authRequest().delete('/card/999999').expect(HttpStatus.NOT_FOUND);
     });
 
-    it('TC-CARD-062 should reject without authentication', async () => {
+    it('TC-CARD-062 This test case aims to reject without authentication', async () => {
       await request(app.getHttpServer())
         .delete(`/card/${testCard?.id}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it('TC-CARD-063 should reject deleting already deleted card', async () => {
+    it('TC-CARD-063 This test case aims to reject deleting already deleted card', async () => {
       const tempCard = await cardService.create({
         deckId: testDeck.id,
         front: 'Double Delete',
@@ -909,7 +909,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
   });
 
   describe('/card/:id/review-status (GET) - Review Status Tests', () => {
-    it('TC-CARD-064 should return review status for new card', async () => {
+    it('TC-CARD-064 This test case aims to return review status for new card', async () => {
       const res = await authRequest()
         .get(`/card/${testCard?.id}/review-status`)
         .expect(HttpStatus.OK);
@@ -918,7 +918,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       expect(res.body.data).toHaveProperty('lastReviewedAt');
     });
 
-    it('TC-CARD-065 should return null lastReviewedAt for never reviewed card', async () => {
+    it('TC-CARD-065 This test case aims to return null lastReviewedAt for never reviewed card', async () => {
       const newCard = await cardService.create({
         deckId: testDeck.id,
         front: 'Never Reviewed',
@@ -934,7 +934,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       await cardService.remove(newCard.id);
     });
 
-    it('TC-CARD-066 should return lastReviewedAt for reviewed card', async () => {
+    it('TC-CARD-066 This test case aims to return lastReviewedAt for reviewed card', async () => {
       const reviewedCard = await cardService.create({
         deckId: testDeck.id,
         front: 'Reviewed Card',
@@ -967,13 +967,13 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       await cardService.remove(reviewedCard.id);
     });
 
-    it('TC-CARD-067 should return 404 for non-existent card', async () => {
+    it('TC-CARD-067 This test case aims to return 404 for non-existent card', async () => {
       await authRequest()
         .get('/card/999999/review-status')
         .expect(HttpStatus.NOT_FOUND);
     });
 
-    it('TC-CARD-068 should reject without authentication', async () => {
+    it('TC-CARD-068 This test case aims to reject without authentication', async () => {
       await request(app.getHttpServer())
         .get(`/card/${testCard?.id}/review-status`)
         .expect(HttpStatus.UNAUTHORIZED);
@@ -981,7 +981,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
   });
 
   describe('Card Edge Cases', () => {
-    it('TC-CARD-069 should handle concurrent card creation', async () => {
+    it('TC-CARD-069 This test case aims to handle concurrent card creation', async () => {
       const promises: Promise<request.Response>[] = [];
       for (let i = 0; i < 5; i++) {
         promises.push(
@@ -1009,7 +1009,7 @@ describe('UC-13: Browse Deck Cards & UC-14: Add Card & UC-15: Edit Card & UC-16:
       }
     });
 
-    it('TC-CARD-070 should handle rapid update/delete cycles', async () => {
+    it('TC-CARD-070 This test case aims to handle rapid update/delete cycles', async () => {
       const card = await cardService.create({
         deckId: testDeck.id,
         front: 'Rapid Cycle',
