@@ -49,7 +49,7 @@ describe('RolesGuard  Tests', () => {
 
   describe('canActivate', () => {
     describe('Routes without authentication', () => {
-      it('should allow access when requiresAuth is false', () => {
+      it('This test case aims to allow access when requiresAuth is false', () => {
         mockReflector.get.mockReturnValue({ requiresAuth: false });
         const context = createMockExecutionContext();
 
@@ -58,7 +58,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(true);
       });
 
-      it('should allow access when no route config exists', () => {
+      it('This test case aims to allow access when no route config exists', () => {
         mockReflector.get.mockReturnValue(undefined);
         const context = createMockExecutionContext();
 
@@ -67,7 +67,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(true);
       });
 
-      it('should allow access when route config is null', () => {
+      it('This test case aims to allow access when route config is null', () => {
         mockReflector.get.mockReturnValue(null);
         const context = createMockExecutionContext();
 
@@ -78,7 +78,7 @@ describe('RolesGuard  Tests', () => {
     });
 
     describe('Routes without role restrictions', () => {
-      it('should allow access when roles array is empty', () => {
+      it('This test case aims to allow access when roles array is empty', () => {
         mockReflector.get.mockReturnValue({ requiresAuth: true, roles: [] });
         const context = createMockExecutionContext({ role: 'USER' });
 
@@ -87,7 +87,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(true);
       });
 
-      it('should allow access when roles is undefined', () => {
+      it('This test case aims to allow access when roles is undefined', () => {
         mockReflector.get.mockReturnValue({ requiresAuth: true });
         const context = createMockExecutionContext({ role: 'USER' });
 
@@ -99,7 +99,7 @@ describe('RolesGuard  Tests', () => {
 
     describe('Routes with role restrictions', () => {
       describe('USER role', () => {
-        it('should allow USER access to USER-only routes', () => {
+        it('This test case aims to allow USER access to USER-only routes', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['USER'],
@@ -111,7 +111,7 @@ describe('RolesGuard  Tests', () => {
           expect(result).toBe(true);
         });
 
-        it('should deny USER access to ADMIN-only routes', () => {
+        it('This test case aims to deny USER access to ADMIN-only routes', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['ADMIN'],
@@ -123,7 +123,7 @@ describe('RolesGuard  Tests', () => {
           expect(result).toBe(false);
         });
 
-        it('should allow USER access to routes with multiple roles including USER', () => {
+        it('This test case aims to allow USER access to routes with multiple roles including USER', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['USER', 'ADMIN'],
@@ -137,7 +137,7 @@ describe('RolesGuard  Tests', () => {
       });
 
       describe('ADMIN role', () => {
-        it('should allow ADMIN access to ADMIN-only routes', () => {
+        it('This test case aims to allow ADMIN access to ADMIN-only routes', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['ADMIN'],
@@ -149,7 +149,7 @@ describe('RolesGuard  Tests', () => {
           expect(result).toBe(true);
         });
 
-        it('should deny ADMIN access to USER-only routes', () => {
+        it('This test case aims to deny ADMIN access to USER-only routes', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['USER'],
@@ -161,7 +161,7 @@ describe('RolesGuard  Tests', () => {
           expect(result).toBe(false);
         });
 
-        it('should allow ADMIN access to routes with multiple roles', () => {
+        it('This test case aims to allow ADMIN access to routes with multiple roles', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['USER', 'ADMIN', 'MODERATOR'],
@@ -175,7 +175,7 @@ describe('RolesGuard  Tests', () => {
       });
 
       describe('Multiple roles', () => {
-        it('should check against all allowed roles', () => {
+        it('This test case aims to check against all allowed roles', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['ADMIN', 'MODERATOR', 'SUPER_ADMIN'],
@@ -187,7 +187,7 @@ describe('RolesGuard  Tests', () => {
           expect(result).toBe(true);
         });
 
-        it('should deny when user role not in allowed roles', () => {
+        it('This test case aims to deny when user role not in allowed roles', () => {
           mockReflector.get.mockReturnValue({
             requiresAuth: true,
             roles: ['ADMIN', 'SUPER_ADMIN'],
@@ -202,7 +202,7 @@ describe('RolesGuard  Tests', () => {
     });
 
     describe('Edge cases', () => {
-      it('should handle case-sensitive role comparison', () => {
+      it('This test case aims to handle case-sensitive role comparison', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['USER'],
@@ -214,7 +214,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(false); // 'user' !== 'USER'
       });
 
-      it('should handle undefined user role', () => {
+      it('This test case aims to handle undefined user role', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['USER'],
@@ -226,7 +226,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(false);
       });
 
-      it('should handle null user role', () => {
+      it('This test case aims to handle null user role', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['USER'],
@@ -238,7 +238,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(false);
       });
 
-      it('should handle empty string role', () => {
+      it('This test case aims to handle empty string role', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['USER'],
@@ -250,7 +250,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(false);
       });
 
-      it('should handle numeric role (edge case)', () => {
+      it('This test case aims to handle numeric role (edge case)', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['1'],
@@ -264,7 +264,7 @@ describe('RolesGuard  Tests', () => {
     });
 
     describe('Route config variations', () => {
-      it('should handle route config with message property', () => {
+      it('This test case aims to handle route config with message property', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['USER'],
@@ -277,7 +277,7 @@ describe('RolesGuard  Tests', () => {
         expect(result).toBe(true);
       });
 
-      it('should handle route config with additional properties', () => {
+      it('This test case aims to handle route config with additional properties', () => {
         mockReflector.get.mockReturnValue({
           requiresAuth: true,
           roles: ['ADMIN'],
@@ -294,11 +294,11 @@ describe('RolesGuard  Tests', () => {
   });
 
   describe('Guard instantiation', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(guard).toBeDefined();
     });
 
-    it('should have reflector injected', () => {
+    it('This test case aims to have reflector injected', () => {
       expect(reflector).toBeDefined();
     });
   });

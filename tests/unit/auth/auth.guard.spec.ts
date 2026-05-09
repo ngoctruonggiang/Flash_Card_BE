@@ -337,19 +337,19 @@ describe('UC-02: Login - AuthGuard Tests', () => {
   });
 
   describe('Guard instantiation', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(guard).toBeDefined();
     });
 
-    it('should have reflector injected', () => {
+    it('This test case aims to have reflector injected', () => {
       expect(reflector).toBeDefined();
     });
 
-    it('should have jwtService injected', () => {
+    it('This test case aims to have jwtService injected', () => {
       expect(jwtService).toBeDefined();
     });
 
-    it('should have userService injected', () => {
+    it('This test case aims to have userService injected', () => {
       expect(userService).toBeDefined();
     });
   });

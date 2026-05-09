@@ -49,7 +49,7 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('HttpException handling', () => {
-    it('should handle BadRequest (400) exception', () => {
+    it('This test case aims to handle BadRequest (400) exception', () => {
       const exception = new HttpException(
         'Bad Request',
         HttpStatus.BAD_REQUEST,
@@ -68,7 +68,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle Unauthorized (401) exception', () => {
+    it('This test case aims to handle Unauthorized (401) exception', () => {
       const exception = new HttpException(
         'Unauthorized',
         HttpStatus.UNAUTHORIZED,
@@ -85,7 +85,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle Forbidden (403) exception', () => {
+    it('This test case aims to handle Forbidden (403) exception', () => {
       const exception = new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 
       filter.catch(exception, mockArgumentsHost);
@@ -99,7 +99,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle NotFound (404) exception', () => {
+    it('This test case aims to handle NotFound (404) exception', () => {
       const exception = new HttpException('Not Found', HttpStatus.NOT_FOUND);
 
       filter.catch(exception, mockArgumentsHost);
@@ -113,7 +113,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle Conflict (409) exception', () => {
+    it('This test case aims to handle Conflict (409) exception', () => {
       const exception = new HttpException('Conflict', HttpStatus.CONFLICT);
 
       filter.catch(exception, mockArgumentsHost);
@@ -127,7 +127,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle InternalServerError (500) HttpException', () => {
+    it('This test case aims to handle InternalServerError (500) HttpException', () => {
       const exception = new HttpException(
         'Internal Server Error',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -146,7 +146,7 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('HttpException with object response', () => {
-    it('should extract message from object response', () => {
+    it('This test case aims to extract message from object response', () => {
       const exception = new HttpException(
         { message: 'Validation failed', statusCode: 400 },
         HttpStatus.BAD_REQUEST,
@@ -161,7 +161,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should join array messages', () => {
+    it('This test case aims to join array messages', () => {
       const exception = new HttpException(
         { message: ['Error 1', 'Error 2', 'Error 3'], statusCode: 400 },
         HttpStatus.BAD_REQUEST,
@@ -176,7 +176,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle single item array message', () => {
+    it('This test case aims to handle single item array message', () => {
       const exception = new HttpException(
         { message: ['Single error'], statusCode: 400 },
         HttpStatus.BAD_REQUEST,
@@ -191,7 +191,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle empty array message', () => {
+    it('This test case aims to handle empty array message', () => {
       const exception = new HttpException(
         { message: [], statusCode: 400 },
         HttpStatus.BAD_REQUEST,
@@ -206,7 +206,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle object response without message property', () => {
+    it('This test case aims to handle object response without message property', () => {
       const exception = new HttpException(
         { error: 'Some error', statusCode: 400 },
         HttpStatus.BAD_REQUEST,
@@ -220,7 +220,7 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('Generic Error handling', () => {
-    it('should handle generic Error with 500 status', () => {
+    it('This test case aims to handle generic Error with 500 status', () => {
       const exception = new Error('Something went wrong');
 
       filter.catch(exception, mockArgumentsHost);
@@ -235,7 +235,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle TypeError', () => {
+    it('This test case aims to handle TypeError', () => {
       const exception = new TypeError('Cannot read property of undefined');
 
       filter.catch(exception, mockArgumentsHost);
@@ -248,7 +248,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle ReferenceError', () => {
+    it('This test case aims to handle ReferenceError', () => {
       const exception = new ReferenceError('x is not defined');
 
       filter.catch(exception, mockArgumentsHost);
@@ -256,7 +256,7 @@ describe('GlobalExceptionFilter Tests', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
     });
 
-    it('should handle SyntaxError', () => {
+    it('This test case aims to handle SyntaxError', () => {
       const exception = new SyntaxError('Unexpected token');
 
       filter.catch(exception, mockArgumentsHost);
@@ -264,7 +264,7 @@ describe('GlobalExceptionFilter Tests', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
     });
 
-    it('should handle RangeError', () => {
+    it('This test case aims to handle RangeError', () => {
       const exception = new RangeError('Maximum call stack exceeded');
 
       filter.catch(exception, mockArgumentsHost);
@@ -274,7 +274,7 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('Response format', () => {
-    it('should include timestamp in response', () => {
+    it('This test case aims to include timestamp in response', () => {
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
       filter.catch(exception, mockArgumentsHost);
@@ -286,7 +286,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should include path in response', () => {
+    it('This test case aims to include path in response', () => {
       mockRequest.url = '/api/users/123';
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
@@ -299,7 +299,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should include null data in response', () => {
+    it('This test case aims to include null data in response', () => {
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
       filter.catch(exception, mockArgumentsHost);
@@ -311,7 +311,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should format timestamp as ISO string', () => {
+    it('This test case aims to format timestamp as ISO string', () => {
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
       filter.catch(exception, mockArgumentsHost);
@@ -324,7 +324,7 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('Logging', () => {
-    it('should log HttpException to console.error', () => {
+    it('This test case aims to log HttpException to console.error', () => {
       const consoleSpy = jest.spyOn(console, 'error');
       const exception = new HttpException('Test Error', HttpStatus.BAD_REQUEST);
 
@@ -336,7 +336,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should log generic Error to console.error', () => {
+    it('This test case aims to log generic Error to console.error', () => {
       const consoleSpy = jest.spyOn(console, 'error');
       const exception = new Error('Generic Error');
 
@@ -350,7 +350,7 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('Different request paths', () => {
-    it('should handle root path', () => {
+    it('This test case aims to handle root path', () => {
       mockRequest.url = '/';
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
@@ -363,7 +363,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle nested paths', () => {
+    it('This test case aims to handle nested paths', () => {
       mockRequest.url = '/api/v1/users/123/cards/456';
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
@@ -376,7 +376,7 @@ describe('GlobalExceptionFilter Tests', () => {
       );
     });
 
-    it('should handle paths with query parameters', () => {
+    it('This test case aims to handle paths with query parameters', () => {
       mockRequest.url = '/api/cards?deckId=1&limit=10';
       const exception = new HttpException('Test', HttpStatus.BAD_REQUEST);
 
@@ -391,11 +391,11 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('Filter instantiation', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(filter).toBeDefined();
     });
 
-    it('should be instance of GlobalExceptionFilter', () => {
+    it('This test case aims to be instance of GlobalExceptionFilter', () => {
       expect(filter).toBeInstanceOf(GlobalExceptionFilter);
     });
   });

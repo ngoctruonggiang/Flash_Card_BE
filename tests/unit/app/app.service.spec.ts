@@ -8,15 +8,15 @@ describe('AppService Tests', () => {
   });
 
   describe('Constructor', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(service).toBeDefined();
     });
 
-    it('should be instance of AppService', () => {
+    it('This test case aims to be instance of AppService', () => {
       expect(service).toBeInstanceOf(AppService);
     });
 
-    it('should create a new instance successfully', () => {
+    it('This test case aims to create a new instance successfully', () => {
       const newService = new AppService();
       expect(newService).toBeDefined();
       expect(newService).toBeInstanceOf(AppService);
@@ -24,19 +24,19 @@ describe('AppService Tests', () => {
   });
 
   describe('getHello', () => {
-    it('should return "Hello World!"', () => {
+    it('This test case aims to return "Hello World!"', () => {
       const result = service.getHello();
 
       expect(result).toBe('Hello World!');
     });
 
-    it('should return a string', () => {
+    it('This test case aims to return a string', () => {
       const result = service.getHello();
 
       expect(typeof result).toBe('string');
     });
 
-    it('should return exactly "Hello World!" with correct casing', () => {
+    it('This test case aims to return exactly "Hello World!" with correct casing', () => {
       const result = service.getHello();
 
       expect(result).not.toBe('hello world!');
@@ -45,47 +45,47 @@ describe('AppService Tests', () => {
       expect(result).toBe('Hello World!');
     });
 
-    it('should return string with correct length', () => {
+    it('This test case aims to return string with correct length', () => {
       const result = service.getHello();
 
       expect(result.length).toBe(12);
     });
 
-    it('should return string starting with "Hello"', () => {
+    it('This test case aims to return string starting with "Hello"', () => {
       const result = service.getHello();
 
       expect(result.startsWith('Hello')).toBe(true);
     });
 
-    it('should return string ending with "!"', () => {
+    it('This test case aims to return string ending with "!"', () => {
       const result = service.getHello();
 
       expect(result.endsWith('!')).toBe(true);
     });
 
-    it('should contain "World"', () => {
+    it('This test case aims to contain "World"', () => {
       const result = service.getHello();
 
       expect(result).toContain('World');
     });
 
-    it('should contain a space character', () => {
+    it('This test case aims to contain a space character', () => {
       const result = service.getHello();
 
       expect(result).toContain(' ');
     });
 
-    it('should match the expected pattern', () => {
+    it('This test case aims to match the expected pattern', () => {
       const result = service.getHello();
 
       expect(result).toMatch(/^Hello\sWorld!$/);
     });
 
-    it('should be callable without parameters', () => {
+    it('This test case aims to be callable without parameters', () => {
       expect(() => service.getHello()).not.toThrow();
     });
 
-    it('should return same value on multiple calls', () => {
+    it('This test case aims to return same value on multiple calls', () => {
       const result1 = service.getHello();
       const result2 = service.getHello();
       const result3 = service.getHello();
@@ -94,26 +94,26 @@ describe('AppService Tests', () => {
       expect(result2).toBe(result3);
     });
 
-    it('should not return null', () => {
+    it('This test case aims to not return null', () => {
       const result = service.getHello();
 
       expect(result).not.toBeNull();
     });
 
-    it('should not return undefined', () => {
+    it('This test case aims to not return undefined', () => {
       const result = service.getHello();
 
       expect(result).not.toBeUndefined();
     });
 
-    it('should not return empty string', () => {
+    it('This test case aims to not return empty string', () => {
       const result = service.getHello();
 
       expect(result).not.toBe('');
       expect(result.length).toBeGreaterThan(0);
     });
 
-    it('should be a truthy value', () => {
+    it('This test case aims to be a truthy value', () => {
       const result = service.getHello();
 
       expect(result).toBeTruthy();
@@ -121,7 +121,7 @@ describe('AppService Tests', () => {
   });
 
   describe('Method properties', () => {
-    it('should have getHello method', () => {
+    it('This test case aims to have getHello method', () => {
       expect(service.getHello).toBeDefined();
       expect(typeof service.getHello).toBe('function');
     });
@@ -133,7 +133,7 @@ describe('AppService Tests', () => {
   });
 
   describe('Multiple instances', () => {
-    it('should return same value from different instances', () => {
+    it('This test case aims to return same value from different instances', () => {
       const service1 = new AppService();
       const service2 = new AppService();
       const service3 = new AppService();
@@ -142,7 +142,7 @@ describe('AppService Tests', () => {
       expect(service2.getHello()).toBe(service3.getHello());
     });
 
-    it('should create independent instances', () => {
+    it('This test case aims to create independent instances', () => {
       const service1 = new AppService();
       const service2 = new AppService();
 
@@ -151,7 +151,7 @@ describe('AppService Tests', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle rapid successive calls', () => {
+    it('This test case aims to handle rapid successive calls', () => {
       const results: string[] = [];
       for (let i = 0; i < 100; i++) {
         results.push(service.getHello());
@@ -161,7 +161,7 @@ describe('AppService Tests', () => {
       expect(results).toHaveLength(100);
     });
 
-    it('should be deterministic', () => {
+    it('This test case aims to be deterministic', () => {
       const firstCall = service.getHello();
 
       // Call it many times
@@ -176,7 +176,7 @@ describe('AppService Tests', () => {
   });
 
   describe('String method compatibility', () => {
-    it('should be splittable', () => {
+    it('This test case aims to be splittable', () => {
       const result = service.getHello();
       const words = result.split(' ');
 
@@ -185,25 +185,25 @@ describe('AppService Tests', () => {
       expect(words[1]).toBe('World!');
     });
 
-    it('should be convertible to lowercase', () => {
+    it('This test case aims to be convertible to lowercase', () => {
       const result = service.getHello();
 
       expect(result.toLowerCase()).toBe('hello world!');
     });
 
-    it('should be convertible to uppercase', () => {
+    it('This test case aims to be convertible to uppercase', () => {
       const result = service.getHello();
 
       expect(result.toUpperCase()).toBe('HELLO WORLD!');
     });
 
-    it('should be trimmable (no change expected)', () => {
+    it('This test case aims to be trimmable (no change expected)', () => {
       const result = service.getHello();
 
       expect(result.trim()).toBe(result);
     });
 
-    it('should support charAt', () => {
+    it('This test case aims to support charAt', () => {
       const result = service.getHello();
 
       expect(result.charAt(0)).toBe('H');
@@ -211,14 +211,14 @@ describe('AppService Tests', () => {
       expect(result.charAt(11)).toBe('!');
     });
 
-    it('should support charCodeAt', () => {
+    it('This test case aims to support charCodeAt', () => {
       const result = service.getHello();
 
       expect(result.charCodeAt(0)).toBe(72); // 'H'
       expect(result.charCodeAt(6)).toBe(87); // 'W'
     });
 
-    it('should support indexOf', () => {
+    it('This test case aims to support indexOf', () => {
       const result = service.getHello();
 
       expect(result.indexOf('Hello')).toBe(0);
@@ -227,20 +227,20 @@ describe('AppService Tests', () => {
       expect(result.indexOf('xyz')).toBe(-1);
     });
 
-    it('should support replace', () => {
+    it('This test case aims to support replace', () => {
       const result = service.getHello();
 
       expect(result.replace('World', 'Universe')).toBe('Hello Universe!');
     });
 
-    it('should support slice', () => {
+    it('This test case aims to support slice', () => {
       const result = service.getHello();
 
       expect(result.slice(0, 5)).toBe('Hello');
       expect(result.slice(6)).toBe('World!');
     });
 
-    it('should support substring', () => {
+    it('This test case aims to support substring', () => {
       const result = service.getHello();
 
       expect(result.substring(0, 5)).toBe('Hello');
@@ -249,14 +249,14 @@ describe('AppService Tests', () => {
   });
 
   describe('Type safety', () => {
-    it('should return string type', () => {
+    it('This test case aims to return string type', () => {
       const result = service.getHello();
 
       expect(typeof result).toBe('string');
       expect((result as any) instanceof String).toBe(false); // primitive, not String object
     });
 
-    it('should be assignable to string variable', () => {
+    it('This test case aims to be assignable to string variable', () => {
       const result: string = service.getHello();
 
       expect(result).toBe('Hello World!');

@@ -11,15 +11,15 @@ describe('AppController Tests', () => {
   });
 
   describe('Constructor', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should be instance of AppController', () => {
+    it('This test case aims to be instance of AppController', () => {
       expect(controller).toBeInstanceOf(AppController);
     });
 
-    it('should have appService injected', () => {
+    it('This test case aims to have appService injected', () => {
       // Access private property for testing
       expect(
         (controller as unknown as { appService: AppService }).appService,
@@ -28,24 +28,24 @@ describe('AppController Tests', () => {
   });
 
   describe('getHello', () => {
-    it('should return null', () => {
+    it('This test case aims to return null', () => {
       const result = controller.getHello();
 
       expect(result).toBeNull();
     });
 
-    it('should return null type value', () => {
+    it('This test case aims to return null type value', () => {
       const result = controller.getHello();
 
       expect(result).toBe(null);
       expect(typeof result).toBe('object');
     });
 
-    it('should be callable without parameters', () => {
+    it('This test case aims to be callable without parameters', () => {
       expect(() => controller.getHello()).not.toThrow();
     });
 
-    it('should consistently return null on multiple calls', () => {
+    it('This test case aims to consistently return null on multiple calls', () => {
       const result1 = controller.getHello();
       const result2 = controller.getHello();
       const result3 = controller.getHello();
@@ -55,31 +55,31 @@ describe('AppController Tests', () => {
       expect(result3).toBeNull();
     });
 
-    it('should not return undefined', () => {
+    it('This test case aims to not return undefined', () => {
       const result = controller.getHello();
 
       expect(result).not.toBeUndefined();
     });
 
-    it('should not return an object with properties', () => {
+    it('This test case aims to not return an object with properties', () => {
       const result = controller.getHello();
 
       expect(result).not.toEqual({});
     });
 
-    it('should not return a string', () => {
+    it('This test case aims to not return a string', () => {
       const result = controller.getHello();
 
       expect(typeof result).not.toBe('string');
     });
 
-    it('should not return a number', () => {
+    it('This test case aims to not return a number', () => {
       const result = controller.getHello();
 
       expect(typeof result).not.toBe('number');
     });
 
-    it('should not return a boolean', () => {
+    it('This test case aims to not return a boolean', () => {
       const result = controller.getHello();
 
       expect(typeof result).not.toBe('boolean');
@@ -87,7 +87,7 @@ describe('AppController Tests', () => {
   });
 
   describe('Controller metadata', () => {
-    it('should have getHello method', () => {
+    it('This test case aims to have getHello method', () => {
       expect(controller.getHello).toBeDefined();
       expect(typeof controller.getHello).toBe('function');
     });
@@ -99,7 +99,7 @@ describe('AppController Tests', () => {
   });
 
   describe('Integration with AppService', () => {
-    it('should work independently of AppService getHello', () => {
+    it('This test case aims to work independently of AppService getHello', () => {
       // Controller's getHello doesn't actually use AppService's getHello
       // This test verifies that behavior
       const mockAppService = {
@@ -114,7 +114,7 @@ describe('AppController Tests', () => {
       expect(mockAppService.getHello).not.toHaveBeenCalled();
     });
 
-    it('should not call AppService when getHello is invoked', () => {
+    it('This test case aims to not call AppService when getHello is invoked', () => {
       const serviceSpy = jest.spyOn(appService, 'getHello');
 
       controller.getHello();
@@ -124,7 +124,7 @@ describe('AppController Tests', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle rapid successive calls', () => {
+    it('This test case aims to handle rapid successive calls', () => {
       const results: unknown[] = [];
       for (let i = 0; i < 100; i++) {
         results.push(controller.getHello());
@@ -134,7 +134,7 @@ describe('AppController Tests', () => {
       expect(results).toHaveLength(100);
     });
 
-    it('should work with new controller instances', () => {
+    it('This test case aims to work with new controller instances', () => {
       const newService = new AppService();
       const newController = new AppController(newService);
 

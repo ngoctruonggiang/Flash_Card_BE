@@ -50,17 +50,17 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Interceptor instantiation', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(interceptor).toBeDefined();
     });
 
-    it('should be instance of ResponseInterceptor', () => {
+    it('This test case aims to be instance of ResponseInterceptor', () => {
       expect(interceptor).toBeInstanceOf(ResponseInterceptor);
     });
   });
 
   describe('Response wrapping', () => {
-    it('should wrap simple object data in ApiResponseDto format', (done) => {
+    it('This test case aims to wrap simple object data in ApiResponseDto format', (done) => {
       const data = { id: 1, name: 'Test' };
       mockCallHandler = createMockCallHandler(data);
 
@@ -76,7 +76,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap array data', (done) => {
+    it('This test case aims to wrap array data', (done) => {
       const data = [1, 2, 3, 4, 5];
       mockCallHandler = createMockCallHandler(data);
 
@@ -90,7 +90,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap string data', (done) => {
+    it('This test case aims to wrap string data', (done) => {
       const data = 'Hello World';
       mockCallHandler = createMockCallHandler(data);
 
@@ -103,7 +103,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap number data', (done) => {
+    it('This test case aims to wrap number data', (done) => {
       const data = 42;
       mockCallHandler = createMockCallHandler(data);
 
@@ -116,7 +116,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap boolean data', (done) => {
+    it('This test case aims to wrap boolean data', (done) => {
       const data = true;
       mockCallHandler = createMockCallHandler(data);
 
@@ -129,7 +129,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap null data', (done) => {
+    it('This test case aims to wrap null data', (done) => {
       const data = null;
       mockCallHandler = createMockCallHandler(data);
 
@@ -142,7 +142,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap undefined data as null (default behavior)', (done) => {
+    it('This test case aims to wrap undefined data as null (default behavior)', (done) => {
       const data = undefined;
       mockCallHandler = createMockCallHandler(data);
 
@@ -158,7 +158,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Complex data structures', () => {
-    it('should wrap nested object data', (done) => {
+    it('This test case aims to wrap nested object data', (done) => {
       const data = {
         user: {
           id: 1,
@@ -180,7 +180,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap array of objects', (done) => {
+    it('This test case aims to wrap array of objects', (done) => {
       const data = [
         { id: 1, name: 'Card 1' },
         { id: 2, name: 'Card 2' },
@@ -197,7 +197,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap empty array', (done) => {
+    it('This test case aims to wrap empty array', (done) => {
       const data: unknown[] = [];
       mockCallHandler = createMockCallHandler(data);
 
@@ -210,7 +210,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap empty object', (done) => {
+    it('This test case aims to wrap empty object', (done) => {
       const data = {};
       mockCallHandler = createMockCallHandler(data);
 
@@ -223,7 +223,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap Date objects', (done) => {
+    it('This test case aims to wrap Date objects', (done) => {
       const date = new Date('2024-01-15T10:30:00.000Z');
       const data = { createdAt: date };
       mockCallHandler = createMockCallHandler(data);
@@ -238,7 +238,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Domain-specific data', () => {
-    it('should wrap user data', (done) => {
+    it('This test case aims to wrap user data', (done) => {
       const data = {
         id: 'user-123',
         email: 'test@example.com',
@@ -260,7 +260,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap deck data', (done) => {
+    it('This test case aims to wrap deck data', (done) => {
       const data = {
         id: 'deck-123',
         name: 'My Deck',
@@ -281,7 +281,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap card data with review info', (done) => {
+    it('This test case aims to wrap card data with review info', (done) => {
       const data = {
         id: 'card-123',
         front: 'Question',
@@ -303,7 +303,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should wrap study session data', (done) => {
+    it('This test case aims to wrap study session data', (done) => {
       const data = {
         cards: [
           { id: 'card-1', front: 'Q1', back: 'A1' },
@@ -330,7 +330,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Response structure validation', () => {
-    it('should always include statusCode from response', (done) => {
+    it('This test case aims to always include statusCode from response', (done) => {
       mockExecutionContext = createMockExecutionContext(201);
       mockCallHandler = createMockCallHandler({ test: true });
 
@@ -342,7 +342,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should use route config message', (done) => {
+    it('This test case aims to use route config message', (done) => {
       mockReflector.get.mockReturnValue({ message: 'Custom message' });
       mockCallHandler = createMockCallHandler({ test: true });
 
@@ -354,7 +354,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should use empty string when no route config', (done) => {
+    it('This test case aims to use empty string when no route config', (done) => {
       mockReflector.get.mockReturnValue(null);
       mockCallHandler = createMockCallHandler({ test: true });
 
@@ -366,7 +366,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should always include data property', (done) => {
+    it('This test case aims to always include data property', (done) => {
       mockCallHandler = createMockCallHandler({ test: true });
 
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
@@ -377,7 +377,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should include timestamp', (done) => {
+    it('This test case aims to include timestamp', (done) => {
       mockCallHandler = createMockCallHandler({ test: true });
 
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
@@ -389,7 +389,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should include path from request', (done) => {
+    it('This test case aims to include path from request', (done) => {
       mockExecutionContext = createMockExecutionContext(200, '/api/users/123');
       mockCallHandler = createMockCallHandler({ test: true });
 
@@ -403,7 +403,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Observable behavior', () => {
-    it('should return an Observable', () => {
+    it('This test case aims to return an Observable', () => {
       mockCallHandler = createMockCallHandler({});
       const result = interceptor.intercept(
         mockExecutionContext,
@@ -414,7 +414,7 @@ describe('ResponseInterceptor  Tests', () => {
       expect(typeof result.subscribe).toBe('function');
     });
 
-    it('should pass through errors from handler', (done) => {
+    it('This test case aims to pass through errors from handler', (done) => {
       const error = new Error('Test error');
       mockCallHandler = {
         handle: () => throwError(() => error),
@@ -428,7 +428,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should complete after emitting value', (done) => {
+    it('This test case aims to complete after emitting value', (done) => {
       mockCallHandler = createMockCallHandler({ test: true });
 
       let completed = false;
@@ -446,7 +446,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle very large numbers', (done) => {
+    it('This test case aims to handle very large numbers', (done) => {
       const data = { count: Number.MAX_SAFE_INTEGER };
       mockCallHandler = createMockCallHandler(data);
 
@@ -460,7 +460,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should handle special string characters', (done) => {
+    it('This test case aims to handle special string characters', (done) => {
       const data = { text: 'Special chars: <>&"\'\\n\\t' };
       mockCallHandler = createMockCallHandler(data);
 
@@ -474,7 +474,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should handle unicode strings', (done) => {
+    it('This test case aims to handle unicode strings', (done) => {
       const data = { text: 'Unicode: 你好世界 🎉 émojis' };
       mockCallHandler = createMockCallHandler(data);
 
@@ -488,7 +488,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should handle BigInt serialized as string', (done) => {
+    it('This test case aims to handle BigInt serialized as string', (done) => {
       const data = { bigValue: '9007199254740993' };
       mockCallHandler = createMockCallHandler(data);
 
@@ -504,7 +504,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Multiple executions', () => {
-    it('should work correctly for multiple sequential calls', (done) => {
+    it('This test case aims to work correctly for multiple sequential calls', (done) => {
       const results: unknown[] = [];
 
       mockCallHandler = createMockCallHandler({ call: 1 });
@@ -527,7 +527,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should not retain state between calls', (done) => {
+    it('This test case aims to not retain state between calls', (done) => {
       mockCallHandler = createMockCallHandler({ first: true });
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: (result) => {
@@ -547,7 +547,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Generic type support', () => {
-    it('should work with typed ResponseInterceptor<string>', (done) => {
+    it('This test case aims to work with typed ResponseInterceptor<string>', (done) => {
       const typedInterceptor = new ResponseInterceptor<string>(mockReflector);
       mockCallHandler = createMockCallHandler('typed string');
 
@@ -561,7 +561,7 @@ describe('ResponseInterceptor  Tests', () => {
         });
     });
 
-    it('should work with typed ResponseInterceptor<number[]>', (done) => {
+    it('This test case aims to work with typed ResponseInterceptor<number[]>', (done) => {
       const typedInterceptor = new ResponseInterceptor<number[]>(mockReflector);
       mockCallHandler = createMockCallHandler([1, 2, 3]);
 
@@ -577,7 +577,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Different status codes', () => {
-    it('should handle 201 Created status', (done) => {
+    it('This test case aims to handle 201 Created status', (done) => {
       mockExecutionContext = createMockExecutionContext(201);
       mockCallHandler = createMockCallHandler({ id: 'new-resource' });
 
@@ -589,7 +589,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should handle 204 No Content status', (done) => {
+    it('This test case aims to handle 204 No Content status', (done) => {
       mockExecutionContext = createMockExecutionContext(204);
       mockCallHandler = createMockCallHandler(null);
 
@@ -604,7 +604,7 @@ describe('ResponseInterceptor  Tests', () => {
   });
 
   describe('Reflector interactions', () => {
-    it('should call reflector.get with correct arguments', (done) => {
+    it('This test case aims to call reflector.get with correct arguments', (done) => {
       mockCallHandler = createMockCallHandler({});
 
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
@@ -615,7 +615,7 @@ describe('ResponseInterceptor  Tests', () => {
       });
     });
 
-    it('should handle route config with undefined message', (done) => {
+    it('This test case aims to handle route config with undefined message', (done) => {
       mockReflector.get.mockReturnValue({});
       mockCallHandler = createMockCallHandler({});
 

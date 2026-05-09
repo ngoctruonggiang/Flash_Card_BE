@@ -570,11 +570,11 @@ describe('AuthController Tests', () => {
   });
 
   describe('Controller instantiation', () => {
-    it('should be defined', () => {
+    it('This test case aims to be defined', () => {
       expect(controller).toBeDefined();
     });
 
-    it('should have authService injected', () => {
+    it('This test case aims to have authService injected', () => {
       expect(authService).toBeDefined();
     });
   });
