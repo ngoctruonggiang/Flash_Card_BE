@@ -131,8 +131,9 @@ export class StudyController {
     message: 'Submitting card review',
     requiresAuth: true,
   })
-  submitReview(@Body() cardReview: SubmitReviewDto) {
-    return this.reviewService.submitReviews(cardReview);
+  submitReview(@GetUser() user: User, @Body() cardReview: SubmitReviewDto) {
+    // AUTH-CHECK [UC-21]: Truyền userId để service verify ownership
+    return this.reviewService.submitReviews(cardReview, user.id);
   }
 
   @Post('/cram/review')
@@ -160,8 +161,9 @@ export class StudyController {
     message: 'Start Study Session',
     requiresAuth: true,
   })
-  getDueReviews(@Param() params: IdParamDto) {
-    return this.reviewService.getDueReviews(params.id);
+  getDueReviews(@GetUser() user: User, @Param() params: IdParamDto) {
+    // AUTH-CHECK [UC-20]: Truyền userId để service verify ownership
+    return this.reviewService.getDueReviews(params.id, user.id);
   }
 
   @Get('/preview/:id')

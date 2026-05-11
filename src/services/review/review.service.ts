@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { SubmitReviewDto } from 'src/utils/types/dto/review/submitReview.dto';
 import { Card, CardReview, ReviewQuality } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
@@ -45,43 +49,71 @@ export class ReviewService {
     });
   }
 
-  async submitReviews(review: SubmitReviewDto) {
+  /**
+   * [FACADE] — Chuyển đổi Card entity thành SchedulerCard input.
+   * Encapsulate mapping logic, giảm coupling giữa DB schema và Scheduler interface.
+   */
+  private toSchedulerInput(card: Card): SchedulerCard {
+    return {
+      status: card.status,
+      stepIndex: card.stepIndex,
+      easeFactor: card.easeFactor,
+      interval: card.interval,
+    };
+  }
+
+  /**
+   * UC-21: Record Review Outcome — Submit batch review results.
+   * Đã refactor: Unit of Work (single transaction) + Facade (scheduler helper)
+   * + ownership check + actual review IDs.
+   *
+   * @param review - DTO chứa mảng CardReviews
+   * @param userId - ID của user hiện tại (từ JWT token)
+   * @throws NotFoundException - Nếu card không tồn tại
+   * @throws ForbiddenException - Nếu user không sở hữu card/deck
+   */
+  async submitReviews(review: SubmitReviewDto, userId: number) {
     const scheduler = new AnkiScheduler();
-    const results: CardReview[] = [];
+    // ĐÚNG — DTO không có reviewedAt, dùng server-side timestamp
+    const now = new Date();
 
-    // Process each review sequentially (or parallel if independent)
+    // ──── BƯỚC 1: Batch fetch tất cả cards cần review ────
+    const cardIds = review.CardReviews.map((r) => r.cardId);
+    const cards = await this.prismaService.card.findMany({
+      where: { id: { in: cardIds } },
+      include: { deck: { select: { userId: true } } },
+    });
+
+    // ──── BƯỚC 2: Validate existence + ownership ────
+    const cardMap = new Map(cards.map((c) => [c.id, c]));
+
     for (const r of review.CardReviews) {
-      // 1. Fetch current card state
-      const card = await this.prismaService.card.findUnique({
-        where: { id: r.cardId },
-      });
-
+      const card = cardMap.get(r.cardId);
       if (!card) {
         throw new NotFoundException(`Card with id ${r.cardId} not found`);
       }
+      // AUTH-CHECK [UC-21]: Verify user sở hữu deck chứa card
+      if (card.deck.userId !== userId) {
+        throw new ForbiddenException(
+          `You do not have permission to review card ${r.cardId}`,
+        );
+      }
+    }
 
-      // 2. Prepare scheduler input
-      const schedulerInput: SchedulerCard = {
-        status: card.status,
-        stepIndex: card.stepIndex,
-        easeFactor: card.easeFactor,
-        interval: card.interval,
-      };
+    // ──── BƯỚC 3: UNIT OF WORK — Single interactive transaction ────
+    const results = await this.prismaService.$transaction(async (tx) => {
+      const reviewResults: CardReview[] = [];
 
-      // 3. Calculate next state
-      const rating = r.quality as Rating; // Ensure type match
-      const nextState = scheduler.calculateNext(schedulerInput, rating);
+      for (const r of review.CardReviews) {
+        const card = cardMap.get(r.cardId)!;
 
-      // 4. Update Card and Create Review in a transaction
-      // We'll do this one by one to ensure consistency, or batch them if needed.
-      // For now, let's just collect the promises and execute them.
-      // But wait, we need to return the results.
+        // FACADE: Convert Card → SchedulerCard
+        const schedulerInput = this.toSchedulerInput(card);
+        const rating = r.quality as Rating;
+        const nextState = scheduler.calculateNext(schedulerInput, rating);
 
-      // Let's execute immediately for simplicity and correctness
-      const now = new Date();
-
-      await this.prismaService.$transaction([
-        this.prismaService.card.update({
+        // Update card state
+        await tx.card.update({
           where: { id: card.id },
           data: {
             status: nextState.status,
@@ -90,36 +122,32 @@ export class ReviewService {
             interval: nextState.interval,
             nextReviewDate: nextState.nextReviewDate,
           },
-        }),
-        this.prismaService.cardReview.create({
+        });
+
+        // Create review record — trả về actual ID (không còn mock id: 0)
+        const createdReview = await tx.cardReview.create({
           data: {
             cardId: card.id,
             quality: r.quality,
-            repetitions: 0, // Deprecated/Legacy
+            // NOTE: Giữ nguyên behavior gốc — AnkiScheduler không expose
+            // repetitions count ra ngoài nextState. stepIndex trên Card entity
+            // được dùng thay thế để track vị trí trong learning steps.
+            // Thay đổi field này cần đồng bộ với scheduler.ts — ngoài scope.
+            repetitions: 0,
             interval: nextState.interval,
             eFactor: nextState.easeFactor,
-            nextReviewDate: nextState.nextReviewDate || now, // Fallback if null (shouldn't happen for active cards)
+            nextReviewDate: nextState.nextReviewDate || now,
             reviewedAt: now,
             previousStatus: card.status,
             newStatus: nextState.status,
           },
-        }),
-      ]);
+        });
 
-      // Add to results for response (mocking the review object)
-      results.push({
-        id: 0,
-        cardId: card.id,
-        quality: r.quality,
-        repetitions: 0,
-        interval: nextState.interval,
-        eFactor: nextState.easeFactor,
-        nextReviewDate: nextState.nextReviewDate || now,
-        reviewedAt: now,
-        previousStatus: card.status,
-        newStatus: nextState.status,
-      });
-    }
+        reviewResults.push(createdReview);
+      }
+
+      return reviewResults;
+    });
 
     return results;
   }
@@ -158,41 +186,54 @@ export class ReviewService {
     return results;
   }
 
-  async getDueReviews(deckId: number, limit?: number): Promise<Card[]> {
-    // Check if deck exists
-    const deck = await this.prismaService.deck.findUnique({
-      where: { id: deckId },
+  /**
+   * [SPECIFICATION PATTERN] — Xây dựng Prisma where clause cho due cards.
+   * Tách riêng để dễ test, dễ mở rộng (VD: thêm tag filter, new card limit).
+   * Được gọi bởi getDueReviews() — UC-20.
+   */
+  private buildDueCardsSpec(deckId: number, now: Date) {
+    return {
+      deckId,
+      OR: [
+        // Cards đã review và đến hạn
+        { nextReviewDate: { lte: now } },
+        // Cards mới chưa bao giờ review
+        { status: 'new' as const },
+        // Cards đang học và đến hạn
+        { status: 'learning' as const, nextReviewDate: { lte: now } },
+        // Cards đang học lại và đến hạn
+        { status: 'relearning' as const, nextReviewDate: { lte: now } },
+      ],
+    };
+  }
+
+  /**
+   * UC-20: Start Study Session — Lấy danh sách thẻ đến hạn ôn tập.
+   * Đã refactor: thêm ownership check + Specification Pattern.
+   *
+   * @param deckId - ID của deck cần lấy thẻ
+   * @param userId - ID của user hiện tại (từ JWT token)
+   * @param limit - Số thẻ tối đa trả về (optional)
+   * @throws NotFoundException - Nếu deck không tồn tại
+   * @throws ForbiddenException - Nếu user không sở hữu deck
+   */
+  async getDueReviews(deckId: number, userId: number, limit?: number): Promise<Card[]> {
+    // AUTH-CHECK [UC-20]: Verify ownership — dùng findFirst thay vì findUnique để check cả id + userId
+    const deck = await this.prismaService.deck.findFirst({
+      where: { id: deckId, userId },
     });
 
     if (!deck) {
-      throw new NotFoundException('Deck not found');
+      throw new NotFoundException('Deck not found or access denied');
     }
 
-    const today = new Date();
+    const now = new Date();
+
+    // SPECIFICATION PATTERN: Delegate query construction
+    const whereSpec = this.buildDueCardsSpec(deckId, now);
 
     const cards = await this.prismaService.card.findMany({
-      where: {
-        deckId,
-        OR: [
-          // has reviews that are due
-          {
-            nextReviewDate: { lte: today },
-          },
-          // never reviewed (new cards)
-          {
-            status: 'new',
-          },
-          // learning cards (often due immediately)
-          {
-            status: 'learning',
-            nextReviewDate: { lte: today },
-          },
-          {
-            status: 'relearning',
-            nextReviewDate: { lte: today },
-          },
-        ],
-      },
+      where: whereSpec,
       take: limit,
       orderBy: { nextReviewDate: 'asc' },
     });

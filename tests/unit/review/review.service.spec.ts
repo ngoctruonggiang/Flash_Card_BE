@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewService } from 'src/services/review/review.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { AnkiScheduler } from 'src/services/scheduler';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ReviewQuality, CardStatus } from '@prisma/client';
 
 // Mock AnkiScheduler
@@ -29,8 +29,17 @@ describe('ReviewService  Tests', () => {
     },
     deck: {
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
     },
-    $transaction: jest.fn((promises) => Promise.all(promises)),
+    $transaction: jest.fn((fn) => {
+      if (typeof fn === 'function') {
+        return fn({
+          card: { update: jest.fn().mockResolvedValue({}) },
+          cardReview: { create: jest.fn().mockImplementation((args) => Promise.resolve({ id: 1, ...args.data })) },
+        });
+      }
+      return Promise.all(fn);
+    }),
   };
 
   beforeEach(async () => {
@@ -276,6 +285,7 @@ describe('ReviewService  Tests', () => {
           stepIndex: 0,
           easeFactor: 2.5,
           interval: 0,
+          deck: { userId: 1 },
         };
         const nextState = {
           status: 'review',
@@ -285,12 +295,10 @@ describe('ReviewService  Tests', () => {
           nextReviewDate: new Date(),
         };
 
-        mockPrismaService.card.findUnique.mockResolvedValue(mockCard);
+        mockPrismaService.card.findMany.mockResolvedValue([mockCard]);
         mockAnkiScheduler.calculateNext.mockReturnValue(nextState);
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result).toHaveLength(1);
         expect(prismaService.$transaction).toHaveBeenCalled();
@@ -300,9 +308,9 @@ describe('ReviewService  Tests', () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 999, quality: 'Good' }],
         };
-        mockPrismaService.card.findUnique.mockResolvedValue(null);
+        mockPrismaService.card.findMany.mockResolvedValue([]);
 
-        await expect(service.submitReviews(submitDto)).rejects.toThrow(
+        await expect(service.submitReviews(submitDto, 1)).rejects.toThrow(
           'Card with id 999 not found',
         );
       });
@@ -318,13 +326,11 @@ describe('ReviewService  Tests', () => {
           ],
         };
 
-        mockPrismaService.card.findUnique.mockResolvedValue({
-          id: 1,
-          status: 'learning',
-          stepIndex: 0,
-          easeFactor: 2.5,
-          interval: 0,
-        });
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'learning', stepIndex: 0, easeFactor: 2.5, interval: 0, deck: { userId: 1 } },
+          { id: 2, status: 'learning', stepIndex: 0, easeFactor: 2.5, interval: 0, deck: { userId: 1 } },
+          { id: 3, status: 'learning', stepIndex: 0, easeFactor: 2.5, interval: 0, deck: { userId: 1 } },
+        ]);
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'review',
           stepIndex: 0,
@@ -332,10 +338,8 @@ describe('ReviewService  Tests', () => {
           interval: 1,
           nextReviewDate: new Date(),
         });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result).toHaveLength(3);
       });
@@ -349,27 +353,12 @@ describe('ReviewService  Tests', () => {
           ],
         };
 
-        mockPrismaService.card.findUnique
-          .mockResolvedValueOnce({
-            id: 1,
-            status: 'learning',
-            stepIndex: 0,
-            easeFactor: 2.5,
-            interval: 0,
-          })
-          .mockResolvedValueOnce(null); // Card 999 doesn't exist - will throw
+        // Batch fetch only returns cards 1 — card 999 missing
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'learning', stepIndex: 0, easeFactor: 2.5, interval: 0, deck: { userId: 1 } },
+        ]);
 
-        mockAnkiScheduler.calculateNext.mockReturnValue({
-          status: 'review',
-          stepIndex: 0,
-          easeFactor: 2.5,
-          interval: 1,
-          nextReviewDate: new Date(),
-        });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
-
-        await expect(service.submitReviews(submitDto)).rejects.toThrow(
+        await expect(service.submitReviews(submitDto, 1)).rejects.toThrow(
           'Card with id 999 not found',
         );
       });
@@ -380,13 +369,9 @@ describe('ReviewService  Tests', () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Again' }],
         };
-        mockPrismaService.card.findUnique.mockResolvedValue({
-          id: 1,
-          status: 'review',
-          stepIndex: 0,
-          easeFactor: 2.5,
-          interval: 10,
-        });
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'review', stepIndex: 0, easeFactor: 2.5, interval: 10, deck: { userId: 1 } },
+        ]);
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'relearning',
           stepIndex: 0,
@@ -394,10 +379,8 @@ describe('ReviewService  Tests', () => {
           interval: 10,
           nextReviewDate: new Date(),
         });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result[0].quality).toBe('Again');
       });
@@ -406,13 +389,9 @@ describe('ReviewService  Tests', () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Hard' }],
         };
-        mockPrismaService.card.findUnique.mockResolvedValue({
-          id: 1,
-          status: 'review',
-          stepIndex: 0,
-          easeFactor: 2.5,
-          interval: 10,
-        });
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'review', stepIndex: 0, easeFactor: 2.5, interval: 10, deck: { userId: 1 } },
+        ]);
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'review',
           stepIndex: 0,
@@ -420,10 +399,8 @@ describe('ReviewService  Tests', () => {
           interval: 12,
           nextReviewDate: new Date(),
         });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result[0].quality).toBe('Hard');
       });
@@ -432,13 +409,9 @@ describe('ReviewService  Tests', () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Good' }],
         };
-        mockPrismaService.card.findUnique.mockResolvedValue({
-          id: 1,
-          status: 'review',
-          stepIndex: 0,
-          easeFactor: 2.5,
-          interval: 10,
-        });
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'review', stepIndex: 0, easeFactor: 2.5, interval: 10, deck: { userId: 1 } },
+        ]);
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'review',
           stepIndex: 0,
@@ -446,10 +419,8 @@ describe('ReviewService  Tests', () => {
           interval: 25,
           nextReviewDate: new Date(),
         });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result[0].quality).toBe('Good');
       });
@@ -458,13 +429,9 @@ describe('ReviewService  Tests', () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Easy' }],
         };
-        mockPrismaService.card.findUnique.mockResolvedValue({
-          id: 1,
-          status: 'review',
-          stepIndex: 0,
-          easeFactor: 2.5,
-          interval: 10,
-        });
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'review', stepIndex: 0, easeFactor: 2.5, interval: 10, deck: { userId: 1 } },
+        ]);
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'review',
           stepIndex: 0,
@@ -472,10 +439,8 @@ describe('ReviewService  Tests', () => {
           interval: 32,
           nextReviewDate: new Date(),
         });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result[0].quality).toBe('Easy');
       });
@@ -486,13 +451,9 @@ describe('ReviewService  Tests', () => {
         const submitDto: any = {
           CardReviews: [{ cardId: 1, quality: 'Good' }],
         };
-        mockPrismaService.card.findUnique.mockResolvedValue({
-          id: 1,
-          status: 'learning',
-          stepIndex: 1,
-          easeFactor: 2.5,
-          interval: 10,
-        });
+        mockPrismaService.card.findMany.mockResolvedValue([
+          { id: 1, status: 'learning', stepIndex: 1, easeFactor: 2.5, interval: 10, deck: { userId: 1 } },
+        ]);
         mockAnkiScheduler.calculateNext.mockReturnValue({
           status: 'review',
           stepIndex: 0,
@@ -500,10 +461,8 @@ describe('ReviewService  Tests', () => {
           interval: 1,
           nextReviewDate: new Date(),
         });
-        mockPrismaService.card.update.mockResolvedValue({});
-        mockPrismaService.cardReview.create.mockResolvedValue({});
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result[0].previousStatus).toBe('learning');
         expect(result[0].newStatus).toBe('review');
@@ -513,8 +472,9 @@ describe('ReviewService  Tests', () => {
     describe('Empty submission scenarios', () => {
       it('TC-RECORDREVIEW-015: This test case aims to verify handling of empty CardReviews array', async () => {
         const submitDto: any = { CardReviews: [] };
+        mockPrismaService.card.findMany.mockResolvedValue([]);
 
-        const result = await service.submitReviews(submitDto);
+        const result = await service.submitReviews(submitDto, 1);
 
         expect(result).toEqual([]);
       });
@@ -635,9 +595,10 @@ describe('ReviewService  Tests', () => {
 
   describe('UC-20: Start Study Session - getDueReviews', () => {
     beforeEach(() => {
-      // Mock deck existence check
-      mockPrismaService.deck.findUnique.mockResolvedValue({
+      // Mock deck ownership check (now uses findFirst with userId)
+      mockPrismaService.deck.findFirst.mockResolvedValue({
         id: 1,
+        userId: 1,
         name: 'Test Deck',
       });
     });
@@ -649,7 +610,7 @@ describe('ReviewService  Tests', () => {
       ];
       mockPrismaService.card.findMany.mockResolvedValue(mockCards);
 
-      const result = await service.getDueReviews(1);
+      const result = await service.getDueReviews(1, 1);
 
       expect(result).toHaveLength(2);
     });
@@ -657,7 +618,7 @@ describe('ReviewService  Tests', () => {
     it('TC-DUEREVIEW-002: This test case aims to verify return of empty array when no cards due', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
-      const result = await service.getDueReviews(1);
+      const result = await service.getDueReviews(1, 1);
 
       expect(result).toEqual([]);
     });
@@ -665,7 +626,7 @@ describe('ReviewService  Tests', () => {
     it('TC-DUEREVIEW-003: This test case aims to verify respect for limit parameter', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
-      await service.getDueReviews(1, 10);
+      await service.getDueReviews(1, 1, 10);
 
       expect(prismaService.card.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -677,7 +638,7 @@ describe('ReviewService  Tests', () => {
     it('TC-DUEREVIEW-004: This test case aims to verify ordering by nextReviewDate asc', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
-      await service.getDueReviews(1);
+      await service.getDueReviews(1, 1);
 
       expect(prismaService.card.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -689,7 +650,7 @@ describe('ReviewService  Tests', () => {
     it('TC-DUEREVIEW-005: This test case aims to verify inclusion of new cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
-      await service.getDueReviews(1);
+      await service.getDueReviews(1, 1);
 
       expect(prismaService.card.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -703,7 +664,7 @@ describe('ReviewService  Tests', () => {
     it('TC-DUEREVIEW-006: This test case aims to verify inclusion of learning cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
-      await service.getDueReviews(1);
+      await service.getDueReviews(1, 1);
 
       expect(prismaService.card.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -719,7 +680,7 @@ describe('ReviewService  Tests', () => {
     it('TC-DUEREVIEW-007: This test case aims to verify inclusion of relearning cards', async () => {
       mockPrismaService.card.findMany.mockResolvedValue([]);
 
-      await service.getDueReviews(1);
+      await service.getDueReviews(1, 1);
 
       expect(prismaService.card.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -733,9 +694,9 @@ describe('ReviewService  Tests', () => {
     });
 
     it('TC-DUEREVIEW-008: This test case aims to verify NotFoundException when deck does not exist', async () => {
-      mockPrismaService.deck.findUnique.mockResolvedValue(null);
+      mockPrismaService.deck.findFirst.mockResolvedValue(null);
 
-      await expect(service.getDueReviews(999)).rejects.toThrow(
+      await expect(service.getDueReviews(999, 1)).rejects.toThrow(
         NotFoundException,
       );
     });

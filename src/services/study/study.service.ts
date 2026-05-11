@@ -37,49 +37,59 @@ export class StudyService {
     return cards;
   }
 
+  /**
+   * [AGGREGATE ROOT QUERY] — Helper tính quality distribution.
+   * Tập trung logic đếm Again/Hard/Good/Easy vào 1 chỗ để tránh duplicate
+   * (hiện có ở getDeckStatistics, getAdvancedStatistics, getTimeRangeStatistics).
+   */
+  private calculateQualityDistribution(reviews: { quality: string }[]) {
+    const againCount = reviews.filter((r) => r.quality === 'Again').length;
+    const hardCount = reviews.filter((r) => r.quality === 'Hard').length;
+    const goodCount = reviews.filter((r) => r.quality === 'Good').length;
+    const easyCount = reviews.filter((r) => r.quality === 'Easy').length;
+    return { againCount, hardCount, goodCount, easyCount };
+  }
+
+  /**
+   * UC-23: View Study Session Statistics.
+   * Đã refactor: dùng previousStatus thay vì card.status + extract quality helper.
+   *
+   * @param deckId - ID của deck
+   * @param sessionStartTime - Thời điểm bắt đầu session
+   * @param sessionEndTime - Thời điểm kết thúc session
+   */
   async calculateSessionStatistics(
     deckId: number,
     sessionStartTime: Date,
     sessionEndTime: Date,
   ): Promise<StudySessionStatisticsDto> {
-    // Get all reviews within the session time range
+    // Query reviews — KHÔNG cần include card.status nữa (dùng previousStatus)
     const reviews = await this.prismaService.cardReview.findMany({
       where: {
-        card: {
-          deckId,
-        },
-        reviewedAt: {
-          gte: sessionStartTime,
-          lte: sessionEndTime,
-        },
+        card: { deckId },
+        reviewedAt: { gte: sessionStartTime, lte: sessionEndTime },
       },
-      include: {
-        card: {
-          select: {
-            status: true,
-          },
-        },
-      },
+      // Removed: include: { card: { select: { status: true } } }
+      // Lý do: previousStatus đã có sẵn trên CardReview record
     });
 
     const totalCardsReviewed = reviews.length;
 
-    // Count cards by status before the review
+    // FIX [UC-23]: Dùng previousStatus (trạng thái TẠI THỜI ĐIỂM review)
+    // thay vì card.status (trạng thái HIỆN TẠI sau tất cả reviews)
     const newCardsIntroduced = reviews.filter(
-      (r) => r.card.status === 'new',
+      (r) => r.previousStatus === 'new',
     ).length;
     const learningCardsReviewed = reviews.filter(
-      (r) => r.card.status === 'learning',
+      (r) => r.previousStatus === 'learning',
     ).length;
     const reviewCardsReviewed = reviews.filter(
-      (r) => r.card.status === 'review',
+      (r) => r.previousStatus === 'review',
     ).length;
 
-    // Count by quality
-    const againCount = reviews.filter((r) => r.quality === 'Again').length;
-    const hardCount = reviews.filter((r) => r.quality === 'Hard').length;
-    const goodCount = reviews.filter((r) => r.quality === 'Good').length;
-    const easyCount = reviews.filter((r) => r.quality === 'Easy').length;
+    // AGGREGATE ROOT QUERY: Dùng shared helper
+    const { againCount, hardCount, goodCount, easyCount } =
+      this.calculateQualityDistribution(reviews);
 
     const correctAnswers = goodCount + easyCount;
     const incorrectAnswers = againCount;
@@ -87,7 +97,6 @@ export class StudyService {
     const accuracyPercentage =
       totalCardsReviewed > 0 ? (correctAnswers / totalCardsReviewed) * 100 : 0;
 
-    // Calculate study time
     const totalStudyTime = Math.floor(
       (sessionEndTime.getTime() - sessionStartTime.getTime()) / 1000,
     );
@@ -95,12 +104,9 @@ export class StudyService {
     const averageTimePerCard =
       totalCardsReviewed > 0 ? totalStudyTime / totalCardsReviewed : 0;
 
-    // Get deck info
     const deck = await this.prismaService.deck.findUnique({
       where: { id: deckId },
-      select: {
-        title: true,
-      },
+      select: { title: true },
     });
 
     return {

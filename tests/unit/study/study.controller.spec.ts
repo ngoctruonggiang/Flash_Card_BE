@@ -56,16 +56,16 @@ describe('StudyController  Tests', () => {
       ];
       mockReviewService.getDueReviews.mockResolvedValue(dueCards);
 
-      const result = await controller.getDueReviews({ id: 1 });
+      const result = await controller.getDueReviews(mockUser as any, { id: 1 });
 
       expect(result).toEqual(dueCards);
-      expect(reviewService.getDueReviews).toHaveBeenCalledWith(1);
+      expect(reviewService.getDueReviews).toHaveBeenCalledWith(1, 1);
     });
 
     it('TC-STARTSTUDY-002: This test case aims to verify empty array is returned when no cards are due', async () => {
       mockReviewService.getDueReviews.mockResolvedValue([]);
 
-      const result = await controller.getDueReviews({ id: 1 });
+      const result = await controller.getDueReviews(mockUser as any, { id: 1 });
 
       expect(result).toEqual([]);
     });
@@ -75,7 +75,7 @@ describe('StudyController  Tests', () => {
         new NotFoundException('Deck not found'),
       );
 
-      await expect(controller.getDueReviews({ id: 999 })).rejects.toThrow(
+      await expect(controller.getDueReviews(mockUser as any, { id: 999 })).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -83,9 +83,9 @@ describe('StudyController  Tests', () => {
     it('TC-STARTSTUDY-004: This test case aims to verify getDueReviews with various deck ids', async () => {
       mockReviewService.getDueReviews.mockResolvedValue([]);
 
-      await controller.getDueReviews({ id: 42 });
+      await controller.getDueReviews(mockUser as any, { id: 42 });
 
-      expect(reviewService.getDueReviews).toHaveBeenCalledWith(42);
+      expect(reviewService.getDueReviews).toHaveBeenCalledWith(42, 1);
     });
 
     it('TC-STARTSTUDY-005: This test case aims to verify retrieval of cards with all status types', async () => {
@@ -97,7 +97,7 @@ describe('StudyController  Tests', () => {
       ];
       mockReviewService.getDueReviews.mockResolvedValue(dueCards);
 
-      const result = await controller.getDueReviews({ id: 1 });
+      const result = await controller.getDueReviews(mockUser as any, { id: 1 });
 
       expect(result).toHaveLength(4);
     });
@@ -187,10 +187,10 @@ describe('StudyController  Tests', () => {
       ];
       mockReviewService.submitReviews.mockResolvedValue(reviewResult);
 
-      const result = await controller.submitReview(submitDto as any);
+      const result = await controller.submitReview(mockUser as any, submitDto as any);
 
       expect(result).toEqual(reviewResult);
-      expect(reviewService.submitReviews).toHaveBeenCalledWith(submitDto);
+      expect(reviewService.submitReviews).toHaveBeenCalledWith(submitDto, 1);
     });
 
     it('TC-RECORDREVIEW-002: This test case aims to verify submission of multiple review outcomes', async () => {
@@ -208,7 +208,7 @@ describe('StudyController  Tests', () => {
       ];
       mockReviewService.submitReviews.mockResolvedValue(reviewResults);
 
-      const result = await controller.submitReview(submitDto as any);
+      const result = await controller.submitReview(mockUser as any, submitDto as any);
 
       expect(result).toHaveLength(3);
     });
@@ -222,7 +222,7 @@ describe('StudyController  Tests', () => {
         };
         mockReviewService.submitReviews.mockResolvedValue([{ quality }]);
 
-        const result = await controller.submitReview(submitDto as any);
+        const result = await controller.submitReview(mockUser as any, submitDto as any);
 
         expect(result[0].quality).toBe(quality);
       }
@@ -232,7 +232,7 @@ describe('StudyController  Tests', () => {
       const submitDto = { CardReviews: [] };
       mockReviewService.submitReviews.mockResolvedValue([]);
 
-      const result = await controller.submitReview(submitDto as any);
+      const result = await controller.submitReview(mockUser as any, submitDto as any);
 
       expect(result).toEqual([]);
     });
@@ -245,7 +245,7 @@ describe('StudyController  Tests', () => {
         new Error('Card not found'),
       );
 
-      await expect(controller.submitReview(submitDto as any)).rejects.toThrow(
+      await expect(controller.submitReview(mockUser as any, submitDto as any)).rejects.toThrow(
         'Card not found',
       );
     });
