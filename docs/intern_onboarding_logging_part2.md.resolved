@@ -1,0 +1,497 @@
+# FlashLearn Backend — Logging & Monitoring Onboarding Guide
+
+## Part 2: Exception Handling, Monitoring, Security & Best Practices
+
+---
+
+## 4. Global Exception Filter
+
+### 4.1 Why `console.error()` is Bad in Production
+
+Before our refactor, the exception filter used `console.error()`:
+
+```typescript
+// ❌ OLD — Bad practice
+console.error('Exception caught by GlobalExceptionFilter:', exception);
+```
+
+Problems with this:
+1. **No log level**: `console.error` doesn't integrate with Winston's transport system. It goes to stdout only — no files, no aggregators
+2. **No structure**: The output is an unformatted object dump that log aggregators can't parse
+3. **No context**: No timestamp, no request URL, no method — you can't correlate it to anything
+4. **Lost on restart**: If the container restarts, console output disappears
+
+Our replacement ([global.filter.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/middleware/filters/global.filter.ts)):
+
+```typescript
+// ✅ NEW — Professional practice
+this.logger.error(
+  `${request.method} ${request.url} ${status} - ${message}`,
+  exception.stack,        // Stack trace goes to internal logs
+  'ExceptionFilter',      // Context label
+);
+```
+
+### 4.2 The Two Audiences Problem
+
+Every error has **two audiences** that need different information:
+
+```
+                    ┌─────────────────┐
+                    │   Exception     │
+                    │   Occurs        │
+                    └────────┬────────┘
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+        ┌───────▼───────┐         ┌───────▼───────┐
+        │  INTERNAL LOG │         │ CLIENT        │
+        │  (for devs)   │         │ RESPONSE      │
+        │               │         │ (for users)   │
+        │ • Full stack  │         │ • Safe message│
+        │   trace       │         │ • No stack    │
+        │ • Request URL │         │   trace       │
+        │ • HTTP method │         │ • No internal │
+        │ • Error class │         │   details     │
+        │ • All context │         │ • Status code │
+        └───────────────┘         └───────────────┘
+```
+
+**What the engineer sees** (in `error-2026-05-14.log`):
+```json
+{
+  "context": "ExceptionFilter",
+  "level": "error",
+  "message": "POST /api/study/review 500 - Cannot read property 'id' of undefined",
+  "stack": "TypeError: Cannot read property 'id' of undefined\n    at ReviewService.submitReview (/src/services/review/review.service.ts:42:15)\n    ...",
+  "timestamp": "2026-05-14T02:54:42.057Z"
+}
+```
+
+**What the client sees** (HTTP response):
+```json
+{
+  "statusCode": 500,
+  "message": "Internal server error",
+  "data": null,
+  "timestamp": "2026-05-14T02:54:42.057Z",
+  "path": "/api/study/review"
+}
+```
+
+> **Security principle**: Never tell attackers *how* your system broke. The generic "Internal server error" message reveals nothing about your code structure, database schema, or technology stack.
+
+### 4.3 Operational vs Unexpected Errors
+
+Our filter distinguishes between two types:
+
+| Type | Example | Log Level | Client Message |
+|---|---|---|---|
+| **Operational** (`HttpException`) | `401 Unauthorized`, `404 Not Found`, `422 Validation Error` | `warn` (4xx) or `error` (5xx) | The actual error message |
+| **Unexpected** (raw `Error`) | `TypeError`, `ReferenceError`, database crash | `error` (always) | Generic "Internal server error" |
+
+```typescript
+if (exception instanceof HttpException) {
+  // Operational: we threw this on purpose
+  if (status >= 500) this.logger.error(...);
+  else this.logger.warn(...);                    // 4xx = client's fault
+  response.json({ message: message });           // Show real message
+} else {
+  // Unexpected: something we didn't anticipate
+  this.logger.error(..., exception.stack, ...);  // Log full stack
+  response.json({ message: 'Internal server error' }); // Hide details
+}
+```
+
+---
+
+## 5. Monitoring & Health Checks
+
+### 5.1 What Health Checks Are
+
+A health check is an endpoint that answers one question: **"Is this service ready to handle requests?"**
+
+Think of it like a pilot's pre-flight checklist:
+- ✅ Engines running? (process alive)
+- ✅ Fuel level OK? (disk space)
+- ✅ Instruments working? (database reachable)
+- ✅ Cabin pressure normal? (memory usage)
+
+If any check fails, the plane doesn't take off — and your load balancer stops sending traffic to that server.
+
+### 5.2 Our Health Check Architecture
+
+```
+                    ┌─────────────────────────────┐
+                    │ GET /api/health              │
+                    │ (HealthController)           │
+                    └──────────┬──────────────────┘
+                               │
+                    ┌──────────▼──────────────────┐
+                    │  HealthCheckService          │
+                    │  (from @nestjs/terminus)      │
+                    │                              │
+                    │  Runs all indicators:        │
+                    └──┬────┬────┬────┬────────────┘
+                       │    │    │    │
+          ┌────────────▼┐ ┌─▼──┐ ┌▼──┐ ┌▼────────┐
+          │ PrismaHealth│ │Heap│ │RSS│ │  Disk   │
+          │ Indicator   │ │    │ │   │ │ Storage │
+          │             │ │<256│ │<512│ │  <90%  │
+          │ SELECT 1    │ │ MB │ │ MB│ │  used  │
+          └─────────────┘ └────┘ └───┘ └─────────┘
+```
+
+**Response when healthy** (status 200):
+```json
+{
+  "status": "ok",
+  "info": {
+    "database": { "status": "up" },
+    "memory_heap": { "status": "up" },
+    "memory_rss": { "status": "up" },
+    "disk": { "status": "up" }
+  }
+}
+```
+
+**Response when unhealthy** (status 503):
+```json
+{
+  "status": "error",
+  "error": {
+    "database": { "status": "down", "message": "SQLITE_CANTOPEN" }
+  }
+}
+```
+
+### 5.3 Liveness vs Readiness Probes
+
+These concepts come from Kubernetes but apply everywhere:
+
+| Probe | Question | Our Endpoint | What Happens on Failure |
+|---|---|---|---|
+| **Liveness** | "Is the process alive?" | `GET /api/health/liveness` | Restart the container |
+| **Readiness** | "Can it serve traffic?" | `GET /api/health` | Stop sending traffic, don't restart |
+
+**Example scenario**: Your app is running (liveness = OK) but the database is down (readiness = FAIL). Kubernetes will stop routing traffic to this pod but won't restart it — because restarting won't fix a database problem.
+
+### 5.4 The Custom PrismaHealthIndicator
+
+Since Terminus doesn't have built-in Prisma support, we created a custom one ([prisma.health.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/services/health/prisma.health.ts)):
+
+```typescript
+async isHealthy(key: string): Promise<HealthIndicatorResult> {
+  await this.prisma.$queryRawUnsafe('SELECT 1');  // Cheapest possible query
+  return this.getStatus(key, true);               // { database: { status: "up" } }
+}
+```
+
+**Why `SELECT 1`?** It's the lightest query possible — it doesn't touch any table, doesn't read any data. It only verifies that the database connection is alive and responsive. Health checks run frequently (every 10-30 seconds), so they must be cheap.
+
+### 5.5 How Metrics Differ From Logs
+
+| Aspect | Logs | Metrics |
+|---|---|---|
+| **Format** | Text/JSON events | Numerical time-series |
+| **Volume** | One per event (can be millions/day) | Aggregated (compact) |
+| **Question** | "What happened at 10:03:15?" | "What's the error rate over the last hour?" |
+| **Storage** | Log files / Elasticsearch | Prometheus / InfluxDB |
+| **Visualization** | Kibana / text search | Grafana dashboards |
+| **Cost** | Expensive at scale | Very cheap |
+
+> **Note**: Our implementation includes health checks for monitoring. Prometheus metrics (request duration histograms, error rate counters) can be added later with `@willsoto/nestjs-prometheus` when the system scales beyond a single instance.
+
+---
+
+## 6. Development vs Production Behavior
+
+| Feature | Development | Production |
+|---|---|---|
+| **Console format** | Colorized, human-readable | Structured JSON |
+| **Log level** | `debug` (show everything) | `info` (hide debug noise) |
+| **Stack traces** | Shown in console | Written to file only |
+| **File logging** | ✅ Active (for testing) | ✅ Active (critical) |
+| **Error file retention** | 30 days | 30 days |
+| **Combined file retention** | 14 days | 14 days |
+| **Health check strictness** | Informational | Determines traffic routing |
+| **Performance impact** | Acceptable (more verbose) | Minimal (less verbose) |
+
+**Console output comparison:**
+
+Development:
+```
+2026-05-14 09:45:58 info [HTTP] GET /api/health 200 - 376b 699ms - Mozilla/5.0... ::1
+```
+↑ Colored, timestamp formatted for humans, readable at a glance.
+
+Production:
+```json
+{"context":"HTTP","level":"info","message":"GET /api/health 200 - 376b 699ms","timestamp":"2026-05-14T02:54:42.057Z"}
+```
+↑ No colors, structured JSON, machine-parsable by Datadog/ELK/CloudWatch.
+
+---
+
+## 7. Security & Best Practices
+
+### 7.1 Never Log Sensitive Data
+
+```typescript
+// ❌ NEVER DO THIS
+this.logger.log(`User login: email=${email}, password=${password}`);
+this.logger.log(`Payment processed: card=${creditCardNumber}`);
+this.logger.log(`Auth token: ${jwtToken}`);
+
+// ✅ DO THIS INSTEAD
+this.logger.log(`User login: email=${email}`);
+this.logger.log(`Payment processed: card=****${last4Digits}`);
+this.logger.log(`Auth: token validated for user ${userId}`);
+```
+
+**What should NEVER appear in logs:**
+- Passwords, API keys, JWT tokens
+- Credit card numbers, SSNs
+- Full email addresses (in GDPR regions)
+- Database connection strings with credentials
+
+### 7.2 Log Retention and Compliance
+
+Our rotation settings align with common practices:
+
+| Data Type | Our Retention | GDPR Consideration |
+|---|---|---|
+| Error logs | 30 days | May contain PII in error messages — review |
+| Combined logs | 14 days | Contains IPs and user agents |
+| Exception logs | 30 days | May contain request bodies |
+
+### 7.3 The Information Security Principle in Our Filter
+
+```
+┌─────────────────────────────────────────┐
+│           Exception Occurs              │
+└────────────────┬────────────────────────┘
+                 │
+    ┌────────────┴────────────┐
+    │                         │
+    ▼                         ▼
+ INTERNAL LOG              CLIENT RESPONSE
+ (full detail)             (sanitized)
+                           
+ ✅ Stack trace            ❌ No stack trace
+ ✅ File paths             ❌ No file paths
+ ✅ DB error codes         ❌ No DB details
+ ✅ Request body           ❌ No internal state
+```
+
+**Why this matters**: If a hacker sends a malformed request and gets back a stack trace showing `at PrismaService.query (/src/services/prisma.service.ts:42)`, they now know:
+- You use Prisma (ORM)
+- Your file structure
+- Potentially your query patterns
+
+Our filter returns only `"Internal server error"` for unexpected errors.
+
+---
+
+## 8. Real Production Debugging Scenario
+
+> **Scenario**: On Monday morning, multiple users report that reviewing flashcards returns a blank error page.
+
+### Step 1: Check Metrics / Health
+
+```bash
+curl https://api.flashlearn.com/api/health
+```
+```json
+{ "status": "ok", "info": { "database": { "status": "up" } } }
+```
+Database is fine. The problem is in the application logic.
+
+### Step 2: Check Error Logs
+
+```bash
+# Search today's error log for the review endpoint
+grep "study/review" logs/error-2026-05-14.log | head -5
+```
+```json
+{
+  "context": "ExceptionFilter",
+  "level": "error",
+  "message": "POST /api/study/review 500 - Cannot read properties of undefined (reading 'easeFactor')",
+  "stack": "TypeError: Cannot read properties of undefined...\n    at ReviewService.submitReview (review.service.ts:87)\n    at StudyController.review (study.controller.ts:34)",
+  "timestamp": "2026-05-14T08:12:33.441Z"
+}
+```
+
+**Found it!** The `easeFactor` property is `undefined` on some card objects.
+
+### Step 3: Check Request Logs for Pattern
+
+```bash
+# How many 500 errors on the review endpoint today?
+grep "study/review 500" logs/combined-2026-05-14.log | wc -l
+# Result: 47
+```
+
+```bash
+# When did they start?
+grep "study/review 500" logs/combined-2026-05-14.log | head -1
+# "timestamp": "2026-05-14T07:45:01.233Z"  ← Started at 7:45 AM
+```
+
+### Step 4: Correlate with Deployment
+
+The deploy log shows a new release went out at 7:40 AM. The errors started 5 minutes later. Root cause: a migration didn't backfill `easeFactor` for old cards created before the SM-2 algorithm refactor.
+
+### Step 5: Fix and Verify
+
+After deploying the fix, monitor:
+```bash
+# Watch for new errors in real-time
+tail -f logs/error-2026-05-14.log | grep "study/review"
+# ... silence. No more errors.
+```
+
+**Total investigation time: ~10 minutes.** Without structured logging, this could take hours of guesswork.
+
+---
+
+## 9. File-by-File Explanation
+
+### How All Components Connect
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         main.ts                             │
+│  Creates Winston logger BEFORE app boots.                   │
+│  Passes it to NestFactory.create() for bootstrap logging.   │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ imports
+┌──────────────────────────▼──────────────────────────────────┐
+│                      app.module.ts                           │
+│  WinstonModule.forRoot() → makes logger available via DI    │
+│  HealthModule → registers health endpoints                  │
+│  APP_FILTER → GlobalExceptionFilter (uses Winston via DI)   │
+│  configure() → applies RequestLoggerMiddleware              │
+└───┬──────────────┬──────────────┬───────────────────────────┘
+    │              │              │
+    ▼              ▼              ▼
+┌────────┐  ┌───────────┐  ┌──────────────┐
+│Request │  │ Global    │  │   Health     │
+│Logger  │  │ Exception │  │   Module     │
+│Middle- │  │ Filter    │  │              │
+│ware   │  │           │  │ Controller + │
+│        │  │ @Inject   │  │ Prisma       │
+│@Inject │  │ Winston   │  │ Health       │
+│Winston │  │           │  │ Indicator    │
+└────────┘  └───────────┘  └──────────────┘
+```
+
+| File | Role | Key Design Decision |
+|---|---|---|
+| [logger.config.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/config/logger.config.ts) | Central logging configuration | Exports a single `winstonConfig` object reused in both `main.ts` and `app.module.ts` |
+| [main.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/main.ts) | App entry point | Logger created *before* `NestFactory.create()` to catch bootstrap errors |
+| [app.module.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/app.module.ts) | Root module | `WinstonModule.forRoot()` enables DI across all modules |
+| [requestLog.interceptor.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/middleware/interceptor/requestLog.interceptor.ts) | HTTP request/response logger | Uses `response.on('finish')` to measure actual duration |
+| [global.filter.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/middleware/filters/global.filter.ts) | Centralized error handler | Separates internal logging from client-facing responses |
+| [health.module.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/modules/health.module.ts) | Health check wiring | Imports `TerminusModule` + `PrismaModule` |
+| [health.controller.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/controllers/health/health.controller.ts) | Health endpoints | Public endpoints (no auth) for monitoring tools |
+| [prisma.health.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/services/health/prisma.health.ts) | Database health indicator | `SELECT 1` — cheapest possible DB verification |
+
+---
+
+## 10. Common Mistakes Interns Make
+
+### ❌ Mistake 1: Overlogging
+
+```typescript
+// BAD: Logging inside a loop that processes 10,000 cards
+for (const card of cards) {
+  this.logger.debug(`Processing card ${card.id}`);  // 10,000 log entries!
+  await this.processCard(card);
+}
+
+// GOOD: Log summary
+this.logger.log(`Processing ${cards.length} cards`);
+for (const card of cards) { await this.processCard(card); }
+this.logger.log(`Finished processing ${cards.length} cards`);
+```
+
+**Why it's bad**: Excessive logging slows down the application (I/O is expensive), fills up disk space, and makes it impossible to find important logs in the noise.
+
+### ❌ Mistake 2: Logging Sensitive Data
+
+```typescript
+// BAD: JWT tokens in logs
+this.logger.log(`Authenticating with token: ${token}`);
+
+// GOOD: Log only non-sensitive identifiers
+this.logger.log(`Authenticating user ${userId}`);
+```
+
+**Why it's bad**: If logs are compromised, attackers get valid authentication tokens.
+
+### ❌ Mistake 3: Using `console.log` in Production Code
+
+```typescript
+// BAD: Bypasses the entire logging infrastructure
+console.log('Debug: user data =', userData);
+
+// GOOD: Uses the injected logger
+this.logger.debug(`User data loaded for ${userId}`, 'UserService');
+```
+
+**Why it's bad**: `console.log` doesn't go to files, doesn't have timestamps, doesn't have log levels, and can't be filtered or searched by log aggregators.
+
+### ❌ Mistake 4: Not Using Context Labels
+
+```typescript
+// BAD: No context — which service logged this?
+this.logger.log('Query executed successfully');
+
+// GOOD: Context tells you exactly where this came from
+this.logger.log('Query executed successfully', 'DeckService');
+```
+
+**Why it's bad**: In a system with 50+ services, finding the source of a log without context is like finding a needle in a haystack.
+
+### ❌ Mistake 5: Synchronous File Writing
+
+```typescript
+// BAD: Blocking the event loop to write logs
+fs.writeFileSync('app.log', logMessage);
+
+// GOOD: Winston handles async I/O internally
+this.logger.log(message);  // Non-blocking
+```
+
+**Why it's bad**: Node.js is single-threaded. Synchronous file I/O blocks the entire event loop, meaning no other requests can be processed while the log is being written. Winston uses async I/O internally.
+
+### ❌ Mistake 6: Unstructured Log Messages
+
+```typescript
+// BAD: Different format every time — impossible to parse
+this.logger.log('user 42 did login at 2026-05-14');
+this.logger.log('LOGIN OK for email=test@test.com');
+this.logger.log('Auth success');
+
+// GOOD: Consistent, structured format
+this.logger.log(`User login successful: userId=${userId}`, 'AuthService');
+```
+
+**Why it's bad**: Inconsistent formats break automated log parsing, alerting rules, and dashboard queries.
+
+---
+
+## Summary: Key Takeaways
+
+1. **Observability is not optional** — it's how you debug production systems without access to a debugger
+2. **Structured JSON logs** are for machines; **pretty logs** are for developers — serve both audiences
+3. **File rotation** prevents disk exhaustion — always set retention policies
+4. **Health checks** tell infrastructure "am I ready?" — make them cheap and public
+5. **Never leak internals** to clients — separate what you log from what you return
+6. **Log levels matter** — 4xx is a warning, 5xx is an error, don't mix them up
+7. **Winston DI registration** happens twice — once for bootstrap, once for the DI container
+8. **Every log entry should have context** — timestamp, level, source, and a meaningful message
+
+> **Final thought**: Good logging is like good insurance — you invest in it before you need it, and when the incident happens at 3 AM, you'll be grateful it's there.

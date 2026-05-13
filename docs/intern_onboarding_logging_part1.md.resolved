@@ -1,0 +1,333 @@
+# FlashLearn Backend — Logging & Monitoring Onboarding Guide
+
+## Part 1: Architecture, Logging, and Request Lifecycle
+
+> **Audience**: New interns with basic NestJS knowledge  
+> **Project**: FlashLearn Backend (NestJS + Prisma + SQLite)  
+> **Author**: Senior Backend Engineering Team
+
+---
+
+## 1. High-Level Architecture Overview
+
+### 1.1 What is "Observability"?
+
+Imagine you're a doctor. Your patient (the server) can't talk to you directly. You need **instruments** to understand what's happening inside:
+
+| Medical Analogy | Software Equivalent | Purpose |
+|---|---|---|
+| Patient's diary of symptoms | **Logs** | Detailed narrative of what happened |
+| Heart rate monitor | **Metrics** | Numerical measurements over time |
+| X-ray / MRI scan | **Traces** | Visual path of a single request through the system |
+
+**Observability** = Logs + Metrics + Traces. Together, they let you answer: *"Why is the system behaving this way?"* without guessing.
+
+### 1.2 Logging vs Monitoring vs Metrics
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    OBSERVABILITY                            │
+│                                                             │
+│  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐  │
+│  │   LOGGING    │  │  MONITORING  │  │     METRICS       │  │
+│  │             │  │              │  │                   │  │
+│  │ "What       │  │ "Is the     │  │ "How many         │  │
+│  │  happened?" │  │  system     │  │  requests/sec?    │  │
+│  │             │  │  healthy?"  │  │  What's the       │  │
+│  │ Text events │  │ Health      │  │  average response │  │
+│  │ with context│  │ checks,    │  │  time?"           │  │
+│  │             │  │ alerts     │  │                   │  │
+│  └─────────────┘  └──────────────┘  └───────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+- **Logging**: Records discrete events. *"User #42 logged in at 10:03:15"*
+- **Monitoring**: Continuously checks system health. *"Is the database reachable? Is memory under 256MB?"*
+- **Metrics**: Aggregated numerical data. *"Average response time is 120ms. Error rate is 0.3%"*
+
+### 1.3 Why Default NestJS Logging is Insufficient
+
+NestJS ships with a built-in `Logger` class. It works for learning, but fails in production:
+
+| Problem | Default NestJS Logger | Our Winston Setup |
+|---|---|---|
+| **Output format** | Plain text only | JSON in production, pretty in dev |
+| **File storage** | None (console only) | Rotated files with retention policies |
+| **Log levels** | Basic filtering | Fine-grained per-transport filtering |
+| **Crash capture** | Lost on process exit | `exceptionHandlers` catch crashes to disk |
+| **Machine parsing** | Impossible to search | JSON is queryable by ELK/Datadog |
+| **Rotation** | N/A | Auto-rotate by date + size, gzip compression |
+
+> **Real-world analogy**: Default NestJS logging is like shouting status updates into an empty room. Winston is like writing them in a structured logbook that gets filed, indexed, and kept for 30 days.
+
+### 1.4 Why Structured Logging Matters
+
+Consider these two log lines:
+
+**Unstructured** (default):
+```
+[Nest] 12345  - 05/14/2026, 9:45:58 AM  LOG [HTTP] GET /api/health 200
+```
+
+**Structured** (our Winston JSON):
+```json
+{
+  "context": "HTTP",
+  "level": "info",
+  "message": "GET /api/health 200 - 376b 699ms",
+  "timestamp": "2026-05-14T02:54:42.057Z"
+}
+```
+
+Why JSON wins:
+- **Searchable**: You can query `level == "error" AND context == "HTTP"` in log aggregators
+- **Parseable**: Machines can read JSON; they can't reliably parse human text
+- **Extensible**: You can add fields (`userId`, `requestId`) without breaking the format
+- **Filterable**: Dashboard tools can build charts from JSON fields
+
+---
+
+## 2. Logging Architecture
+
+### 2.1 Why Winston?
+
+We chose **Winston** (via `nest-winston`) for these reasons:
+
+| Criteria | Winston | Pino | Default NestJS |
+|---|---|---|---|
+| Maturity | 10+ years, 22k+ GitHub stars | Newer, very fast | Built-in |
+| Transports | Console, File, HTTP, Syslog, etc. | Console, File | Console only |
+| NestJS integration | `nest-winston` adapter | `nestjs-pino` | Native |
+| File rotation | `winston-daily-rotate-file` | Needs external tool | None |
+| Format flexibility | `combine()` format pipeline | JSON-first | Fixed format |
+| Learning curve | Moderate | Low | Very low |
+
+> **Engineering decision**: Winston was chosen because it offers the best balance of flexibility (multiple transports, custom formats) and ecosystem maturity. Pino is faster but requires more external tooling for file rotation.
+
+### 2.2 Log Levels Explained
+
+Winston uses these severity levels (from most to least severe):
+
+```
+error  (0) ─── Something broke. Wake someone up.
+ warn  (1) ─── Something is wrong but recoverable. Keep an eye on it.
+ info  (2) ─── Normal operations. "User logged in", "Server started".
+ http  (3) ─── HTTP-specific events.
+verbose(4) ─── More detail than info. Useful for tracing flows.
+ debug (5) ─── Developer-level detail. Only in development.
+ silly (6) ─── Everything. Almost never used.
+```
+
+**In our config** ([logger.config.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/config/logger.config.ts#L67)):
+```typescript
+level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+```
+
+- **Production**: Only `error`, `warn`, `info` are logged (performance + noise reduction)
+- **Development**: `debug` and above are logged (maximum visibility)
+
+### 2.3 The Transport System
+
+A **transport** is a destination where logs are sent. Think of it as a mail system — one letter (log entry) can be delivered to multiple addresses simultaneously:
+
+```
+                    ┌──────────────────────┐
+                    │   Your Application   │
+                    │   Code / NestJS      │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────▼───────────┐
+                    │   Winston Logger     │
+                    │   (Central Hub)      │
+                    └──┬───────┬───────┬───┘
+                       │       │       │
+              ┌────────▼──┐ ┌──▼─────┐ ┌▼──────────────┐
+              │  Console  │ │ Error  │ │   Combined    │
+              │ Transport │ │  File  │ │     File      │
+              │           │ │        │ │               │
+              │ Dev: Color│ │ Only   │ │ All levels    │
+              │ Prod: JSON│ │ errors │ │ (info+warn+   │
+              │           │ │ 30-day │ │  error)       │
+              │           │ │ retain │ │ 14-day retain │
+              └───────────┘ └────────┘ └───────────────┘
+```
+
+**Plus two safety nets:**
+- `exceptionHandlers` → catches unhandled exceptions → `exceptions-YYYY-MM-DD.log`
+- `rejectionHandlers` → catches unhandled promise rejections → `rejections-YYYY-MM-DD.log`
+
+### 2.4 File Rotation — Why It Matters
+
+Without rotation, a busy server can generate **gigabytes** of logs per day. Our config uses `winston-daily-rotate-file`:
+
+```
+logs/
+├── combined-2026-05-14.log      ← Today's logs (all levels)
+├── combined-2026-05-13.log.gz   ← Yesterday's (compressed)
+├── error-2026-05-14.log         ← Today's errors only
+├── exceptions-2026-05-14.log    ← Uncaught exceptions
+└── rejections-2026-05-14.log    ← Unhandled promise rejections
+```
+
+| Setting | Value | Why |
+|---|---|---|
+| `maxSize` | `20m` | Rotate when a single file exceeds 20MB |
+| `maxFiles` (combined) | `14d` | Keep 2 weeks of general logs |
+| `maxFiles` (error) | `30d` | Keep errors longer for post-mortems |
+| `zippedArchive` | `true` | Compress old logs to save disk space |
+| `datePattern` | `YYYY-MM-DD` | One file per day |
+
+### 2.5 Why Error Logs Are Separated
+
+Imagine searching for a critical database error in a file that also contains 50,000 lines of "GET /api/health 200 OK". Separating errors means:
+- **Faster incident response**: Jump straight to `error-*.log`
+- **Alerting**: Tools can watch only the error file for new entries
+- **Retention**: Keep errors for 30 days but general logs for only 14
+
+### 2.6 Dual Registration Pattern
+
+An important architecture decision: Winston is registered **twice**:
+
+```typescript
+// 1. In main.ts — for BOOTSTRAP phase (before DI container exists)
+const logger = WinstonModule.createLogger(winstonConfig);
+const app = await NestFactory.create(AppModule, { logger });
+
+// 2. In app.module.ts — for DI INJECTION (after container exists)
+WinstonModule.forRoot(winstonConfig),
+```
+
+**Why both?**
+- `main.ts`: NestJS needs a logger *before* any modules are loaded. If your database config is wrong and the app crashes on startup, this logger captures that error.
+- `app.module.ts`: Once the DI container is running, middleware and filters need to `@Inject(WINSTON_MODULE_NEST_PROVIDER)` the logger. This registration makes it available via DI.
+
+---
+
+## 3. Request Logging Lifecycle
+
+### 3.1 How NestJS Middleware Works
+
+Middleware sits between the incoming HTTP request and the route handler. It's like a security checkpoint at a building entrance — every visitor must pass through:
+
+```
+Client HTTP Request
+       │
+       ▼
+┌──────────────────┐
+│  RequestLogger   │  ◄── Our middleware. Records start time.
+│  Middleware      │      Attaches listener to response 'finish' event.
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│   Auth Guard     │  ◄── Checks JWT token
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│  Roles Guard     │  ◄── Checks user roles
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│   Controller     │  ◄── Route handler (e.g., StudyController.review)
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│    Service       │  ◄── Business logic (e.g., ReviewService)
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│  Prisma / DB     │  ◄── Database query
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│  Response        │
+│  Interceptor     │  ◄── Wraps result in ApiResponseDto
+└──────┬───────────┘
+       │
+       ▼
+  HTTP Response sent to client
+       │
+       ▼
+┌──────────────────┐
+│ response.on      │  ◄── 'finish' event fires!
+│ ('finish')       │      Middleware callback logs:
+│                  │      method, url, status, size, duration
+└──────────────────┘
+```
+
+### 3.2 How Response Time is Measured
+
+The key technique in our [requestLog.interceptor.ts](file:///d:/1_Hoc_Tap/1_1_Dai_Hoc/Tai_lieu_ki_2_nam_3/T2_Kien_truc_phan_mem/Do-an-flashcard/FlashCardBackend/Flash_Learn_BE/src/middleware/interceptor/requestLog.interceptor.ts):
+
+```typescript
+use(request: Request, response: Response, next: NextFunction): void {
+    const startTime = Date.now();          // ① Record when request arrived
+
+    response.on('finish', () => {          // ③ Fires AFTER response is sent
+      const duration = Date.now() - startTime;  // ④ Calculate elapsed time
+      // ... log the result
+    });
+
+    next();                                // ② Pass control to next handler
+}
+```
+
+The timeline:
+```
+Time ──────────────────────────────────────────────────────►
+
+① startTime     ② next()        Guards → Controller → Service → DB
+   recorded       called                                    │
+   │                                                        │
+   │              ③ Response fully sent to client            │
+   │                 │                                      │
+   │                 ▼                                      │
+   │              'finish' event fires                      │
+   │                 │                                      │
+   └─────────────────┤  duration = now - startTime = 699ms  │
+                     ▼                                      │
+              Log: "GET /api/health 200 - 376b 699ms"       │
+```
+
+### 3.3 What Each Field in the Log Means
+
+Example log output:
+```
+GET /api/health 200 - 376b 699ms - Mozilla/5.0... ::1
+```
+
+| Field | Value | Why It Matters |
+|---|---|---|
+| `method` | `GET` | Which HTTP verb was used |
+| `url` | `/api/health` | Which endpoint was hit |
+| `statusCode` | `200` | Did it succeed? (2xx=OK, 4xx=client error, 5xx=server error) |
+| `contentLength` | `376b` | How much data was sent back (detects unexpectedly large responses) |
+| `duration` | `699ms` | Performance indicator (is this endpoint slow?) |
+| `userAgent` | `Mozilla/5.0...` | What client made the request (browser? curl? mobile app?) |
+| `ip` | `::1` | Who made the request (IPv6 localhost) |
+
+### 3.4 Smart Log Level Routing
+
+Our middleware doesn't just log everything at the same level — it uses the **status code** to decide severity:
+
+```typescript
+if (statusCode >= 500) {
+  this.logger.error(logMessage, undefined, 'HTTP');   // Server broke
+} else if (statusCode >= 400) {
+  this.logger.warn(logMessage, 'HTTP');               // Client mistake
+} else {
+  this.logger.log(logMessage, 'HTTP');                // All good
+}
+```
+
+**Why this matters**:
+- A `404 Not Found` is the *client's* mistake — it shouldn't trigger an error alert
+- A `500 Internal Server Error` is *our* fault — it should wake someone up
+- A `200 OK` is normal — it's informational only
+
+This prevents **alert fatigue**: if every 404 triggered an error alert, the on-call engineer would get hundreds of false alarms and start ignoring real problems.

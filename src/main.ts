@@ -5,11 +5,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import { WinstonModule } from 'nest-winston';
+import { winstonConfig } from './config/logger.config';
 
 async function bootstrap() {
+  // Create the Winston logger instance BEFORE the NestJS app
+  // so that even bootstrap errors are captured by Winston.
+  const logger = WinstonModule.createLogger(winstonConfig);
+
   const app = await NestFactory.create(AppModule, {
-    logger: ['verbose', 'debug', 'log', 'warn', 'error', 'fatal'],
+    logger, // Replace the default NestJS logger with Winston
   });
+
   app.setGlobalPrefix('api');
   app.enableCors({
     credentials: true,
@@ -29,7 +36,7 @@ async function bootstrap() {
   // Save Swagger JSON to file
   const swaggerPath = join(process.cwd(), 'swagger.json');
   await writeFile(swaggerPath, JSON.stringify(document, null, 2));
-  console.log(`Swagger documentation saved to: ${swaggerPath}`);
+  logger.log(`Swagger documentation saved to: ${swaggerPath}`, 'Bootstrap');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -41,6 +48,8 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+  logger.log(`Application is running on: http://localhost:${port}`, 'Bootstrap');
 }
 bootstrap();

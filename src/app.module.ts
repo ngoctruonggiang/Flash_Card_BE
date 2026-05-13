@@ -20,17 +20,24 @@ import { StudyModule } from './modules/study.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReviewService } from './services/review/review.service';
 import { RequestLoggerMiddleware } from './middleware/interceptor/requestLog.interceptor';
+import { WinstonModule } from 'nest-winston';
+import { winstonConfig } from './config/logger.config';
+import { HealthModule } from './modules/health.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    // Register Winston as a NestJS module so @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    // works in middleware, filters, and services via DI.
+    WinstonModule.forRoot(winstonConfig),
     UserModule,
     DeckModule,
     CardModule,
     AuthModule,
     StudyModule,
+    HealthModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
