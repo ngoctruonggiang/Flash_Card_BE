@@ -1,22 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { GlobalExceptionFilter } from 'src/middleware/filters/global.filter';
 import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 
 describe('GlobalExceptionFilter Tests', () => {
   let filter: GlobalExceptionFilter;
+  let mockLogger: jest.Mocked<LoggerService>;
   let mockResponse: {
     status: jest.Mock;
     json: jest.Mock;
   };
   let mockRequest: {
     url: string;
+    method: string;
   };
   let mockArgumentsHost: ArgumentsHost;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    filter = new GlobalExceptionFilter();
+    // Create a mock logger that satisfies the LoggerService interface
+    mockLogger = {
+      log: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+      verbose: jest.fn(),
+    };
+
+    filter = new GlobalExceptionFilter(mockLogger);
 
     mockResponse = {
       status: jest.fn().mockReturnThis(),
@@ -25,6 +37,7 @@ describe('GlobalExceptionFilter Tests', () => {
 
     mockRequest = {
       url: '/test/path',
+      method: 'GET',
     };
 
     mockArgumentsHost = {
@@ -39,9 +52,6 @@ describe('GlobalExceptionFilter Tests', () => {
       switchToWs: () => ({}) as ReturnType<ArgumentsHost['switchToWs']>,
       getType: () => 'http',
     } as ArgumentsHost;
-
-    // Mock console.error to suppress output during tests
-    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -324,27 +334,41 @@ describe('GlobalExceptionFilter Tests', () => {
   });
 
   describe('Logging', () => {
-    it('This test case aims to log HttpException to console.error', () => {
-      const consoleSpy = jest.spyOn(console, 'error');
+    it('This test case aims to log HttpException (4xx) via logger.warn', () => {
       const exception = new HttpException('Test Error', HttpStatus.BAD_REQUEST);
 
       filter.catch(exception, mockArgumentsHost);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Exception caught by GlobalExceptionFilter:',
-        exception,
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'GET /test/path 400 - Test Error',
+        'ExceptionFilter',
       );
     });
 
-    it('This test case aims to log generic Error to console.error', () => {
-      const consoleSpy = jest.spyOn(console, 'error');
+    it('This test case aims to log HttpException (5xx) via logger.error', () => {
+      const exception = new HttpException(
+        'Server Failure',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
+      filter.catch(exception, mockArgumentsHost);
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'GET /test/path 500 - Server Failure',
+        exception.stack,
+        'ExceptionFilter',
+      );
+    });
+
+    it('This test case aims to log generic Error via logger.error', () => {
       const exception = new Error('Generic Error');
 
       filter.catch(exception, mockArgumentsHost);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Exception caught by GlobalExceptionFilter:',
-        exception,
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'GET /test/path 500 - Generic Error',
+        exception.stack,
+        'ExceptionFilter',
       );
     });
   });
