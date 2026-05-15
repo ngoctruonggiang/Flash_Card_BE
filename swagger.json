@@ -1288,6 +1288,20 @@
           "Health"
         ]
       }
+    },
+    "/api/metrics": {
+      "get": {
+        "operationId": "PrometheusController_index",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Prometheus"
+        ]
+      }
     }
   },
   "info": {

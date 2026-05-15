@@ -23,6 +23,7 @@ import { RequestLoggerMiddleware } from './middleware/interceptor/requestLog.int
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './config/logger.config';
 import { HealthModule } from './modules/health.module';
+import { MetricsModule } from './modules/metrics.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { HealthModule } from './modules/health.module';
     AuthModule,
     StudyModule,
     HealthModule,
+    MetricsModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
